@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#F5F3EF">
-<title>鬼怒川・草津・伊香保 旅のしおり</title>
+<title>北関東旅行</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -143,6 +143,13 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .lodge summary{cursor:pointer;font-size:12.5px;color:var(--text);font-weight:600;padding:2px 0}
 .lodge details[open] summary{margin-bottom:6px}
 .lodge-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pick{margin:8px 0 10px;padding:9px 12px;background:var(--bg-accent);border-left:3px solid var(--gold);border-radius:4px;font-size:12.5px;line-height:1.65;color:var(--sub)}
+.pick .pk{display:inline-block;font-size:11px;color:var(--gold);border:1px solid var(--gold);padding:0 6px;border-radius:2px;margin-bottom:3px}
+.pick b{display:block;font-size:14px;color:var(--text);font-weight:600}
+.yt{position:relative;width:100%;aspect-ratio:16/9;margin:2px 0 4px;border-radius:6px;overflow:hidden;background:#000}
+.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt-cap{font-size:10px;color:var(--dim);margin:0 0 10px}
+.lnk{color:var(--route);text-decoration:underline;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -150,8 +157,8 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <div class="page">
   <!-- 表紙 -->
   <header class="cover" id="top">
-    <p class="kicker">Trip Schedule</p>
-    <h1>鬼怒川・草津・伊香保</h1>
+    <p class="kicker">Trip Schedule ｜ 鬼怒川・草津・伊香保</p>
+    <h1>北関東旅行</h1>
     <p class="date">2026.11.21(土) - 11.23(月・祝)</p>
   </header>
 
@@ -230,6 +237,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
         <div class="bd">
           <h4>草津温泉 到着・散策</h4>
           <p class="addr">吾妻郡草津町草津</p>
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/%E6%B9%AF%E7%95%912.jpg?width=800" alt="草津温泉の湯畑と街並み" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Mikkabie / CC BY-SA 4.0 / Wikimedia Commons（草津温泉の湯畑と街並み）</p>
           <p class="desc">湯畑周辺散策およびチェックイン</p>
           <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+湯畑" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
         </div>
@@ -261,6 +269,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
           <p class="addr">吾妻郡東吾妻町松谷868-1</p>
           <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Agatsuma%20Valley%2001.jpg?width=800" alt="吾妻峡" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Kuru man from Japan / CC BY 2.0 / Wikimedia Commons</p>
           <p class="desc">10:30受付 / 10:45〜11:50 往復体験</p>
+          <div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/FjB92gnjdDw" title="アガッタン（東吾妻町インフォメーションガイド）" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><p class="yt-cap">アガッタンに乗る様子（東吾妻町インフォメーションガイド公式動画）（<a class="lnk" href="https://www.youtube.com/watch?v=FjB92gnjdDw" target="_blank" rel="noopener noreferrer">YouTubeで見る</a>）</p>
           <a href="https://www.google.com/maps/search/?api=1&query=アガッタン+吾妻郡東吾妻町松谷868-1" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
         </div>
       </li>
@@ -269,6 +278,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
         <div class="bd">
           <h4>昼食（万葉亭）＆ 伊香保石段街散策</h4>
           <p class="addr">水沢うどん 万葉亭：渋川市伊香保町水沢48-4</p>
+          <div class="pick"><span class="pk">人気メニュー</span><b>天ざるうどん 1,910円（税込）</b>コシの強い水沢うどんを冷たいざるで。海老と野菜の天ぷら付きで、お店のおすすめ御膳の筆頭です。<a class="lnk" href="https://manyotei.com/nenu.html" target="_blank" rel="noopener noreferrer">公式お品書きを見る</a></div>
           <a href="https://www.google.com/maps/search/?api=1&query=水沢うどん+万葉亭+渋川市伊香保町水沢48-4" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
         </div>
       </li>
@@ -307,12 +317,13 @@ html.map-locked,html.map-locked body{overflow:hidden}
       <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+湯畑" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
     </div>
     <div class="card">
-      <h4>熱乃湯（湯もみショー） <span class="tag">体験</span></h4>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Kusatsu%20Yumomi%2C%20Gunma%2003.jpg?width=800" alt="熱乃湯の湯もみショー" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Σ64 / CC BY 4.0 / Wikimedia Commons（熱乃湯の湯もみショー）</p><h4>熱乃湯（湯もみショー） <span class="tag">体験</span></h4>
       <p>伝統の「湯もみと踊り」を鑑賞。午後の部（15:30/16:00/16:30）あり（大人700円）。</p>
+      <div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/PDznaEuUguk" title="草津温泉 熱乃湯「湯もみと踊り」" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><p class="yt-cap">熱乃湯「湯もみと踊り」（草津温泉観光協会 公式動画）（<a class="lnk" href="https://www.youtube.com/watch?v=PDznaEuUguk" target="_blank" rel="noopener noreferrer">YouTubeで見る</a>）</p>
       <a href="https://www.google.com/maps/search/?api=1&query=熱乃湯+草津温泉" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
     </div>
     <div class="card">
-      <h4>西の河原公園 <span class="tag">絶景</span></h4>
+      <img src="https://commons.wikimedia.org/wiki/Special:FilePath/251128%20Sainokawara%20Park%2027.jpg?width=800" alt="西の河原公園" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Aspere / CC0 / Wikimedia Commons（西の河原公園）</p><h4>西の河原公園 <span class="tag">絶景</span></h4>
       <p>湯畑から徒歩約10分。河原から湯が湧き出る美しい公園。奥には巨大な大露天風呂も。</p>
       <a href="https://www.google.com/maps/search/?api=1&query=西の河原公園+草津温泉" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
     </div>
@@ -339,15 +350,15 @@ html.map-locked,html.map-locked body{overflow:hidden}
     </div>
     <div class="card">
       <h4>草津温泉</h4>
-      <p><strong>・温泉まんじゅう</strong>（長寿庵・松むら饅頭）<br><strong>・湯のはな</strong>（本物の温泉の素）<br><strong>・草津温泉ラスク</strong>（グランデフューメ草津）</p>
+      <p><strong><a class="lnk" href="https://www.kusatsu.ne.jp/asobo/shop/manju.htm" target="_blank" rel="noopener noreferrer">・温泉まんじゅう</a></strong>（長寿庵・松むら饅頭）<br><strong><a class="lnk" href="https://www.kusatsu-shokokai.jp/blog/kusatsu-onsen-yunohana-guide" target="_blank" rel="noopener noreferrer">・湯のはな</a></strong>（本物の温泉の素）<br><strong>・草津温泉ラスク</strong>（グランデフューメ草津）</p>
     </div>
     <div class="card">
       <h4>鬼怒川温泉</h4>
-      <p><strong>・日光誉（日本酒） / 日光湯波</strong><br><strong>・鬼怒川温泉かりんとう饅頭</strong></p>
+      <p><strong>・日光誉（日本酒） / 日光湯波</strong><br><strong><a class="lnk" href="https://ooami.co.jp/" target="_blank" rel="noopener noreferrer">・鬼怒川温泉かりんとう饅頭</a></strong></p>
     </div>
     <div class="card">
       <h4>伊香保温泉</h4>
-      <p><strong>・水沢うどん</strong>（半生麺パックはお土産に最適）<br><strong>・勝月堂の湯の花まんじゅう</strong>（温泉饅頭発祥の店）</p>
+      <p><strong>・水沢うどん</strong>（半生麺パックはお土産に最適）<br><strong><a class="lnk" href="https://www.shougetsudo.net/" target="_blank" rel="noopener noreferrer">・勝月堂の湯の花まんじゅう</a></strong>（温泉饅頭発祥の店）</p>
     </div>
   </div>
 
