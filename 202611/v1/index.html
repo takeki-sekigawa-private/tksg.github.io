@@ -136,6 +136,13 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .stop-list .tx i{font:600 12px var(--f-num);font-style:normal;color:var(--gold);margin-right:4px}
 .stop-list .tx small{display:block;font-size:12px;color:var(--sub);line-height:1.5}
 .stop-list .tx em{display:block;font-size:11px;color:var(--dim);font-style:normal;margin-top:2px}
+.lodge{margin-top:10px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;font-size:12.5px;line-height:1.65;color:var(--sub)}
+.lodge .lr{margin:0 0 7px}
+.lodge .lr b{display:block;font-size:12px;color:var(--text);font-weight:600}
+.lodge details{margin:2px 0 8px}
+.lodge summary{cursor:pointer;font-size:12.5px;color:var(--text);font-weight:600;padding:2px 0}
+.lodge details[open] summary{margin-bottom:6px}
+.lodge-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
 </style>
 </head>
 <body>
@@ -181,8 +188,28 @@ html.map-locked,html.map-locked body{overflow:hidden}
       <li class="stop">
         <div class="tm">16:30</div><div class="rl"></div>
         <div class="bd">
-          <h4>チェックイン</h4>
-          <p class="desc">Airbnb（鬼怒川エリア）</p>
+          <h4>チェックイン（Airbnb・貸切一軒家）</h4>
+          <p class="addr">栃木県日光市 / 小佐越駅から徒歩2分</p>
+          <p class="desc">4寝室・最大17名の一軒家を貸切。線路沿いの屋根付きテラスでBBQができ、SL大樹などの電車が目の前を通ります。鬼怒川ライン下りまでは車で約7分です。</p>
+          <div class="lodge">
+            <div class="lr"><b>駐車場</b>宿の前・敷地内は駐車禁止です。徒歩1分の「鬼怒川レジャー公園駐車場」に停めてください（隣家の敷地には立ち入らない）。</div>
+            <div class="lr"><b>チェックイン</b>非対面（セルフ）です。事前にメッセージで案内される WEB名簿を全員分記入しないと、入室用の暗証番号が届きません。代表者の身分証の提出も必要です。</div>
+            <div class="lr"><b>ルール</b>21:00〜翌7:00 はテラス使用不可。屋外で騒がない（声が近隣に響きます）。建物内は禁煙です。</div>
+            <div class="lr"><b>BBQ</b>無料です。カセットボンベは持参し、後片付けは必ず行う（放置すると清掃費 3,300円/30分）。</div>
+            <div class="lr"><b>持っていく物</b>食材・調味料（宿にあるのは食用油と塩コショウのみ）、カセットボンベ、虫よけ、歯ブラシ。</div>
+            <div class="lr"><b>音について</b>線路と道路に挟まれた立地のため、電車や車の音が聞こえます。</div>
+            <details>
+              <summary>SL大樹の通過時刻・周辺の買い物</summary>
+              <div class="lr"><b>下り</b>9:55頃 / 10:50頃 / 13:50頃 / 15:25頃（宿から特によく見えます）</div>
+              <div class="lr"><b>上り</b>11:20頃 / 13:00頃 / 15:50頃 / 16:50頃</div>
+              <div class="lr">宿の説明による目安です。日によって時刻が変わり、運休になることもあります。「SL大樹 時刻表」で当日の運行を確認してください。</div>
+              <div class="lr"><b>買い出し</b>食材はリオンドール鬼怒川店、カセットボンベはコメリが宿のおすすめです。ファミレスは車1分、スーパーとコンビニは車5分です。</div>
+            </details>
+            <div class="lodge-btns">
+              <a class="gmap-btn" href="https://www.airbnb.jp/rooms/1271633470413464115" target="_blank" rel="noopener noreferrer">Airbnbの宿ページを開く</a>
+              <a class="gmap-btn" href="https://www.google.com/maps/search/?api=1&query=%E9%AC%BC%E6%80%92%E5%B7%9D%E3%83%AC%E3%82%B8%E3%83%A3%E3%83%BC%E5%85%AC%E5%9C%92%E9%A7%90%E8%BB%8A%E5%A0%B4" target="_blank" rel="noopener noreferrer">駐車場をGoogleマップで開く</a>
+            </div>
+          </div>
         </div>
       </li>
     </ol>
@@ -380,34 +407,270 @@ function switchTabByCode(tabId) {
 (function(){
 'use strict';
 var PLACES={
- shinagawa:{no:1,n:'品川駅',ll:[35.63065,139.73740],q:'品川駅'},
- board:{no:2,n:'鬼怒川ライン下り 乗船場',ll:[36.82590,139.71515],addr:'日光市鬼怒川温泉大原1414',q:'鬼怒川ライン下り 日光市鬼怒川温泉大原1414'},
- stay:{no:3,n:'宿泊（Airbnb・鬼怒川エリア）',ll:[36.82371,139.71689],approx:true,addr:'鬼怒川エリア',info:'宿の正確な位置は未登録のため、鬼怒川温泉駅付近に目安として表示しています。'},
- yubatake:{no:4,n:'草津温泉 湯畑',ll:[36.62294,138.59673],addr:'吾妻郡草津町草津',q:'草津温泉 湯畑'},
- hotel:{no:5,n:'ホテルヴィレッジ',ll:[36.62710,138.60432],addr:'吾妻郡草津町草津618 / TEL: 0570-01-3232',q:'草津温泉 ホテルヴィレッジ'},
- agattan:{no:6,n:'アガッタン（吾妻峡レールバイク）',ll:[36.57253,138.73631],addr:'吾妻郡東吾妻町松谷868-1',q:'アガッタン 吾妻郡東吾妻町松谷868-1'},
- manyo:{no:7,n:'水沢うどん 万葉亭',ll:[36.47668,138.95117],addr:'渋川市伊香保町水沢48-4',q:'水沢うどん 万葉亭 渋川市伊香保町水沢48-4'},
- ikaho:{no:8,n:'伊香保石段街',ll:[36.49766,138.91639],addr:'渋川市伊香保町伊香保',q:'伊香保石段街'}
+ "shinagawa": {
+  "no": 1,
+  "n": "品川駅",
+  "ll": [
+   35.63065,
+   139.7374
+  ],
+  "q": "品川駅"
+ },
+ "board": {
+  "no": 2,
+  "n": "鬼怒川ライン下り 乗船場",
+  "ll": [
+   36.8259,
+   139.71515
+  ],
+  "addr": "日光市鬼怒川温泉大原1414",
+  "q": "鬼怒川ライン下り 日光市鬼怒川温泉大原1414"
+ },
+ "stay": {
+  "no": 3,
+  "n": "宿泊（Airbnb・貸切一軒家）",
+  "ll": [
+   36.80271,
+   139.70704
+  ],
+  "approx": true,
+  "addr": "日光市・小佐越駅から徒歩2分",
+  "info": "正確な住所はAirbnbの予約詳細でご確認ください（ピンは小佐越駅付近の目安）。車は徒歩1分の「鬼怒川レジャー公園駐車場」へ。宿の前は駐車禁止です。",
+  "rq": "鬼怒川レジャー公園駐車場"
+ },
+ "yubatake": {
+  "no": 4,
+  "n": "草津温泉 湯畑",
+  "ll": [
+   36.62294,
+   138.59673
+  ],
+  "addr": "吾妻郡草津町草津",
+  "q": "草津温泉 湯畑"
+ },
+ "hotel": {
+  "no": 5,
+  "n": "ホテルヴィレッジ",
+  "ll": [
+   36.6271,
+   138.60432
+  ],
+  "addr": "吾妻郡草津町草津618 / TEL: 0570-01-3232",
+  "q": "草津温泉 ホテルヴィレッジ"
+ },
+ "agattan": {
+  "no": 6,
+  "n": "アガッタン（吾妻峡レールバイク）",
+  "ll": [
+   36.57253,
+   138.73631
+  ],
+  "addr": "吾妻郡東吾妻町松谷868-1",
+  "q": "アガッタン 吾妻郡東吾妻町松谷868-1"
+ },
+ "manyo": {
+  "no": 7,
+  "n": "水沢うどん 万葉亭",
+  "ll": [
+   36.47668,
+   138.95117
+  ],
+  "addr": "渋川市伊香保町水沢48-4",
+  "q": "水沢うどん 万葉亭 渋川市伊香保町水沢48-4"
+ },
+ "ikaho": {
+  "no": 8,
+  "n": "伊香保石段街",
+  "ll": [
+   36.49766,
+   138.91639
+  ],
+  "addr": "渋川市伊香保町伊香保",
+  "q": "伊香保石段街"
+ }
 };
 var DAYS=[
- {id:'d1',label:'1日目',date:'11/21(土)',color:'#2B6CB0',title:'品川 → 鬼怒川',dist:156.3,dur:138,route:[0,1],poly:"qbnxEgn{sY{e@yHgi@gUmIoIsMwZ{gAuJm_Au\\sc@_[{|@iSzEq_@wSsIoJwa@eNpDoxBaK}GgJsj@c_@sSn`@iEyAyK`Syj@fm@wgDqPazCrDoaDO{j@qDaGlIm@fy@cb@|AofAxXuVzLyZda@uPx_AaJrNeQfDqyBkDwSzCsr@ho@mp@v\\qw@fj@u_Aze@w{Are@{~Ad|AweAz^k`Ah|@ej@`[q_AvUiu@~Aox@yM_eAkj@iT_Hc]gB}_@xFsh@pUagAvv@krB`k@cb@pS}u@bh@mj@vUs_AdO}iBb@_b@tHeXxJy`@zUua@x^}]nc@c_ApzAa`@x`@}j@n`@_g@nTu`@rKi_BrQek@dM{m@fWqmAjw@wSnGoWlBu_@wDyp@{Uuu@aO}TeJa`@o`@{[o|@mSwXmXgN}s@{HsVqIoR_Q_d@iq@_d@sWad@mEy_AjFmn@cRcXcBeTxGs[`a@yWnCiWoI_d@ch@oQeJuv@}Aar@yOgl@UwSiGiRyT_HaZzCezAkF}o@wJ_O_^gQmSe]m`@q^kEaPiF{o@qb@er@s^grA}\\el@y_@c[yc@iNy_@Zyw@jWmg@lDyYkCkYaJ}aAgr@cAtAzC`CbAtOfGTwAaa@ci@ekA{MqL_i@k@gI{CqDiGoImp@yKeJclA`D}^jEuFIm@_Kuk@hP}qA{Bwp@tJaf@dNeo@|Aik@sEum@nGkq@l@ks@aGoVkNyT}Fq@iHiEiAyzA`l@ycBpa@}}BjgAil@xF{w@tZeg@dHolAzDu]_Hoc@qA}KiD{_@a@it@dMwRlQwMbFibA|Eiw@qP_PtBgZpuA_LsBkn@dAcw@km@}N_A{GxDcY{Ni_@_Io}@mDqWfLot@tq@ec@jV_dB`Mgo@uUuWgP}o@{AiOzB_K{AoFqHuBkP{CmApBlBrPyDK_C_BkFcBhAcGwH",
-  items:[{p:'shinagawa',t:'10:00',note:'集合・出発',leg:{d:156.3,m:138}},{p:'board',t:'14:30',note:'15:10便 / 貸切船で渓谷下り（約30分）'},{p:'stay',t:'16:30',note:'Airbnbにチェックイン'}]},
- {id:'d2',label:'2日目',date:'11/22(日)',color:'#DD6B20',title:'鬼怒川 → 草津',dist:191.5,dur:193,route:[0,1,2],poly:"ecw_FmmwsYiCzG`FhRcL`BwCbDuEeJrGnGhBtOhExGtJpBxPyB|o@zAtWfPnn@rUvdB_Mdc@kVzg@yh@~WwQdKcCt}@rDd^pHlZhOtFyDxO|@dw@lm@fn@iAbLtBbZ}tAnRmBho@fOnbAyCpPmEfUeSju@iMzoA~G`^`HnlA{Ddg@eHzw@uZhl@yF|}BkgAxcBqa@xzAal@hEhAp@hHxT|FnVjNjs@`Gjq@m@tm@oGhk@rEdo@}A`f@eNvq@{J|pA`Ctk@iPl@~JvADnh@yFfeA{CdNnJnHvm@fDzHdKhEvh@j@|GtF~m@lpAtFr@zBbUzl@xd@b^hKpd@tArZcEjo@{Tx\\kBld@pJza@pYf_@xj@ra@hxAzc@pt@jFbp@`EjOn`@t^rSl]j\\rOhLpPlFjp@qDzsAbKdd@pKdMzMtGjz@zBvh@pJxDxFm[j{GsNdb@w^|a@kMzV{StxAif@hiAqDrp@|HfyApGtg@dObm@n]|z@|EpYkBtg@sVhp@kFz\\T`v@tHxs@lG|Tj\\rr@jJd{@vFnSbQnUby@jj@`h@pk@rNly@l^br@lEzd@cE``@ma@`gAr@z`AqBpWcb@lfAq\\lqBy@vc@`JztC_IbsBvBv]fNhy@Ffb@kE`Yc_@fqAcYjeBpBnG|ZlFaBqByJzIeQx[{x@zsDmExo@bBfhAoA`XoI`XqPlR_oCdkAaQxQsl@faAs~@dj@qL~M_`@dtAmIdkAca@tyAePvpAyFfOu^ne@gQ`^sGp^[xn@qH`SsLbHcYd@an@`Qkn@`F_\\dZma@~MwUhUiMzX{MxHiEvbAwD~Mkg@nZoJf@}EtIab@~N_F~KyHr@_VeI{m@vEgJwCwJ`CoOaBeFfCgS`b@Ita@iXpeAe[jWeMla@uk@du@oO|`@kHpw@_Mxc@\\rG~HxOiN|[Vr^cEv_@}Upm@aJdd@cJxNob@|]{BkB{DzBqLcCkHrE{^pz@kh@|e@iOj]gUpXwFnR{@`Pp@zu@}JzZhE~a@lVhQdV`\\d\\tN|j@|y@jE`BdKu@fH`F~Rhd@tGpGvp@hNhLhJdF`k@vDuJdI_GtBzKdBxTyJ`[~@z[ka@`z@wCxq@w\\tz@yU|JsWz\\}Nni@{[d]oIfb@k@|VzDh^jK`^zTd\\jx@xw@|Krn@nb@`f@bE`x@vc@~j@pEvXpUvTzAhMcRlz@cIjQy@py@a[fo@_Ebb@fChf@wAnVsQrPqR`k@kG`C{LhQcKxm@_SxDoHdUit@fj@wD~IaIl@}JnRcCf@qGaEad@bE_IgDuKhAcP{AeRnKgMgI}FtAmEmBqUzTwRb@gFoDaHfFoKyD{Fi]{OgKmCwGiLkEoNz@EiWsC_AuElDcDwCr@uSwGmZ_GfGgByEk@lA",
-  items:[{p:'stay',t:'09:00',note:'鬼怒川 出発（草津方面へ）',leg:{d:190.3,m:190}},{p:'yubatake',t:'13:00',note:'到着・湯畑周辺を散策',leg:{d:1.2,m:4}},{p:'hotel',t:'15:00',note:'チェックイン'}]},
- {id:'d3',label:'3日目',date:'11/23(月・祝)',color:'#97266D',title:'草津 → 吾妻峡 → 伊香保 → 品川',dist:211.1,dur:216,route:[0,1,2,3,4],poly:"osp~Euc~lYj@mAfBxEjIaJ`FjB`FgHMik@xKqe@oA_QwGiP|EcT_GiSzEuMjHoG|@zCd@qE}I_DWdEyFsAi@`Do@iExFq@I}DzGgCbC|BfBeD|In@AbSvBeR_DgG~FnDbCwK|HrBbUWpXzOiAhGdRba@pJStMjKhQnDtSbMjWcBlSfSpX_Dpa@lArP_GnMsLzCqPvHeOs@aSvBsN~^{FdEkMzFcChEpApHtLvBsGXw[hL}OhSbAhMjQdGoN@{SfSqbCwOcdA|Zcq@fBuLcC}AiIgh@_RwH_E}UkR__@q@iIrDkBoDuX{j@s_A}HkHmYsIwKcIeCeLg]qMdDsAlIy^hY_q@dDeVxYq`@~V_Lv\\uz@vCyq@ja@az@_A{[tIgU@uP_FgU_HlFwDtJk@eVoEoTsKuIwp@iNuGqG_Sid@gHaFeKt@kEaB}j@}y@e\\uNeVa\\{UuP{Esb@|J{ZYe~@`Jc_@`SuThOk]jh@}e@z^qz@jHsEpLbCzD{BzBjBnb@}]hKcQzH{a@|Uqm@bEw_@Ws^dMkZkHmQUqH~Lyb@vBid@`YwB|XnFtDeBnHzKnXlRxNnCjUt_@xa@z^jKvPVtG~L`ZpSVdPyN`Bs_@tOqHzRvLlMuFw@{GvMkc@hHwIfGwAd[}UhE{P|OgQ|b@eSo@mIbJhH@{LrH}K`SyH`KxBnGlGpIeBRjCSkCqIdBoGmGaKyBaSxHsH|KAzLcJiHn@lI}b@dS}OfQiEzPe[|UgGvAiHvI_Nfe@rA~b@jLnDUjKTkKkLoDsA_c@dHu\\rMyQ|c@eYhE{P|OgQ|b@eSo@mIbJhH@{LrH}K`SyHzVdKrV_OlU_BfPuw@vb@oz@za@vN~`@qnAz@wT|OqXvAeXfs@~EfKsn@zGobBgV^VrC`[cD`nAc_@x|@uPjrDmVrq@mO|]kQ|YuUh`BooBlbAyk@r^mZbVkZlx@ouAlWgXf[oTpl@cWbe@yJfg@Ynt@vK~V~@b]oEd\\cQbO_QhLgVd{@emDlJ{VpOmU`W_Sd{@ua@dfAwlAnkAcu@vT_Vxe@}u@pViTvh@mRvgAaI`VwItUePnWq\\bc@}{@|Ym^lc@m\\`}@}a@z`@c`@f|BuvEne@_t@vo@yj@zbAog@jm@oz@jk@q[jTiSdRia@zLuu@bIaVvg@ko@|`@m{@x[u\\tKoR|GmY`Dkq@nHye@bQyc@hVc[rd@eUvkAqLn_AoX|X{Dzi@tCnnAfe@xY~EbeBiCzT}DzQsJnQqSfa@wz@|TyW|YmR|qAsi@bf@sa@zRg\\pKqZ`V_dB|Osd@lYk[vxAk~@rbAs`BpS}Njo@sTxSsMpo@y~@rYqV``@iNt}@oL~b@}RfUySv}@cjA~cAes@po@kt@hs@ci@jaAaeBnb@g`@pa@_UjP}SbKu\\fGc{@xEoVvc@su@hLkd@jZ}]pCyc@nq@nTjk@lCl~A~An`AwD~jAoP|sBvT~M{_@tZ_`@jFmo@jJob@?sLmCs_@wJ_YeDa`@gl@ayCyYas@xFoC|[pEpwAX~]iShW|FhS{Bni@sz@|yAceAr^u|@_IsDwg@_v@\\cJbNKhB}]gIE",
-  items:[{p:'hotel',t:'09:45',note:'草津温泉 出発',leg:{d:27,m:32}},{p:'agattan',t:'10:15',note:'10:30受付 / 10:45〜11:50 往復体験',leg:{d:37.9,m:50}},{p:'manyo',t:'12:45',note:'昼食',leg:{d:5.1,m:7}},{p:'ikaho',t:'',note:'昼食後に石段街を散策（14:30 伊香保出発）',leg:{d:141.1,m:127}},{p:'shinagawa',t:'',note:'帰着（東京方面へ帰路）'}]}
+ {
+  "id": "d1",
+  "label": "1日目",
+  "date": "11/21(土)",
+  "color": "#2B6CB0",
+  "title": "品川 → 鬼怒川",
+  "dist": 159.6,
+  "dur": 144,
+  "route": [
+   0,
+   1,
+   2
+  ],
+  "poly": "qbnxEgn{sY{e@yHgi@gUmIoIsMwZ{gAuJm_Au\\sc@_[{|@iSzEq_@wSsIoJwa@eNpDoxBaK}GgJsj@c_@sSn`@iEyAyK`Syj@fm@wgDqPazCrDoaDO{j@qDaGlIm@fy@cb@|AofAxXuVzLyZda@uPx_AaJrNeQfDqyBkDwSzCsr@ho@mp@v\\qw@fj@u_Aze@w{Are@{~Ad|AweAz^k`Ah|@ej@`[q_AvUiu@~Aox@yM_eAkj@iT_Hc]gB}_@xFsh@pUagAvv@krB`k@cb@pS}u@bh@mj@vUs_AdO}iBb@_b@tHeXxJy`@zUua@x^}]nc@c_ApzAa`@x`@}j@n`@_g@nTu`@rKi_BrQek@dM{m@fWqmAjw@uPrFiWfC{_@sC{s@}Vuu@aO}TeJa`@o`@{[o|@mSwXmXgN}s@{HsVqIoR_Q_d@iq@_d@sWad@mEy_AjFmn@cRcXcBeTxGs[`a@yWnCiWoI_d@ch@oQeJuv@}Aar@yOgl@UwSiGiRyT_HaZzCezAkF}o@wJ_O_^gQmSe]m`@q^kEaPiF{o@qb@er@s^grA}\\el@y_@c[yc@iNy_@Zyw@jWmg@lDyYkCkYaJ}aAgr@cAtAzC`CbAtOfGTwAaa@ci@ekA{MqL_i@k@gI{CqDiGoImp@yKeJclA`D}^jEuFIm@_Kuk@hP}qA{Bwp@tJaf@dNeo@|Aik@sEum@nGkq@l@ks@aGoVkNyT}Fq@iHiEiAyzA`l@ycBpa@}}BjgAil@xF{w@tZeg@dHolAzDu]_Hoc@qA}KiD{_@a@it@dMwRlQwMbFibA|Eiw@qP_PtBgZpuA_LsBkn@dAcw@km@}N_A{GxDcY{Ni_@_Io}@mDqWfLot@tq@ec@jV_dB`Mgo@uUuWgP}iAWoFeEsDeTgDkBzAxBhQ}DkBkJcBhAaHuJzDmChFhAtKzOhMoMvIw@nb@~^|cAnZz@cF",
+  "items": [
+   {
+    "p": "shinagawa",
+    "t": "10:00",
+    "note": "集合・出発",
+    "leg": {
+     "d": 156.3,
+     "m": 138
+    }
+   },
+   {
+    "p": "board",
+    "t": "14:30",
+    "note": "15:10便 / 貸切船で渓谷下り（約30分）",
+    "leg": {
+     "d": 3.3,
+     "m": 6
+    }
+   },
+   {
+    "p": "stay",
+    "t": "16:30",
+    "note": "Airbnb（貸切一軒家）にチェックイン"
+   }
+  ]
+ },
+ {
+  "id": "d2",
+  "label": "2日目",
+  "date": "11/22(日)",
+  "color": "#DD6B20",
+  "title": "鬼怒川 → 草津",
+  "dist": 187.5,
+  "dur": 190,
+  "route": [
+   0,
+   1,
+   2
+  ],
+  "poly": "wrr_FcsusY{@bFlIjBlD}BbBfIzJpDtGdPx}@uG`g@{W`c@yd@bZ}SdP{Dj{@pDd^pHlZhOtFyDxO|@dw@lm@fn@iAbLtBbZ}tAnRmBho@fOnbAyCpPmEfUeSju@iMzoA~G`^`HnlA{Ddg@eHzw@uZhl@yF|}BkgAxcBqa@j{Acl@~DxAh@zGxT|FnVjNjs@`Gjq@m@tm@oGhk@rEdo@}A`f@eNvq@{J|pA`Ctk@iPl@~JvADnh@yFfeA{CdNnJnHvm@fDzHdKhEvh@j@|GtF~m@lpAtFr@zBbUzl@xd@b^hKpd@tArZcEjo@{Tx\\kBld@pJza@pYf_@xj@ra@hxAzc@pt@jFbp@`EjOn`@t^rSl]j\\rOhLpPlFjp@qDzsAbKdd@pKdMzMtGjz@zBvh@pJxDxFm[j{GsNdb@w^|a@kMzV{StxAif@hiAqDrp@|HfyApGtg@dObm@n]|z@|EpYkBtg@sVhp@kFz\\T`v@tHxs@lG|Tj\\rr@jJd{@vFnSbQnUby@jj@`h@pk@rNly@l^br@lEzd@cE``@ma@`gAr@z`AqBpWcb@lfAq\\lqBy@vc@`JztC_IbsBvBv]fNhy@Ffb@kE`Yc_@fqAcYjeBpBnG|ZlFaBqByJzIeQx[{x@zsDmExo@bBfhAoA`XoI`XqPlR_oCdkAaQxQsl@faAs~@dj@qL~M_`@dtAmIdkAca@tyAePvpAyFfOu^ne@gQ`^sGp^[xn@qH`SsLbHcYd@an@`Qkn@`F_\\dZma@~MwUhUiMzX{MxHiEvbAwD~Mkg@nZoJf@}EtIab@~N_F~KyHr@_VeI{m@vEgJwCwJ`CoOaBeFfCgS`b@Ita@iXpeAe[jWeMla@uk@du@oO|`@kHpw@_Mxc@\\rG~HxOiN|[Vr^cEv_@}Upm@aJdd@cJxNob@|]{BkB{DzBqLcCkHrE{^pz@kh@|e@iOj]gUpXwFnR{@`Pp@zu@}JzZhE~a@lVhQdV`\\d\\tN|j@|y@jE`BdKu@fH`F~Rhd@tGpGvp@hNhLhJdF`k@vDuJdI_GtBzKdBxTyJ`[~@z[ka@`z@wCxq@w\\tz@yU|JsWz\\}Nni@{[d]oIfb@k@|VzDh^jK`^zTd\\jx@xw@|Krn@nb@`f@bE`x@vc@~j@pEvXpUvTzAhMcRlz@cIjQy@py@a[fo@_Ebb@fChf@wAnVsQrPqR`k@kG`C{LhQcKxm@_SxDoHdUit@fj@wD~IaIl@}JnRcCf@qGaEad@bE_IgDuKhAcP{AeRnKgMgI}FtAmEmBqUzTwRb@gFoDaHfFoKyD{Fi]{OgKmCwGiLkEoNz@EiWsC_AuElDcDwCr@uSwGmZ_GfGgByEk@lA",
+  "items": [
+   {
+    "p": "stay",
+    "t": "09:00",
+    "note": "鬼怒川 出発（草津方面へ）",
+    "leg": {
+     "d": 186.3,
+     "m": 186
+    }
+   },
+   {
+    "p": "yubatake",
+    "t": "13:00",
+    "note": "到着・湯畑周辺を散策",
+    "leg": {
+     "d": 1.2,
+     "m": 4
+    }
+   },
+   {
+    "p": "hotel",
+    "t": "15:00",
+    "note": "チェックイン"
+   }
+  ]
+ },
+ {
+  "id": "d3",
+  "label": "3日目",
+  "date": "11/23(月・祝)",
+  "color": "#97266D",
+  "title": "草津 → 吾妻峡 → 伊香保 → 品川",
+  "dist": 211.1,
+  "dur": 216,
+  "route": [
+   0,
+   1,
+   2,
+   3,
+   4
+  ],
+  "poly": "osp~Euc~lYj@mAfBxEjIaJ`FjB`FgHMik@xKqe@oA_QwGiP|EcT_GiSzEuMjHoG|@zCd@qE}I_DWdEyFsAi@`Do@iExFq@I}DzGgCbC|BfBeD|In@AbSvBeR_DgG~FnDbCwK|HrBbUWpXzOiAhGdRba@pJStMjKhQnDtSbMjWcBlSfSpX_Dpa@lArP_GnMsLzCqPvHeOs@aSvBsN~^{FdEkMzFcChEpApHtLvBsGXw[hL}OhSbAhMjQdGoN@{SfSqbCwOcdA|Zcq@fBuLcC}AiIgh@_RwH_E}UkR__@q@iIrDkBoDuX{j@s_A}HkHmYsIwKcIeCeLg]qMdDsAlIy^hY_q@dDeVxYq`@~V_Lv\\uz@vCyq@ja@az@_A{[tIgU@uP_FgU_HlFwDtJk@eVoEoTsKuIwp@iNuGqG_Sid@gHaFeKt@kEaB}j@}y@e\\uNeVa\\{UuP{Esb@|J{ZYe~@`Jc_@`SuThOk]jh@}e@z^qz@jHsEpLbCzD{BzBjBnb@}]hKcQzH{a@|Uqm@bEw_@Ws^dMkZkHmQUqH~Lyb@vBid@`YwB|XnFtDeBnHzKnXlRxNnCjUt_@xa@z^jKvPVtG~L`ZpSVdPyN`Bs_@tOqHzRvLlMuFw@{GvMkc@hHwIfGwAd[}UhE{P|OgQ|b@eSo@mIbJhH@{LrH}K`SyH`KxBnGlGpIeBRjCSkCqIdBoGmGaKyBaSxHsH|KAzLcJiHn@lI}b@dS}OfQiEzPe[|UgGvAiHvI_Nfe@rA~b@jLnDUjKTkKkLoDsA_c@dHu\\rMyQ|c@eYhE{P|OgQ|b@eSo@mIbJhH@{LrH}K`SyHzVdKrV_OlU_BfPuw@vb@oz@za@vN~`@qnAz@wT|OqXvAeXfs@~EfKsn@zGobBgV^VrC`[cD`nAc_@x|@uPjrDmVrq@mO|]kQ|YuUh`BooBlbAyk@r^mZbVkZlx@ouAlWgXf[oTpl@cWbe@yJfg@Ynt@vK~V~@b]oEd\\cQbO_QhLgVd{@emDlJ{VpOmU`W_Sd{@ua@dfAwlAnkAcu@vT_Vxe@}u@pViTvh@mRvgAaI`VwItUePnWq\\bc@}{@|Ym^lc@m\\`}@}a@z`@c`@f|BuvEne@_t@vo@yj@zbAog@jm@oz@jk@q[jTiSdRia@zLuu@bIaVvg@ko@|`@m{@x[u\\tKoR|GmY`Dkq@nHye@bQyc@hVc[rd@eUvkAqLn_AoX|X{Dzi@tCnnAfe@xY~EbeBiCzT}DzQsJnQqSfa@wz@|TyW|YmR|qAsi@bf@sa@zRg\\pKqZ`V_dB|Osd@lYk[vxAk~@rbAs`BpS}Njo@sTxSsMpo@y~@rYqV``@iNt}@oL~b@}RfUySv}@cjA~cAes@po@kt@hs@ci@jaAaeBnb@g`@pa@_UjP}SbKu\\fGc{@xEoVvc@su@hLkd@jZ}]pCyc@nq@nTjk@lCl~A~An`AwD~jAoP|sBvT~M{_@tZ_`@jFmo@jJob@?sLmCs_@wJ_YeDa`@gl@ayCyYas@xFoC|[pEpwAX~]iShW|FhS{Bni@sz@|yAceAr^u|@_IsDwg@_v@\\cJbNKhB}]gIE",
+  "items": [
+   {
+    "p": "hotel",
+    "t": "09:45",
+    "note": "草津温泉 出発",
+    "leg": {
+     "d": 27,
+     "m": 32
+    }
+   },
+   {
+    "p": "agattan",
+    "t": "10:15",
+    "note": "10:30受付 / 10:45〜11:50 往復体験",
+    "leg": {
+     "d": 37.9,
+     "m": 50
+    }
+   },
+   {
+    "p": "manyo",
+    "t": "12:45",
+    "note": "昼食",
+    "leg": {
+     "d": 5.1,
+     "m": 7
+    }
+   },
+   {
+    "p": "ikaho",
+    "t": "",
+    "note": "昼食後に石段街を散策（14:30 伊香保出発）",
+    "leg": {
+     "d": 141.1,
+     "m": 127
+    }
+   },
+   {
+    "p": "shinagawa",
+    "t": "",
+    "note": "帰着（東京方面へ帰路）"
+   }
+  ]
+ }
 ];
 var SPOTS=[
- {day:'d2',n:'熱乃湯',ll:[36.62271,138.59632],note:'湯もみショー（15:30 / 16:00 / 16:30）・大人700円',q:'草津温泉 熱乃湯'},
- {day:'d2',n:'西の河原公園',ll:[36.62406,138.59036],note:'湯畑から徒歩約10分。大露天風呂もあります',q:'草津温泉 西の河原公園'}
+ {
+  "day": "d1",
+  "n": "鬼怒川レジャー公園駐車場",
+  "ll": [
+   36.79988,
+   139.70776
+  ],
+  "note": "宿から徒歩1分。宿の前・敷地内は駐車禁止なので、車はこちらに停めます",
+  "q": "鬼怒川レジャー公園駐車場",
+  "nav": true
+ },
+ {
+  "day": "d2",
+  "n": "熱乃湯",
+  "ll": [
+   36.62271,
+   138.59632
+  ],
+  "note": "湯もみショー（15:30 / 16:00 / 16:30）・大人700円",
+  "q": "草津温泉 熱乃湯"
+ },
+ {
+  "day": "d2",
+  "n": "西の河原公園",
+  "ll": [
+   36.62406,
+   138.59036
+  ],
+  "note": "湯畑から徒歩約10分。大露天風呂もあります",
+  "q": "草津温泉 西の河原公園"
+ }
 ];
-
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function fm(m){var h=Math.floor(m/60),r=m%60;return h?h+'時間'+(r?r+'分':''):r+'分';}
 function gq(p){return p.q?encodeURIComponent(p.q):p.ll[0]+','+p.ll[1];}
 function gsearch(p){return 'https://www.google.com/maps/search/?api=1&query='+gq(p);}
 function gnav(p){return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+gq(p);}
-function groute(d){var ps=d.route.map(function(i){return PLACES[d.items[i].p];});var u='https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+gq(ps[0])+'&destination='+gq(ps[ps.length-1]);if(ps.length>2)u+='&waypoints='+ps.slice(1,-1).map(gq).join('%7C');return u;}
+function gr(p){return p.rq?encodeURIComponent(p.rq):gq(p);}
+function groute(d){var ps=d.route.map(function(i){return PLACES[d.items[i].p];});var u='https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+gr(ps[0])+'&destination='+gr(ps[ps.length-1]);if(ps.length>2)u+='&waypoints='+ps.slice(1,-1).map(gr).join('%7C');return u;}
 function dec(s){var i=0,la=0,lo=0,out=[],b,sh,r;while(i<s.length){sh=0;r=0;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5;}while(b>=32);la+=(r&1)?~(r>>1):(r>>1);sh=0;r=0;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5;}while(b>=32);lo+=(r&1)?~(r>>1):(r>>1);out.push([la/1e5,lo/1e5]);}return out;}
 function sc(z,a,b){var t=Math.max(0,Math.min(1,(z-6)/8));return a+(b-a)*t;}
 function dayOf(id){return DAYS.filter(function(x){return x.id===id;})[0];}
@@ -421,7 +684,7 @@ function popupHtml(k){var p=PLACES[k],h='<div class="pp"><div class="pp-h">STOP 
  h+='<div class="pp-l"><a href="'+gsearch(p)+'" '+A+'>Googleマップ</a>';
  if(!p.approx)h+='<a href="'+gnav(p)+'" '+A+'>ここへナビ</a>';
  return h+'</div></div>';}
-function spotHtml(s){return '<div class="pp"><div class="pp-h">SPOT</div><strong>'+esc(s.n)+'</strong><div class="pp-n">'+esc(s.note)+'</div><div class="pp-l"><a href="'+gsearch(s)+'" '+A+'>Googleマップ</a></div></div>';}
+function spotHtml(s){return '<div class="pp"><div class="pp-h">SPOT</div><strong>'+esc(s.n)+'</strong><div class="pp-n">'+esc(s.note)+'</div><div class="pp-l"><a href="'+gsearch(s)+'" '+A+'>Googleマップ</a>'+(s.nav?'<a href="'+gnav(s)+'" '+A+'>ここへナビ</a>':'')+'</div></div>';}
 function sumHtml(vis){var h='',td=0,tm=0;vis.forEach(function(d){td+=d.dist;tm+=d.dur;h+='<div class="day-sum"><span class="dot" style="background:'+d.color+'"></span><div><h4>'+d.label+' '+d.date+'　'+esc(d.title)+'</h4><p>走行 約'+Math.round(d.dist)+'km ・ 運転 約'+fm(d.dur)+'</p><a href="'+groute(d)+'" '+A+'>Googleマップでこの行程を開く</a></div></div>';});
  if(vis.length>1)h+='<div class="day-total">3日間の合計 約'+Math.round(td)+'km ・ 運転 約'+fm(tm)+'</div>';return h;}
 function listHtml(vis){var h='';vis.forEach(function(d){h+='<li class="dh" style="color:'+d.color+'">'+d.label+' '+d.date+'</li>';d.items.forEach(function(it){var p=PLACES[it.p];h+='<li><button type="button" class="st" data-p="'+it.p+'"><span class="no">'+p.no+'</span><span class="tx"><b>'+(it.t?'<i>'+it.t+'</i>':'')+esc(p.n)+'</b><small>'+esc(it.note)+'</small>'+(it.leg?'<em>↓ 次まで '+it.leg.d+'km ・ 約'+fm(it.leg.m)+'</em>':'')+'</span></button></li>';});});return h;}
