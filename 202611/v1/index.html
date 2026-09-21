@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 :root {
   --bg: #F5F3EF;
@@ -90,6 +91,39 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--line);border
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(245,243,239,0.95);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
 .tabbar ul{list-style:none;margin:0 auto;padding:0;max-width:440px;display:grid;grid-template-columns:repeat(3,1fr)}
 .tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;color:var(--sub);text-decoration:none;font-size:11px}
+
+/* ---- MAP (Leaflet) ---- */
+.mapwrap{padding:0 20px 24px}
+.map-filter{display:flex;gap:6px;margin-bottom:10px}
+.map-filter button{flex:1;font:inherit;font-size:13px;padding:7px 2px;border:1px solid var(--line);background:var(--bg-card);color:var(--sub);border-radius:6px;cursor:pointer;white-space:nowrap}
+.map-filter button.on{background:var(--text);border-color:var(--text);color:#fff}
+#tripmap{height:clamp(320px,62vh,460px);border:1px solid var(--line);border-radius:8px;position:relative;z-index:0;isolation:isolate;background:#E8E4DC;font-family:var(--f-hand)}
+#tripmap .leaflet-popup-content{margin:10px 12px;font:400 13px/1.6 var(--f-hand);letter-spacing:.03em}
+#tripmap .leaflet-popup-content p{margin:0}
+.pp strong{font-size:14px}
+.pp-h{font:700 11px/1.4 var(--f-num);letter-spacing:.08em;color:var(--dim);margin-bottom:1px}
+.pp-a,.pp-n{color:var(--sub);font-size:12px;line-height:1.5}
+.pp-l{margin-top:6px;display:flex;gap:14px}
+.pp-l a{font-size:12px}
+.pin{width:26px;height:26px;border-radius:50%;background:var(--text);color:#fff;font:700 13px/22px var(--f-num);text-align:center;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+.pin.approx{border-style:dashed;background:#4A5568}
+.spot{width:14px;height:14px;border-radius:50%;background:#fff;border:3px solid;box-shadow:0 1px 3px rgba(0,0,0,.4)}
+.loc-btn{background:#fff;border:2px solid rgba(0,0,0,.25);border-radius:4px;padding:5px 8px;font:inherit;font-size:12px;color:var(--text);cursor:pointer}
+.map-note{font-size:11px;color:var(--dim);line-height:1.6;margin:8px 0 6px}
+.day-sum{display:flex;gap:10px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:8px}
+.day-sum .dot{flex:none;width:10px;height:10px;border-radius:50%;margin-top:9px}
+.day-sum h4{margin:0;font-size:14px}
+.day-sum p{margin:0;font-size:12px;color:var(--sub)}
+.day-sum a{font-size:12px}
+.day-total{font:600 12px/1.6 var(--f-num);color:var(--sub);text-align:right;margin-top:6px}
+.stop-list{list-style:none;margin:14px 0 0;padding:0}
+.stop-list .dh{font:700 12px/1.4 var(--f-num);letter-spacing:.08em;margin:16px 0 2px}
+.stop-list .st{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:none;border:0;border-bottom:1px dashed var(--line);padding:9px 0;font:inherit;color:inherit;cursor:pointer}
+.stop-list .no{flex:none;width:24px;height:24px;border-radius:50%;background:var(--text);color:#fff;font:700 12px/24px var(--f-num);text-align:center}
+.stop-list .tx b{font-size:14px;font-weight:600}
+.stop-list .tx i{font:600 12px var(--f-num);font-style:normal;color:var(--gold);margin-right:4px}
+.stop-list .tx small{display:block;font-size:12px;color:var(--sub);line-height:1.5}
+.stop-list .tx em{display:block;font-size:11px;color:var(--dim);font-style:normal;margin-top:2px}
 </style>
 </head>
 <body>
@@ -282,40 +316,17 @@ svg.map{display:block;width:100%;height:auto;border:1px solid var(--line);border
   <section class="sec-h" id="map">
     <h3>ドライブ詳細ルートマップ</h3>
   </section>
-  <div style="padding:0 20px 20px;">
-    <svg class="map" viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg">
-      <!-- 県境界線 -->
-      <path d="M 195,20 C 190,40 180,60 185,85 C 190,105 205,120 200,135 C 195,150 175,160 170,175" fill="none" stroke="#A0AEC0" stroke-width="1.2" stroke-dasharray="3 2" />
-      <path d="M 170,175 C 185,180 200,185 220,180 C 235,175 250,185 270,190" fill="none" stroke="#A0AEC0" stroke-width="1.2" stroke-dasharray="3 2" />
-      <path d="M 190,230 C 220,235 240,230 260,238" fill="none" stroke="#A0AEC0" stroke-width="1.2" stroke-dasharray="3 2" />
-      
-      <!-- 県名テキスト -->
-      <text x="100" y="70" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">群馬県</text>
-      <text x="240" y="70" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">栃木県</text>
-      <text x="200" y="210" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">埼玉県</text>
-      <text x="200" y="255" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">東京都</text>
-
-      <!-- ドライブルート -->
-      <path d="M 215,260 C 220,245 235,220 240,190 C 245,150 250,120 248,85 L 245,65" fill="none" stroke="#2B6CB0" stroke-width="2.5" stroke-linecap="round" />
-      <path d="M 245,65 C 220,60 195,80 150,90 C 120,95 85,90 60,95" fill="none" stroke="#2B6CB0" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5 3" />
-      <path d="M 60,95 C 75,110 95,115 110,120 C 125,125 130,140 140,145 C 160,170 190,200 215,260" fill="none" stroke="#2B6CB0" stroke-width="2.5" stroke-linecap="round" />
-
-      <!-- 主要スポット -->
-      <circle cx="215" cy="260" r="4" fill="#E53E3E" />
-      <text x="223" y="264" font-size="11" font-family="var(--f-hand)" fill="#1A202C" font-weight="bold">品川（発着）</text>
-
-      <circle cx="245" cy="65" r="4" fill="#E53E3E" />
-      <text x="253" y="69" font-size="11" font-family="var(--f-hand)" fill="#1A202C" font-weight="bold">鬼怒川温泉</text>
-
-      <circle cx="60" cy="95" r="4" fill="#E53E3E" />
-      <text x="60" y="85" font-size="11" font-family="var(--f-hand)" fill="#1A202C" font-weight="bold" text-anchor="middle">草津温泉</text>
-
-      <circle cx="110" cy="120" r="3.5" fill="#319795" />
-      <text x="70" y="130" font-size="10" font-family="var(--f-hand)" fill="#2D3748">アガッタン</text>
-      
-      <circle cx="140" cy="145" r="3.5" fill="#319795" />
-      <text x="148" y="150" font-size="10" font-family="var(--f-hand)" fill="#2D3748">伊香保温泉</text>
-    </svg>
+  <div class="mapwrap">
+    <div class="map-filter" id="mapFilter">
+      <button type="button" data-f="all" class="on" aria-pressed="true">全行程</button>
+      <button type="button" data-f="d1" aria-pressed="false">1日目</button>
+      <button type="button" data-f="d2" aria-pressed="false">2日目</button>
+      <button type="button" data-f="d3" aria-pressed="false">3日目</button>
+    </div>
+    <div id="tripmap" role="region" aria-label="旅程のルート地図"></div>
+    <p class="map-note">地図: 国土地理院タイル / OpenStreetMap。ルートは車での目安です（有料道路の利用可否・渋滞・休憩は反映していません）。番号ピンをタップすると詳細が開きます。</p>
+    <div id="daySum"></div>
+    <ul class="stop-list" id="stopList"></ul>
   </div>
 
   <!-- フッターバー -->
@@ -346,5 +357,83 @@ function switchTabByCode(tabId) {
 }
 </script>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+'use strict';
+var PLACES={
+ shinagawa:{no:1,n:'品川駅',ll:[35.63065,139.73740],q:'品川駅'},
+ board:{no:2,n:'鬼怒川ライン下り 乗船場',ll:[36.82590,139.71515],addr:'日光市鬼怒川温泉大原1414',q:'鬼怒川ライン下り 日光市鬼怒川温泉大原1414'},
+ stay:{no:3,n:'宿泊（Airbnb・鬼怒川エリア）',ll:[36.82371,139.71689],approx:true,addr:'鬼怒川エリア',info:'宿の正確な位置は未登録のため、鬼怒川温泉駅付近に目安として表示しています。'},
+ yubatake:{no:4,n:'草津温泉 湯畑',ll:[36.62294,138.59673],addr:'吾妻郡草津町草津',q:'草津温泉 湯畑'},
+ hotel:{no:5,n:'ホテルヴィレッジ',ll:[36.62710,138.60432],addr:'吾妻郡草津町草津618 / TEL: 0570-01-3232',q:'草津温泉 ホテルヴィレッジ'},
+ agattan:{no:6,n:'アガッタン（吾妻峡レールバイク）',ll:[36.57253,138.73631],addr:'吾妻郡東吾妻町松谷868-1',q:'アガッタン 吾妻郡東吾妻町松谷868-1'},
+ manyo:{no:7,n:'水沢うどん 万葉亭',ll:[36.47668,138.95117],addr:'渋川市伊香保町水沢48-4',q:'水沢うどん 万葉亭 渋川市伊香保町水沢48-4'},
+ ikaho:{no:8,n:'伊香保石段街',ll:[36.49766,138.91639],addr:'渋川市伊香保町伊香保',q:'伊香保石段街'}
+};
+var DAYS=[
+ {id:'d1',label:'1日目',date:'11/21(土)',color:'#2B6CB0',title:'品川 → 鬼怒川',dist:156.3,dur:138,route:[0,1],poly:"qbnxEgn{sY{e@yHgi@gUmIoIsMwZ{gAuJm_Au\\sc@_[{|@iSzEq_@wSsIoJwa@eNpDoxBaK}GgJsj@c_@sSn`@iEyAyK`Syj@fm@wgDqPazCrDoaDO{j@qDaGlIm@fy@cb@|AofAxXuVzLyZda@uPx_AaJrNeQfDqyBkDwSzCsr@ho@mp@v\\qw@fj@u_Aze@w{Are@{~Ad|AweAz^k`Ah|@ej@`[q_AvUiu@~Aox@yM_eAkj@iT_Hc]gB}_@xFsh@pUagAvv@krB`k@cb@pS}u@bh@mj@vUs_AdO}iBb@_b@tHeXxJy`@zUua@x^}]nc@c_ApzAa`@x`@}j@n`@_g@nTu`@rKi_BrQek@dM{m@fWqmAjw@wSnGoWlBu_@wDyp@{Uuu@aO}TeJa`@o`@{[o|@mSwXmXgN}s@{HsVqIoR_Q_d@iq@_d@sWad@mEy_AjFmn@cRcXcBeTxGs[`a@yWnCiWoI_d@ch@oQeJuv@}Aar@yOgl@UwSiGiRyT_HaZzCezAkF}o@wJ_O_^gQmSe]m`@q^kEaPiF{o@qb@er@s^grA}\\el@y_@c[yc@iNy_@Zyw@jWmg@lDyYkCkYaJ}aAgr@cAtAzC`CbAtOfGTwAaa@ci@ekA{MqL_i@k@gI{CqDiGoImp@yKeJclA`D}^jEuFIm@_Kuk@hP}qA{Bwp@tJaf@dNeo@|Aik@sEum@nGkq@l@ks@aGoVkNyT}Fq@iHiEiAyzA`l@ycBpa@}}BjgAil@xF{w@tZeg@dHolAzDu]_Hoc@qA}KiD{_@a@it@dMwRlQwMbFibA|Eiw@qP_PtBgZpuA_LsBkn@dAcw@km@}N_A{GxDcY{Ni_@_Io}@mDqWfLot@tq@ec@jV_dB`Mgo@uUuWgP}o@{AiOzB_K{AoFqHuBkP{CmApBlBrPyDK_C_BkFcBhAcGwH",
+  items:[{p:'shinagawa',t:'10:00',note:'集合・出発',leg:{d:156.3,m:138}},{p:'board',t:'14:30',note:'15:10便 / 貸切船で渓谷下り（約30分）'},{p:'stay',t:'16:30',note:'Airbnbにチェックイン'}]},
+ {id:'d2',label:'2日目',date:'11/22(日)',color:'#DD6B20',title:'鬼怒川 → 草津',dist:191.5,dur:193,route:[0,1,2],poly:"ecw_FmmwsYiCzG`FhRcL`BwCbDuEeJrGnGhBtOhExGtJpBxPyB|o@zAtWfPnn@rUvdB_Mdc@kVzg@yh@~WwQdKcCt}@rDd^pHlZhOtFyDxO|@dw@lm@fn@iAbLtBbZ}tAnRmBho@fOnbAyCpPmEfUeSju@iMzoA~G`^`HnlA{Ddg@eHzw@uZhl@yF|}BkgAxcBqa@xzAal@hEhAp@hHxT|FnVjNjs@`Gjq@m@tm@oGhk@rEdo@}A`f@eNvq@{J|pA`Ctk@iPl@~JvADnh@yFfeA{CdNnJnHvm@fDzHdKhEvh@j@|GtF~m@lpAtFr@zBbUzl@xd@b^hKpd@tArZcEjo@{Tx\\kBld@pJza@pYf_@xj@ra@hxAzc@pt@jFbp@`EjOn`@t^rSl]j\\rOhLpPlFjp@qDzsAbKdd@pKdMzMtGjz@zBvh@pJxDxFm[j{GsNdb@w^|a@kMzV{StxAif@hiAqDrp@|HfyApGtg@dObm@n]|z@|EpYkBtg@sVhp@kFz\\T`v@tHxs@lG|Tj\\rr@jJd{@vFnSbQnUby@jj@`h@pk@rNly@l^br@lEzd@cE``@ma@`gAr@z`AqBpWcb@lfAq\\lqBy@vc@`JztC_IbsBvBv]fNhy@Ffb@kE`Yc_@fqAcYjeBpBnG|ZlFaBqByJzIeQx[{x@zsDmExo@bBfhAoA`XoI`XqPlR_oCdkAaQxQsl@faAs~@dj@qL~M_`@dtAmIdkAca@tyAePvpAyFfOu^ne@gQ`^sGp^[xn@qH`SsLbHcYd@an@`Qkn@`F_\\dZma@~MwUhUiMzX{MxHiEvbAwD~Mkg@nZoJf@}EtIab@~N_F~KyHr@_VeI{m@vEgJwCwJ`CoOaBeFfCgS`b@Ita@iXpeAe[jWeMla@uk@du@oO|`@kHpw@_Mxc@\\rG~HxOiN|[Vr^cEv_@}Upm@aJdd@cJxNob@|]{BkB{DzBqLcCkHrE{^pz@kh@|e@iOj]gUpXwFnR{@`Pp@zu@}JzZhE~a@lVhQdV`\\d\\tN|j@|y@jE`BdKu@fH`F~Rhd@tGpGvp@hNhLhJdF`k@vDuJdI_GtBzKdBxTyJ`[~@z[ka@`z@wCxq@w\\tz@yU|JsWz\\}Nni@{[d]oIfb@k@|VzDh^jK`^zTd\\jx@xw@|Krn@nb@`f@bE`x@vc@~j@pEvXpUvTzAhMcRlz@cIjQy@py@a[fo@_Ebb@fChf@wAnVsQrPqR`k@kG`C{LhQcKxm@_SxDoHdUit@fj@wD~IaIl@}JnRcCf@qGaEad@bE_IgDuKhAcP{AeRnKgMgI}FtAmEmBqUzTwRb@gFoDaHfFoKyD{Fi]{OgKmCwGiLkEoNz@EiWsC_AuElDcDwCr@uSwGmZ_GfGgByEk@lA",
+  items:[{p:'stay',t:'09:00',note:'鬼怒川 出発（草津方面へ）',leg:{d:190.3,m:190}},{p:'yubatake',t:'13:00',note:'到着・湯畑周辺を散策',leg:{d:1.2,m:4}},{p:'hotel',t:'15:00',note:'チェックイン'}]},
+ {id:'d3',label:'3日目',date:'11/23(月・祝)',color:'#97266D',title:'草津 → 吾妻峡 → 伊香保 → 品川',dist:211.1,dur:216,route:[0,1,2,3,4],poly:"osp~Euc~lYj@mAfBxEjIaJ`FjB`FgHMik@xKqe@oA_QwGiP|EcT_GiSzEuMjHoG|@zCd@qE}I_DWdEyFsAi@`Do@iExFq@I}DzGgCbC|BfBeD|In@AbSvBeR_DgG~FnDbCwK|HrBbUWpXzOiAhGdRba@pJStMjKhQnDtSbMjWcBlSfSpX_Dpa@lArP_GnMsLzCqPvHeOs@aSvBsN~^{FdEkMzFcChEpApHtLvBsGXw[hL}OhSbAhMjQdGoN@{SfSqbCwOcdA|Zcq@fBuLcC}AiIgh@_RwH_E}UkR__@q@iIrDkBoDuX{j@s_A}HkHmYsIwKcIeCeLg]qMdDsAlIy^hY_q@dDeVxYq`@~V_Lv\\uz@vCyq@ja@az@_A{[tIgU@uP_FgU_HlFwDtJk@eVoEoTsKuIwp@iNuGqG_Sid@gHaFeKt@kEaB}j@}y@e\\uNeVa\\{UuP{Esb@|J{ZYe~@`Jc_@`SuThOk]jh@}e@z^qz@jHsEpLbCzD{BzBjBnb@}]hKcQzH{a@|Uqm@bEw_@Ws^dMkZkHmQUqH~Lyb@vBid@`YwB|XnFtDeBnHzKnXlRxNnCjUt_@xa@z^jKvPVtG~L`ZpSVdPyN`Bs_@tOqHzRvLlMuFw@{GvMkc@hHwIfGwAd[}UhE{P|OgQ|b@eSo@mIbJhH@{LrH}K`SyH`KxBnGlGpIeBRjCSkCqIdBoGmGaKyBaSxHsH|KAzLcJiHn@lI}b@dS}OfQiEzPe[|UgGvAiHvI_Nfe@rA~b@jLnDUjKTkKkLoDsA_c@dHu\\rMyQ|c@eYhE{P|OgQ|b@eSo@mIbJhH@{LrH}K`SyHzVdKrV_OlU_BfPuw@vb@oz@za@vN~`@qnAz@wT|OqXvAeXfs@~EfKsn@zGobBgV^VrC`[cD`nAc_@x|@uPjrDmVrq@mO|]kQ|YuUh`BooBlbAyk@r^mZbVkZlx@ouAlWgXf[oTpl@cWbe@yJfg@Ynt@vK~V~@b]oEd\\cQbO_QhLgVd{@emDlJ{VpOmU`W_Sd{@ua@dfAwlAnkAcu@vT_Vxe@}u@pViTvh@mRvgAaI`VwItUePnWq\\bc@}{@|Ym^lc@m\\`}@}a@z`@c`@f|BuvEne@_t@vo@yj@zbAog@jm@oz@jk@q[jTiSdRia@zLuu@bIaVvg@ko@|`@m{@x[u\\tKoR|GmY`Dkq@nHye@bQyc@hVc[rd@eUvkAqLn_AoX|X{Dzi@tCnnAfe@xY~EbeBiCzT}DzQsJnQqSfa@wz@|TyW|YmR|qAsi@bf@sa@zRg\\pKqZ`V_dB|Osd@lYk[vxAk~@rbAs`BpS}Njo@sTxSsMpo@y~@rYqV``@iNt}@oL~b@}RfUySv}@cjA~cAes@po@kt@hs@ci@jaAaeBnb@g`@pa@_UjP}SbKu\\fGc{@xEoVvc@su@hLkd@jZ}]pCyc@nq@nTjk@lCl~A~An`AwD~jAoP|sBvT~M{_@tZ_`@jFmo@jJob@?sLmCs_@wJ_YeDa`@gl@ayCyYas@xFoC|[pEpwAX~]iShW|FhS{Bni@sz@|yAceAr^u|@_IsDwg@_v@\\cJbNKhB}]gIE",
+  items:[{p:'hotel',t:'09:45',note:'草津温泉 出発',leg:{d:27,m:32}},{p:'agattan',t:'10:15',note:'10:30受付 / 10:45〜11:50 往復体験',leg:{d:37.9,m:50}},{p:'manyo',t:'12:45',note:'昼食',leg:{d:5.1,m:7}},{p:'ikaho',t:'',note:'昼食後に石段街を散策（14:30 伊香保出発）',leg:{d:141.1,m:127}},{p:'shinagawa',t:'',note:'帰着（東京方面へ帰路）'}]}
+];
+var SPOTS=[
+ {day:'d2',n:'熱乃湯',ll:[36.62271,138.59632],note:'湯もみショー（15:30 / 16:00 / 16:30）・大人700円',q:'草津温泉 熱乃湯'},
+ {day:'d2',n:'西の河原公園',ll:[36.62406,138.59036],note:'湯畑から徒歩約10分。大露天風呂もあります',q:'草津温泉 西の河原公園'}
+];
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function fm(m){var h=Math.floor(m/60),r=m%60;return h?h+'時間'+(r?r+'分':''):r+'分';}
+function gq(p){return p.q?encodeURIComponent(p.q):p.ll[0]+','+p.ll[1];}
+function gsearch(p){return 'https://www.google.com/maps/search/?api=1&query='+gq(p);}
+function gnav(p){return 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='+gq(p);}
+function groute(d){var ps=d.route.map(function(i){return PLACES[d.items[i].p];});var u='https://www.google.com/maps/dir/?api=1&travelmode=driving&origin='+gq(ps[0])+'&destination='+gq(ps[ps.length-1]);if(ps.length>2)u+='&waypoints='+ps.slice(1,-1).map(gq).join('%7C');return u;}
+function dec(s){var i=0,la=0,lo=0,out=[],b,sh,r;while(i<s.length){sh=0;r=0;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5;}while(b>=32);la+=(r&1)?~(r>>1):(r>>1);sh=0;r=0;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5;}while(b>=32);lo+=(r&1)?~(r>>1):(r>>1);out.push([la/1e5,lo/1e5]);}return out;}
+Object.keys(PLACES).forEach(function(k){PLACES[k].visits=[];});
+DAYS.forEach(function(d){d.items.forEach(function(it){PLACES[it.p].visits.push({day:d,item:it});});});
+var A='target="_blank" rel="noopener noreferrer"';
+function popupHtml(k){var p=PLACES[k],h='<div class="pp"><div class="pp-h">STOP '+p.no+'</div><strong>'+esc(p.n)+'</strong>';
+ if(p.addr)h+='<div class="pp-a">'+esc(p.addr)+'</div>';
+ p.visits.forEach(function(v){h+='<div class="pp-n"><b style="color:'+v.day.color+'">'+v.day.label+'</b> '+(v.item.t?v.item.t+' ':'')+esc(v.item.note)+'</div>';});
+ if(p.info)h+='<div class="pp-n">'+esc(p.info)+'</div>';
+ h+='<div class="pp-l"><a href="'+gsearch(p)+'" '+A+'>Googleマップ</a>';
+ if(!p.approx)h+='<a href="'+gnav(p)+'" '+A+'>ここへナビ</a>';
+ return h+'</div></div>';}
+function sumHtml(vis){var h='',td=0,tm=0;vis.forEach(function(d){td+=d.dist;tm+=d.dur;h+='<div class="day-sum"><span class="dot" style="background:'+d.color+'"></span><div><h4>'+d.label+' '+d.date+'　'+esc(d.title)+'</h4><p>走行 約'+Math.round(d.dist)+'km ・ 運転 約'+fm(d.dur)+'</p><a href="'+groute(d)+'" '+A+'>Googleマップでこの行程を開く</a></div></div>';});
+ if(vis.length>1)h+='<div class="day-total">3日間の合計 約'+Math.round(td)+'km ・ 運転 約'+fm(tm)+'</div>';return h;}
+function listHtml(vis){var h='';vis.forEach(function(d){h+='<li class="dh" style="color:'+d.color+'">'+d.label+' '+d.date+'</li>';d.items.forEach(function(it){var p=PLACES[it.p];h+='<li><button type="button" class="st" data-p="'+it.p+'"><span class="no">'+p.no+'</span><span class="tx"><b>'+(it.t?'<i>'+it.t+'</i>':'')+esc(p.n)+'</b><small>'+esc(it.note)+'</small>'+(it.leg?'<em>↓ 次まで '+it.leg.d+'km ・ 約'+fm(it.leg.m)+'</em>':'')+'</span></button></li>';});});return h;}
+var elMap=document.getElementById('tripmap'),elSum=document.getElementById('daySum'),elList=document.getElementById('stopList'),elF=document.getElementById('mapFilter');
+var map=null,markers={},dayLayers={},dayBounds={},spotLayers={};
+function selDays(f){return f==='all'?DAYS:DAYS.filter(function(d){return d.id===f;});}
+function apply(f){
+ var vis=selDays(f);elSum.innerHTML=sumHtml(vis);elList.innerHTML=listHtml(vis);
+ Array.prototype.forEach.call(elF.querySelectorAll('button'),function(b){var on=b.getAttribute('data-f')===f;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on?'true':'false');});
+ if(!map)return;
+ var ids=vis.map(function(d){return d.id;}),b=L.latLngBounds([]);
+ DAYS.forEach(function(d){var on=ids.indexOf(d.id)>=0;[dayLayers[d.id],spotLayers[d.id]].forEach(function(g){if(g){if(on)map.addLayer(g);else map.removeLayer(g);}});if(on)b.extend(dayBounds[d.id]);});
+ Object.keys(PLACES).forEach(function(k){var p=PLACES[k],on=p.visits.some(function(v){return ids.indexOf(v.day.id)>=0;});if(on)map.addLayer(markers[k]);else map.removeLayer(markers[k]);if(on)b.extend(p.ll);});
+ map.fitBounds(b,{padding:[28,28]});
+}
+if(typeof L!=='undefined'){
+ var gsi=function(t,ext){return L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/'+t+'/{z}/{x}/{y}.'+ext,{maxZoom:18,attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" '+A+'>地理院タイル</a>'});};
+ var base={'淡色地図':gsi('pale','png'),'標準地図':gsi('std','png'),'航空写真':gsi('seamlessphoto','jpg'),'OpenStreetMap':L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'})};
+ map=L.map(elMap,{layers:[base['淡色地図']],scrollWheelZoom:false});
+ L.control.layers(base,null,{collapsed:true,position:'topright'}).addTo(map);
+ L.control.scale({imperial:false}).addTo(map);
+ map.on('click',function(){map.scrollWheelZoom.enable();});map.on('mouseout',function(){map.scrollWheelZoom.disable();});
+ var Loc=L.Control.extend({options:{position:'topleft'},onAdd:function(){var b=L.DomUtil.create('button','loc-btn');b.type='button';b.textContent='現在地';L.DomEvent.disableClickPropagation(b);L.DomEvent.on(b,'click',function(){map.locate({enableHighAccuracy:true,maxZoom:13});});return b;}});
+ new Loc().addTo(map);
+ var me=null;map.on('locationfound',function(e){if(me)map.removeLayer(me);me=L.circleMarker(e.latlng,{radius:8,color:'#fff',weight:3,fillColor:'#3182CE',fillOpacity:1}).addTo(map).bindPopup('現在地');});
+ map.on('locationerror',function(){alert('現在地を取得できませんでした（位置情報の許可をご確認ください）');});
+ DAYS.forEach(function(d){var pts=dec(d.poly);dayBounds[d.id]=L.latLngBounds(pts);dayLayers[d.id]=L.layerGroup([L.polyline(pts,{color:'#fff',weight:9,opacity:.9,lineJoin:'round'}),L.polyline(pts,{color:d.color,weight:5,opacity:.95,lineJoin:'round'})]);});
+ SPOTS.forEach(function(s){var d=DAYS.filter(function(x){return x.id===s.day;})[0];var m=L.marker(s.ll,{icon:L.divIcon({className:'',html:'<div class="spot" style="border-color:'+d.color+'"></div>',iconSize:[14,14],iconAnchor:[7,7],popupAnchor:[0,-8]})}).bindPopup('<div class="pp"><div class="pp-h">SPOT</div><strong>'+esc(s.n)+'</strong><div class="pp-n">'+esc(s.note)+'</div><div class="pp-l"><a href="'+gsearch(s)+'" '+A+'>Googleマップ</a></div></div>',{maxWidth:240});(spotLayers[s.day]=spotLayers[s.day]||L.layerGroup()).addLayer(m);});
+ Object.keys(PLACES).forEach(function(k){var p=PLACES[k];markers[k]=L.marker(p.ll,{icon:L.divIcon({className:'',html:'<div class="pin'+(p.approx?' approx':'')+'">'+p.no+'</div>',iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-14]}),title:p.n,riseOnHover:true}).bindPopup(popupHtml(k),{maxWidth:240});});
+}else{elMap.innerHTML='<p style="padding:16px;font-size:13px">地図を読み込めませんでした。下のリストのGoogleマップリンクをご利用ください。</p>';}
+elF.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(b)apply(b.getAttribute('data-f'));});
+elList.addEventListener('click',function(e){var b=e.target.closest('button[data-p]');if(!b)return;var k=b.getAttribute('data-p');if(!map){window.open(gsearch(PLACES[k]),'_blank','noopener');return;}elMap.scrollIntoView({behavior:'smooth',block:'center'});map.flyTo(PLACES[k].ll,13,{duration:.8});setTimeout(function(){markers[k].openPopup();},900);});
+apply('all');
+})();
+</script>
 </body>
 </html>
