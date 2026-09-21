@@ -343,7 +343,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
       <div id="tripmap" role="region" aria-label="旅程のルート地図"></div>
       <div class="map-resize" id="mapResize" role="separator" aria-orientation="horizontal" aria-label="地図の高さを変更（ドラッグまたは上下キー）" tabindex="0"><span>ドラッグして高さを変更</span></div>
     </div>
-    <p class="map-note">地図: <span id="mapSrc">読み込み中…</span>。ルートは車での目安です（有料道路の利用可否・渋滞・休憩は反映していません）。番号ピンをタップすると詳細が開きます。<span id="mapHint"></span></p>
+    <p class="map-note">地図: <span id="mapSrc">読み込み中…</span>。ルートは車での目安です（有料道路の利用可否・渋滞・休憩は反映していません）。番号ピンをタップすると詳細が開きます。</p>
     <div id="daySum"></div>
     <ul class="stop-list" id="stopList"></ul>
   </div>
@@ -376,7 +376,6 @@ function switchTabByCode(tabId) {
 }
 </script>
 
-<script src="gmaps-key.js"></script>
 <script>
 (function(){
 'use strict';
@@ -428,8 +427,8 @@ function sumHtml(vis){var h='',td=0,tm=0;vis.forEach(function(d){td+=d.dist;tm+=
 function listHtml(vis){var h='';vis.forEach(function(d){h+='<li class="dh" style="color:'+d.color+'">'+d.label+' '+d.date+'</li>';d.items.forEach(function(it){var p=PLACES[it.p];h+='<li><button type="button" class="st" data-p="'+it.p+'"><span class="no">'+p.no+'</span><span class="tx"><b>'+(it.t?'<i>'+it.t+'</i>':'')+esc(p.n)+'</b><small>'+esc(it.note)+'</small>'+(it.leg?'<em>↓ 次まで '+it.leg.d+'km ・ 約'+fm(it.leg.m)+'</em>':'')+'</span></button></li>';});});return h;}
 
 function $(id){return document.getElementById(id);}
-var elMap=$('tripmap'),elBox=$('mapbox'),elSum=$('daySum'),elList=$('stopList'),elF=$('mapFilter'),elSrc=$('mapSrc'),elHint=$('mapHint'),btnLoc=$('btnLoc'),btnFull=$('btnFull'),elRes=$('mapResize');
-var engine=null,curF='all',full=false,abandoned=false;
+var elMap=$('tripmap'),elBox=$('mapbox'),elSum=$('daySum'),elList=$('stopList'),elF=$('mapFilter'),elSrc=$('mapSrc'),btnLoc=$('btnLoc'),btnFull=$('btnFull'),elRes=$('mapResize');
+var engine=null,curF='all',full=false;
 function selDays(f){return f==='all'?DAYS:DAYS.filter(function(d){return d.id===f;});}
 function idsOf(f){return selDays(f).map(function(d){return d.id;});}
 function apply(f){curF=f;var vis=selDays(f);elSum.innerHTML=sumHtml(vis);elList.innerHTML=listHtml(vis);
@@ -445,7 +444,7 @@ function setFull(on,fromPop){
  btnFull.textContent=on?'全画面を閉じる':'全画面で見る';
  if(on){try{history.pushState({mapfull:1},'');}catch(e){}}
  else if(!fromPop){try{if(history.state&&history.state.mapfull)history.back();}catch(e){}}
- if(engine){if(engine.gesture)engine.gesture(on?'greedy':'cooperative');setTimeout(function(){if(engine)engine.resized();},80);}
+ if(engine){setTimeout(function(){if(engine)engine.resized();},80);}
 }
 btnFull.addEventListener('click',function(){setFull(!full);});
 window.addEventListener('popstate',function(){if(full)setFull(false,true);});
@@ -475,60 +474,9 @@ btnLoc.addEventListener('click',locate);
 elF.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(b)apply(b.getAttribute('data-f'));});
 elList.addEventListener('click',function(e){var b=e.target.closest('button[data-p]');if(!b)return;var k=b.getAttribute('data-p');if(!engine){window.open(gsearch(PLACES[k]),'_blank','noopener');return;}elMap.scrollIntoView({behavior:'smooth',block:'center'});engine.focus(k);});
 
-/* ---- Google マップ ---- */
-function startGoogle(){
- var G=google.maps;
- elSrc.textContent='Google マップ';
- elHint.textContent=' 地図は2本指で動かせます（1本指はページのスクロール）。1本指で自由に動かすには「全画面で見る」をお使いください。';
- var map=new G.Map(elMap,{center:{lat:36.3,lng:139.2},zoom:8,mapTypeControl:true,streetViewControl:false,fullscreenControl:false,rotateControl:false,clickableIcons:false,gestureHandling:'cooperative'});
- var iw=new G.InfoWindow({maxWidth:260});
- var mk={},sp=[],dl={},me=null,circ=null;
- function pinIcon(p,z){return {path:G.SymbolPath.CIRCLE,scale:sc(z,9,15),fillColor:p.approx?'#4A5568':'#1F2A38',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:2};}
- function pinLabel(p,z){return {text:String(p.no),color:'#ffffff',fontWeight:'700',fontSize:Math.round(sc(z,10,15))+'px'};}
- function spotIcon(col,z){return {path:G.SymbolPath.CIRCLE,scale:sc(z,4,8),fillColor:'#ffffff',fillOpacity:1,strokeColor:col,strokeWeight:3};}
- DAYS.forEach(function(d){var pts=dec(d.poly).map(function(q){return {lat:q[0],lng:q[1]};});var b=new G.LatLngBounds();pts.forEach(function(q){b.extend(q);});
-  dl[d.id]={b:b,c:new G.Polyline({path:pts,strokeColor:'#ffffff',strokeOpacity:0.9,strokeWeight:9,zIndex:1,clickable:false}),
-   l:new G.Polyline({path:pts,strokeColor:d.color,strokeOpacity:0.95,strokeWeight:5,zIndex:2,clickable:false,icons:[{icon:{path:G.SymbolPath.FORWARD_CLOSED_ARROW,scale:2.6,strokeColor:'#ffffff',strokeWeight:1,fillColor:d.color,fillOpacity:1},offset:'50px',repeat:'140px'}]})};});
- Object.keys(PLACES).forEach(function(k){var p=PLACES[k];var m=new G.Marker({position:{lat:p.ll[0],lng:p.ll[1]},title:p.n,icon:pinIcon(p,8),label:pinLabel(p,8),zIndex:20});m.addListener('click',function(){iw.setContent(popupHtml(k));iw.open({map:map,anchor:m});});mk[k]=m;});
- SPOTS.forEach(function(s){var col=dayOf(s.day).color;var m=new G.Marker({position:{lat:s.ll[0],lng:s.ll[1]},title:s.n,icon:spotIcon(col,8),zIndex:15});m.addListener('click',function(){iw.setContent(spotHtml(s));iw.open({map:map,anchor:m});});sp.push({day:s.day,m:m,col:col});});
- function rescale(){var z=map.getZoom();if(z==null)return;
-  Object.keys(mk).forEach(function(k){mk[k].setIcon(pinIcon(PLACES[k],z));mk[k].setLabel(pinLabel(PLACES[k],z));});
-  sp.forEach(function(o){o.m.setIcon(spotIcon(o.col,z));});
-  Object.keys(dl).forEach(function(id){dl[id].c.setOptions({strokeWeight:sc(z,5,11)});dl[id].l.setOptions({strokeWeight:sc(z,3,6.5)});});}
- map.addListener('zoom_changed',rescale);
- engine={
-  show:function(ids){var b=new G.LatLngBounds();
-   DAYS.forEach(function(d){var on=ids.indexOf(d.id)>=0;dl[d.id].c.setMap(on?map:null);dl[d.id].l.setMap(on?map:null);if(on)b.union(dl[d.id].b);});
-   sp.forEach(function(o){o.m.setMap(ids.indexOf(o.day)>=0?map:null);});
-   Object.keys(PLACES).forEach(function(k){var p=PLACES[k],on=p.visits.some(function(v){return ids.indexOf(v.day.id)>=0;});mk[k].setMap(on?map:null);if(on)b.extend(mk[k].getPosition());});
-   iw.close();map.fitBounds(b,48);rescale();},
-  focus:function(k){if((map.getZoom()||0)<13)map.setZoom(13);map.panTo(mk[k].getPosition());setTimeout(function(){G.event.trigger(mk[k],'click');},500);},
-  showMe:function(ll,acc){var pos={lat:ll[0],lng:ll[1]};if(me){me.setMap(null);circ.setMap(null);}
-   circ=new G.Circle({map:map,center:pos,radius:acc,strokeColor:'#3182CE',strokeOpacity:0.4,strokeWeight:1,fillColor:'#3182CE',fillOpacity:0.12,clickable:false});
-   me=new G.Marker({map:map,position:pos,title:'現在地',zIndex:30,icon:{path:G.SymbolPath.CIRCLE,scale:8,fillColor:'#3182CE',fillOpacity:1,strokeColor:'#ffffff',strokeWeight:3}});
-   map.setZoom(15);map.panTo(pos);},
-  gesture:function(g){map.setOptions({gestureHandling:g});},
-  resized:function(){G.event.trigger(map,'resize');},
-  destroy:function(){elMap.innerHTML='';}
- };
- apply(curF);
- var self=engine,ok=false;
- G.event.addListenerOnce(map,'tilesloaded',function(){ok=true;});
- function fail(){if(engine!==self||abandoned)return;abandoned=true;try{self.destroy();}catch(e){}engine=null;elMap.innerHTML='';startLeaflet('Googleマップを表示できなかったため');}
- setTimeout(function(){if(ok||engine!==self)return;if(elMap.querySelector('.gm-err-container')||!elMap.querySelector('.gm-style'))fail();},5000);
- setTimeout(function(){if(ok||engine!==self)return;fail();},15000);
-}
-function bootGoogle(key){
- var timer=setTimeout(function(){if(!engine){abandoned=true;startLeaflet('Googleマップの読み込みに時間がかかったため');}},12000);
- window.gm_authFailure=function(){if(abandoned)return;abandoned=true;clearTimeout(timer);if(engine&&engine.destroy)engine.destroy();engine=null;elMap.innerHTML='';startLeaflet('Googleマップの認証に失敗したため');};
- window.__gmReady=function(){if(abandoned)return;Promise.all([google.maps.importLibrary('maps'),google.maps.importLibrary('core')]).then(function(){if(abandoned)return;clearTimeout(timer);startGoogle();}).catch(function(){if(abandoned)return;abandoned=true;clearTimeout(timer);startLeaflet('Googleマップを読み込めなかったため');});};
- loadScript('https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(key)+'&loading=async&v=weekly&language=ja&region=JP&callback=__gmReady').catch(function(){if(abandoned)return;abandoned=true;clearTimeout(timer);startLeaflet('Googleマップを読み込めなかったため');});
-}
-
-/* ---- Leaflet（Google が使えない時の簡易地図） ---- */
-function startLeaflet(reason){
- elSrc.textContent='国土地理院タイル / OpenStreetMap（簡易地図'+(reason?'・'+reason:'')+'）';
- elHint.textContent='';
+/* ---- 地図（Leaflet） ---- */
+function startMap(){
+ elSrc.textContent='国土地理院タイル / OpenStreetMap';
  Promise.all([loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'),window.L?Promise.resolve():loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')]).then(function(){
   var gsi=function(t,ext){return L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/'+t+'/{z}/{x}/{y}.'+ext,{maxZoom:18,attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" '+A+'>地理院タイル</a>'});};
   var base={'淡色地図':gsi('pale','png'),'標準地図':gsi('std','png'),'航空写真':gsi('seamlessphoto','jpg'),'OpenStreetMap':L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'})};
@@ -557,8 +505,7 @@ function startLeaflet(reason){
 }
 
 apply('all');
-var key=String(window.GMAPS_KEY||'').replace(/\s/g,'');
-if(key){bootGoogle(key);}else{startLeaflet();}
+startMap();
 })();
 </script>
 </body>
