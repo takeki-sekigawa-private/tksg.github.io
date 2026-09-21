@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F5F3EF">
+<title>鬼怒川・草津・伊香保 旅のしおり</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F3EF;
+  --bg-card: #FFFFFF;
+  --bg-accent: #EAE7E1;
+  --text: #1F2A38;
+  --sub: #4A5568;
+  --dim: #718096;
+  --line: #CBD5E0;
+  --gold: #B78A52;
+  --route: #2B6CB0;
+  --f-hand: "Zen Kurenaido", "Noto Sans JP", sans-serif;
+  --f-num: "Plus Jakarta Sans", sans-serif;
+}
+
+*{box-sizing:border-box}
+html{background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.7 var(--f-hand);letter-spacing:0.04em;padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+
+.page{max-width:440px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative}
+@media (min-width:480px){
+  body{background:#E2E8F0;padding:20px 0}
+  .page{border:1px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,0.05);border-radius:8px}
+}
+
+a{color:var(--gold);text-decoration:none}
+h1,h2,h3,h4{font-family:var(--f-hand);margin:0;font-weight:400;color:var(--text)}
+
+/* HERO */
+.cover{padding:32px 20px 20px;text-align:center}
+.kicker{font-family:var(--f-num);font-size:12px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin:0 0 6px;font-weight:600}
+.cover h1{font-size:32px;line-height:1.2;letter-spacing:0.1em;margin-bottom:8px}
+.cover .date{font-family:var(--f-num);font-size:14px;color:var(--sub);font-weight:600}
+
+/* タブUI */
+.tab-nav{display:flex;background:var(--bg-accent);border-y:1px solid var(--line);padding:4px;gap:2px;position:sticky;top:0;z-index:30;overflow-x:auto}
+.tab-btn{flex:1;min-width:68px;padding:8px 0;text-align:center;font-family:var(--f-hand);font-size:12.5px;color:var(--sub);border:none;background:transparent;cursor:pointer;border-radius:4px;transition:all 0.2s;white-space:nowrap}
+.tab-btn.active{background:var(--bg-card);color:var(--text);font-weight:600;box-shadow:0 2px 4px rgba(0,0,0,0.04)}
+
+.tab-content{display:none;padding:20px}
+.tab-content.active{display:block}
+
+/* タイムライン */
+.tl{list-style:none;margin:0;padding:0}
+.tl li{display:grid;grid-template-columns:48px 12px 1fr;column-gap:12px;margin-bottom:16px}
+.tl .tm{font-family:var(--f-num);font-weight:600;color:var(--gold);font-size:13.5px;padding-top:2px}
+.tl .rl{position:relative}
+.tl .rl::after{content:"";position:absolute;left:5px;top:10px;bottom:-18px;width:1px;background:var(--line)}
+.tl li:last-child .rl::after{display:none}
+.tl .stop .rl::before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.tl .bd h4{font-size:16px;margin:0 0 2px;font-weight:600}
+.tl .addr{font-size:12px;color:var(--dim);margin-bottom:4px}
+.tl .desc{font-size:13px;color:var(--sub);margin:0 0 8px}
+
+/* カードスタイル */
+.card{background:var(--bg-card);border:1px solid var(--line);border-radius:6px;padding:14px;margin-bottom:12px}
+.card h4{font-size:15px;color:var(--text);font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center}
+.card .tag{font-size:11px;color:var(--gold);border:1px solid var(--gold);padding:0 6px;border-radius:2px}
+.card p{font-size:13px;color:var(--sub);margin:0 0 6px}
+.card ul{margin:0 0 8px;padding-left:18px;font-size:13px;color:var(--sub)}
+.card-img{width:100%;height:160px;object-fit:cover;border-radius:4px;margin-bottom:10px;display:block}
+
+/* ボタンリンク（マップ / PDF） */
+.gmap-btn{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--route);background:#EBF8FF;border:1px solid #BEE3F8;padding:4px 8px;border-radius:4px;text-decoration:none;font-weight:600;margin-top:4px}
+.pdf-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--gold);color:#FFF;padding:12px 16px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;margin-bottom:16px;box-shadow:0 2px 6px rgba(183,138,82,0.3);transition:transform 0.1s}
+.pdf-btn:active{transform:scale(0.98)}
+
+/* チェックリスト */
+.chk-list{list-style:none;padding:0;margin:0}
+.chk-list li{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--sub);padding:6px 0;border-bottom:1px dashed var(--line)}
+.chk-list input[type="checkbox"]{width:16px;height:16px;accent-color:var(--gold)}
+
+/* MAP Styles */
+.sec-h{padding:10px 0;text-align:center}
+.sec-h h3{font-size:16px;letter-spacing:0.1em;color:var(--text)}
+svg.map{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#FAF8F5;margin-bottom:16px}
+
+/* フッターナビ */
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(245,243,239,0.95);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.tabbar ul{list-style:none;margin:0 auto;padding:0;max-width:440px;display:grid;grid-template-columns:repeat(3,1fr)}
+.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;color:var(--sub);text-decoration:none;font-size:11px}
+</style>
+</head>
+<body>
+
+<div class="page">
+  <!-- 表紙 -->
+  <header class="cover" id="top">
+    <p class="kicker">Trip Schedule</p>
+    <h1>鬼怒川・草津・伊香保</h1>
+    <p class="date">2026.11.21(土) - 11.23(月・祝)</p>
+  </header>
+
+  <!-- タブUI -->
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab(this, 'day1')">1日目</button>
+    <button class="tab-btn" onclick="switchTab(this, 'day2')">2日目</button>
+    <button class="tab-btn" onclick="switchTab(this, 'day3')">3日目</button>
+    <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
+    <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
+  </nav>
+
+  <!-- DAY 1 -->
+  <div id="day1" class="tab-content active">
+    <ol class="tl">
+      <li class="stop">
+        <div class="tm">10:00</div><div class="rl"></div>
+        <div class="bd">
+          <h4>品川駅 出発</h4>
+          <p class="desc">品川駅集合・車で鬼怒川方面へ</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=品川駅" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">14:30</div><div class="rl"></div>
+        <div class="bd">
+          <h4>鬼怒川ライン下り（15:10便）</h4>
+          <p class="addr">日光市鬼怒川温泉大原1414</p>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/2/23/Kinugawa_Line_Kudari_2010.jpg" alt="鬼怒川ライン下り" class="card-img">
+          <p class="desc">乗船手続後、貸切船で渓谷下り（約30分）</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=鬼怒川ライン下り+日光市鬼怒川温泉大原1414" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">16:30</div><div class="rl"></div>
+        <div class="bd">
+          <h4>チェックイン</h4>
+          <p class="desc">Airbnb（鬼怒川エリア）</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- DAY 2 -->
+  <div id="day2" class="tab-content">
+    <ol class="tl">
+      <li class="stop">
+        <div class="tm">09:00</div><div class="rl"></div>
+        <div class="bd">
+          <h4>鬼怒川 出発</h4>
+          <p class="desc">草津温泉方面へ移動</p>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">13:00</div><div class="rl"></div>
+        <div class="bd">
+          <h4>草津温泉 到着・散策</h4>
+          <p class="addr">吾妻郡草津町草津</p>
+          <p class="desc">湯畑周辺散策およびチェックイン</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+湯畑" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">15:00</div><div class="rl"></div>
+        <div class="bd">
+          <h4>ホテルヴィレッジ</h4>
+          <p class="addr">吾妻郡草津町草津618 / TEL: 0570-01-3232</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+ホテルヴィレッジ" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- DAY 3 -->
+  <div id="day3" class="tab-content">
+    <ol class="tl">
+      <li class="stop">
+        <div class="tm">09:45</div><div class="rl"></div>
+        <div class="bd">
+          <h4>草津温泉 出発</h4>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">10:15</div><div class="rl"></div>
+        <div class="bd">
+          <h4>アガッタン（吾妻峡レールバイク）</h4>
+          <p class="addr">吾妻郡東吾妻町松谷868-1</p>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Agatsuma_Gorge_202011.jpg" alt="吾妻峡" class="card-img">
+          <p class="desc">10:30受付 / 10:45〜11:50 往復体験</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=アガッタン+吾妻郡東吾妻町松谷868-1" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">12:45</div><div class="rl"></div>
+        <div class="bd">
+          <h4>昼食（万葉亭）＆ 伊香保石段街散策</h4>
+          <p class="addr">水沢うどん 万葉亭：渋川市伊香保町水沢48-4</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=水沢うどん+万葉亭+渋川市伊香保町水沢48-4" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+        </div>
+      </li>
+      <li class="stop">
+        <div class="tm">14:30</div><div class="rl"></div>
+        <div class="bd">
+          <h4>伊香保 出発</h4>
+          <p class="desc">東京方面へ帰路</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <!-- 草津ガイド -->
+  <div id="kusatsu" class="tab-content">
+    <!-- 公式観光マップPDFバナー -->
+    <a href="https://agakanren.com/websys/wp-content/uploads/kusatsuonsenTM2024_9.pdf" target="_blank" rel="noopener noreferrer" class="pdf-btn">
+      🗺️ 草津温泉 公式タウングイドマップ (PDF) を開く
+    </a>
+
+    <div class="card">
+      <h4>草津到着後のモデルルート <span class="tag">おすすめ</span></h4>
+      <ul>
+        <li><strong>13:00</strong> 湯畑到着・周辺で温泉饅頭の食べ歩き</li>
+        <li><strong>14:00</strong> 「熱乃湯」で湯もみショー鑑賞</li>
+        <li><strong>15:00</strong> チェックイン後、西の河原公園へ散策＆足湯</li>
+        <li><strong>17:30</strong> 裏草津（地蔵エリア）で落ち着いたカフェタイム</li>
+        <li><strong>19:00</strong> 夜の湯畑ライトアップ鑑賞</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/1/14/Kusatsu_Onsen_Yubatake_201804.jpg" alt="湯畑" class="card-img">
+      <h4>湯畑 <span class="tag">中心街</span></h4>
+      <p>毎分4,000Lの温泉が湧き出る草津のシンボル。足湯や木道散策が楽しめます。</p>
+      <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+湯畑" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+    </div>
+    <div class="card">
+      <h4>熱乃湯（湯もみショー） <span class="tag">体験</span></h4>
+      <p>伝統の「湯もみと踊り」を鑑賞。午後の部（15:30/16:00/16:30）あり（大人700円）。</p>
+      <a href="https://www.google.com/maps/search/?api=1&query=熱乃湯+草津温泉" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+    </div>
+    <div class="card">
+      <h4>西の河原公園 <span class="tag">絶景</span></h4>
+      <p>湯畑から徒歩約10分。河原から湯が湧き出る美しい公園。奥には巨大な大露天風呂も。</p>
+      <a href="https://www.google.com/maps/search/?api=1&query=西の河原公園+草津温泉" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+    </div>
+  </div>
+
+  <!-- 持ち物＆お土産 -->
+  <div id="info" class="tab-content">
+    <div class="sec-h">
+      <h3>持ち物チェックリスト</h3>
+    </div>
+    <div class="card">
+      <ul class="chk-list">
+        <li><input type="checkbox"> 着替え・防寒具（草津は標高が高く冷え込みます）</li>
+        <li><input type="checkbox"> タオル・手ぬぐい（外湯・足湯巡り用）</li>
+        <li><input type="checkbox"> 充電器・モバイルバッテリー</li>
+        <li><input type="checkbox"> 常備薬・酔い止め（山道ドライブ対策）</li>
+        <li><input type="checkbox"> 小銭（コインロッカーや足湯利用時に便利）</li>
+        <li><input type="checkbox"> 濡れたタオルを入れる袋・サブバッグ</li>
+      </ul>
+    </div>
+
+    <div class="sec-h" style="margin-top:20px;">
+      <h3>おすすめのお土産</h3>
+    </div>
+    <div class="card">
+      <h4>草津温泉</h4>
+      <p><strong>・温泉まんじゅう</strong>（長寿庵・松むら饅頭）<br><strong>・湯のはな</strong>（本物の温泉の素）<br><strong>・草津温泉ラスク</strong>（グランデフューメ草津）</p>
+    </div>
+    <div class="card">
+      <h4>鬼怒川温泉</h4>
+      <p><strong>・日光誉（日本酒） / 日光湯波</strong><br><strong>・鬼怒川温泉かりんとう饅頭</strong></p>
+    </div>
+    <div class="card">
+      <h4>伊香保温泉</h4>
+      <p><strong>・水沢うどん</strong>（半生麺パックはお土産に最適）<br><strong>・勝月堂の湯の花まんじゅう</strong>（温泉饅頭発祥の店）</p>
+    </div>
+  </div>
+
+  <!-- 精密広域マップ -->
+  <section class="sec-h" id="map">
+    <h3>ドライブ詳細ルートマップ</h3>
+  </section>
+  <div style="padding:0 20px 20px;">
+    <svg class="map" viewBox="0 0 360 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- 県境界線 -->
+      <path d="M 195,20 C 190,40 180,60 185,85 C 190,105 205,120 200,135 C 195,150 175,160 170,175" fill="none" stroke="#A0AEC0" stroke-width="1.2" stroke-dasharray="3 2" />
+      <path d="M 170,175 C 185,180 200,185 220,180 C 235,175 250,185 270,190" fill="none" stroke="#A0AEC0" stroke-width="1.2" stroke-dasharray="3 2" />
+      <path d="M 190,230 C 220,235 240,230 260,238" fill="none" stroke="#A0AEC0" stroke-width="1.2" stroke-dasharray="3 2" />
+      
+      <!-- 県名テキスト -->
+      <text x="100" y="70" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">群馬県</text>
+      <text x="240" y="70" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">栃木県</text>
+      <text x="200" y="210" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">埼玉県</text>
+      <text x="200" y="255" font-size="10" font-family="var(--f-hand)" fill="#A0AEC0" font-weight="bold">東京都</text>
+
+      <!-- ドライブルート -->
+      <path d="M 215,260 C 220,245 235,220 240,190 C 245,150 250,120 248,85 L 245,65" fill="none" stroke="#2B6CB0" stroke-width="2.5" stroke-linecap="round" />
+      <path d="M 245,65 C 220,60 195,80 150,90 C 120,95 85,90 60,95" fill="none" stroke="#2B6CB0" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="5 3" />
+      <path d="M 60,95 C 75,110 95,115 110,120 C 125,125 130,140 140,145 C 160,170 190,200 215,260" fill="none" stroke="#2B6CB0" stroke-width="2.5" stroke-linecap="round" />
+
+      <!-- 主要スポット -->
+      <circle cx="215" cy="260" r="4" fill="#E53E3E" />
+      <text x="223" y="264" font-size="11" font-family="var(--f-hand)" fill="#1A202C" font-weight="bold">品川（発着）</text>
+
+      <circle cx="245" cy="65" r="4" fill="#E53E3E" />
+      <text x="253" y="69" font-size="11" font-family="var(--f-hand)" fill="#1A202C" font-weight="bold">鬼怒川温泉</text>
+
+      <circle cx="60" cy="95" r="4" fill="#E53E3E" />
+      <text x="60" y="85" font-size="11" font-family="var(--f-hand)" fill="#1A202C" font-weight="bold" text-anchor="middle">草津温泉</text>
+
+      <circle cx="110" cy="120" r="3.5" fill="#319795" />
+      <text x="70" y="130" font-size="10" font-family="var(--f-hand)" fill="#2D3748">アガッタン</text>
+      
+      <circle cx="140" cy="145" r="3.5" fill="#319795" />
+      <text x="148" y="150" font-size="10" font-family="var(--f-hand)" fill="#2D3748">伊香保温泉</text>
+    </svg>
+  </div>
+
+  <!-- フッターバー -->
+  <nav class="tabbar">
+    <ul>
+      <li><a href="#top">TOP</a></li>
+      <li><a href="#top" onclick="switchTabByCode('day1')">SCHEDULE</a></li>
+      <li><a href="#map">MAP</a></li>
+    </ul>
+  </nav>
+</div>
+
+<script>
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+function switchTabByCode(tabId) {
+  const btns = document.querySelectorAll('.tab-btn');
+  const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4};
+  if(targetMap[tabId] !== undefined) {
+    switchTab(btns[targetMap[tabId]], tabId);
+  }
+}
+</script>
+
+</body>
+</html>
