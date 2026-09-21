@@ -26,7 +26,7 @@
 
 *{box-sizing:border-box}
 html{background:var(--bg);color:var(--text);-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.7 var(--f-hand);letter-spacing:0.04em;padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+body{margin:0;background:var(--bg);color:var(--text);font:400 15px/1.7 var(--f-hand);letter-spacing:0.04em;padding-bottom:calc(28px + env(safe-area-inset-bottom))}
 
 .page{max-width:440px;margin:0 auto;background:var(--bg);min-height:100vh;position:relative}
 @media (min-width:480px){
@@ -87,9 +87,6 @@ h1,h2,h3,h4{font-family:var(--f-hand);margin:0;font-weight:400;color:var(--text)
 svg.map{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px;background:#FAF8F5;margin-bottom:16px}
 
 /* フッターナビ */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:50;background:rgba(245,243,239,0.95);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
-.tabbar ul{list-style:none;margin:0 auto;padding:0;max-width:440px;display:grid;grid-template-columns:repeat(3,1fr)}
-.tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;height:50px;color:var(--sub);text-decoration:none;font-size:11px}
 
 /* ---- MAP ---- */
 .mapwrap{padding:0 20px 24px}
@@ -150,6 +147,21 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .yt-cap{font-size:10px;color:var(--dim);margin:0 0 10px}
 .lnk{color:var(--route);text-decoration:underline;text-underline-offset:3px}
+.lsheet{position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;background:rgba(31,42,56,.45)}
+.lsheet[hidden]{display:none}
+.lsheet .lbox{width:100%;max-width:480px;max-height:88vh;max-height:88dvh;overflow:auto;background:var(--bg-card);border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2);font-size:13.5px;line-height:1.75;color:var(--text);letter-spacing:.02em}
+.lsheet h4{margin:0 0 6px;font-size:17px}
+.lsheet p{margin:0 0 8px}
+.lsheet .lh{font-weight:600;margin:10px 0 2px}
+.lsheet .sub{font-size:12px;color:var(--dim)}
+.lsheet ol{margin:4px 0 10px;padding-left:1.4em}
+.lsheet li{margin:2px 0}
+.lsheet details{margin:6px 0;padding:8px 10px;background:var(--bg-accent);border-radius:8px}
+.lsheet summary{cursor:pointer;font-weight:600}
+.lsheet .lstat{min-height:1.2em;color:#C53030;font-size:12.5px}
+.lsheet .acts{display:flex;gap:8px;margin-top:10px}
+.lsheet .acts button{flex:1;min-height:46px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+.lsheet .acts .pri{background:var(--route);border-color:var(--route);color:#fff}
 </style>
 </head>
 <body>
@@ -235,19 +247,20 @@ html.map-locked,html.map-locked body{overflow:hidden}
       <li class="stop">
         <div class="tm">13:00</div><div class="rl"></div>
         <div class="bd">
-          <h4>草津温泉 到着・散策</h4>
-          <p class="addr">吾妻郡草津町草津</p>
-          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/%E6%B9%AF%E7%95%912.jpg?width=800" alt="草津温泉の湯畑と街並み" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Mikkabie / CC BY-SA 4.0 / Wikimedia Commons（草津温泉の湯畑と街並み）</p>
-          <p class="desc">湯畑周辺散策およびチェックイン</p>
-          <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+湯畑" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+          <h4>草津温泉 到着・ホテルヴィレッジ チェックイン</h4>
+          <p class="addr">吾妻郡草津町草津618 / TEL: 0570-01-3232</p>
+          <p class="desc">到着後は先にホテルでチェックイン（入室できない場合は荷物を預けて散策へ）</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+ホテルヴィレッジ" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
         </div>
       </li>
       <li class="stop">
-        <div class="tm">15:00</div><div class="rl"></div>
+        <div class="tm">14:00</div><div class="rl"></div>
         <div class="bd">
-          <h4>ホテルヴィレッジ</h4>
-          <p class="addr">吾妻郡草津町草津618 / TEL: 0570-01-3232</p>
-          <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+ホテルヴィレッジ" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+          <h4>湯畑周辺 散策</h4>
+          <p class="addr">吾妻郡草津町草津</p>
+          <img src="https://commons.wikimedia.org/wiki/Special:FilePath/%E6%B9%AF%E7%95%912.jpg?width=800" alt="草津温泉の湯畑と街並み" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Mikkabie / CC BY-SA 4.0 / Wikimedia Commons（草津温泉の湯畑と街並み）</p>
+          <p class="desc">ホテルから歩いて湯畑周辺を散策</p>
+          <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+湯畑" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
         </div>
       </li>
     </ol>
@@ -299,18 +312,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
       🗺️ 草津温泉 公式タウングイドマップ (PDF) を開く
     </a>
 
-    <div class="card">
-      <h4>草津到着後のモデルルート <span class="tag">おすすめ</span></h4>
-      <ul>
-        <li><strong>13:00</strong> 湯畑到着・周辺で温泉饅頭の食べ歩き</li>
-        <li><strong>14:00</strong> 「熱乃湯」で湯もみショー鑑賞</li>
-        <li><strong>15:00</strong> チェックイン後、西の河原公園へ散策＆足湯</li>
-        <li><strong>17:30</strong> 裏草津（地蔵エリア）で落ち着いたカフェタイム</li>
-        <li><strong>19:00</strong> 夜の湯畑ライトアップ鑑賞</li>
-      </ul>
-    </div>
-
-    <div class="card">
+        <div class="card">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/251130%20Yubatake%2C%20Kusatsu%2010.jpg?width=800" alt="湯畑" class="card-img">
       <h4>湯畑 <span class="tag">中心街</span></h4>
       <p>毎分4,000Lの温泉が湧き出る草津のシンボル。足湯や木道散策が楽しめます。</p>
@@ -319,7 +321,6 @@ html.map-locked,html.map-locked body{overflow:hidden}
     <div class="card">
       <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Kusatsu%20Yumomi%2C%20Gunma%2003.jpg?width=800" alt="熱乃湯の湯もみショー" class="card-img"><p style="font-size:10px;color:#718096;margin:-6px 0 8px">写真: Σ64 / CC BY 4.0 / Wikimedia Commons（熱乃湯の湯もみショー）</p><h4>熱乃湯（湯もみショー） <span class="tag">体験</span></h4>
       <p>伝統の「湯もみと踊り」を鑑賞。午後の部（15:30/16:00/16:30）あり（大人700円）。</p>
-      <div class="yt"><iframe src="https://www.youtube-nocookie.com/embed/PDznaEuUguk" title="草津温泉 熱乃湯「湯もみと踊り」" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe></div><p class="yt-cap">熱乃湯「湯もみと踊り」（草津温泉観光協会 公式動画）（<a class="lnk" href="https://www.youtube.com/watch?v=PDznaEuUguk" target="_blank" rel="noopener noreferrer">YouTubeで見る</a>）</p>
       <a href="https://www.google.com/maps/search/?api=1&query=熱乃湯+草津温泉" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
     </div>
     <div class="card">
@@ -385,15 +386,6 @@ html.map-locked,html.map-locked body{overflow:hidden}
     <div id="daySum"></div>
     <ul class="stop-list" id="stopList"></ul>
   </div>
-
-  <!-- フッターバー -->
-  <nav class="tabbar">
-    <ul>
-      <li><a href="#top">TOP</a></li>
-      <li><a href="#top" onclick="switchTabByCode('day1')">SCHEDULE</a></li>
-      <li><a href="#map">MAP</a></li>
-    </ul>
-  </nav>
 </div>
 
 <script>
@@ -450,7 +442,7 @@ var PLACES={
   "rq": "鬼怒川レジャー公園駐車場"
  },
  "yubatake": {
-  "no": 4,
+  "no": 5,
   "n": "草津温泉 湯畑",
   "ll": [
    36.62294,
@@ -460,7 +452,7 @@ var PLACES={
   "q": "草津温泉 湯畑"
  },
  "hotel": {
-  "no": 5,
+  "no": 4,
   "n": "ホテルヴィレッジ",
   "ll": [
    36.6271,
@@ -547,37 +539,32 @@ var DAYS=[
   "date": "11/22(日)",
   "color": "#DD6B20",
   "title": "鬼怒川 → 草津",
-  "dist": 187.5,
-  "dur": 190,
+  "dist": 185.5,
+  "dur": 179,
   "route": [
    0,
-   1,
-   2
+   1
   ],
-  "poly": "wrr_FcsusY{@bFlIjBlD}BbBfIzJpDtGdPx}@uG`g@{W`c@yd@bZ}SdP{Dj{@pDd^pHlZhOtFyDxO|@dw@lm@fn@iAbLtBbZ}tAnRmBho@fOnbAyCpPmEfUeSju@iMzoA~G`^`HnlA{Ddg@eHzw@uZhl@yF|}BkgAxcBqa@j{Acl@~DxAh@zGxT|FnVjNjs@`Gjq@m@tm@oGhk@rEdo@}A`f@eNvq@{J|pA`Ctk@iPl@~JvADnh@yFfeA{CdNnJnHvm@fDzHdKhEvh@j@|GtF~m@lpAtFr@zBbUzl@xd@b^hKpd@tArZcEjo@{Tx\\kBld@pJza@pYf_@xj@ra@hxAzc@pt@jFbp@`EjOn`@t^rSl]j\\rOhLpPlFjp@qDzsAbKdd@pKdMzMtGjz@zBvh@pJxDxFm[j{GsNdb@w^|a@kMzV{StxAif@hiAqDrp@|HfyApGtg@dObm@n]|z@|EpYkBtg@sVhp@kFz\\T`v@tHxs@lG|Tj\\rr@jJd{@vFnSbQnUby@jj@`h@pk@rNly@l^br@lEzd@cE``@ma@`gAr@z`AqBpWcb@lfAq\\lqBy@vc@`JztC_IbsBvBv]fNhy@Ffb@kE`Yc_@fqAcYjeBpBnG|ZlFaBqByJzIeQx[{x@zsDmExo@bBfhAoA`XoI`XqPlR_oCdkAaQxQsl@faAs~@dj@qL~M_`@dtAmIdkAca@tyAePvpAyFfOu^ne@gQ`^sGp^[xn@qH`SsLbHcYd@an@`Qkn@`F_\\dZma@~MwUhUiMzX{MxHiEvbAwD~Mkg@nZoJf@}EtIab@~N_F~KyHr@_VeI{m@vEgJwCwJ`CoOaBeFfCgS`b@Ita@iXpeAe[jWeMla@uk@du@oO|`@kHpw@_Mxc@\\rG~HxOiN|[Vr^cEv_@}Upm@aJdd@cJxNob@|]{BkB{DzBqLcCkHrE{^pz@kh@|e@iOj]gUpXwFnR{@`Pp@zu@}JzZhE~a@lVhQdV`\\d\\tN|j@|y@jE`BdKu@fH`F~Rhd@tGpGvp@hNhLhJdF`k@vDuJdI_GtBzKdBxTyJ`[~@z[ka@`z@wCxq@w\\tz@yU|JsWz\\}Nni@{[d]oIfb@k@|VzDh^jK`^zTd\\jx@xw@|Krn@nb@`f@bE`x@vc@~j@pEvXpUvTzAhMcRlz@cIjQy@py@a[fo@_Ebb@fChf@wAnVsQrPqR`k@kG`C{LhQcKxm@_SxDoHdUit@fj@wD~IaIl@}JnRcCf@qGaEad@bE_IgDuKhAcP{AeRnKgMgI}FtAmEmBqUzTwRb@gFoDaHfFoKyD{Fi]{OgKmCwGiLkEoNz@EiWsC_AuElDcDwCr@uSwGmZ_GfGgByEk@lA",
+  "poly": "_`s_FqousYxT|ElD}BpBzI|IjCdHtPx}@sGje@qVpg@oh@~YkSdKcCt}@rDd`@lIlXlNtFyDxO|@dw@lm@fn@iAbLtBbZ}tAnVuAhk@nNnbAyCpPmEtWgT|r@gLzoA~G`^`HnlA{Ddg@eHzw@uZhl@yF|}BkgAxcBqa@xzAal@hEhAp@hHfl@hV|s@`Gzp@m@ho@qG~h@tEzo@}A`f@eNvq@{J|pA`Ctk@iPdCdKvnBuKpNhKbMpv@lKpEvh@j@|GtF~m@lpAfFXhC|Uzl@xd@b^hKpd@tA|^uF`k@iSx\\kBld@pJza@pYf_@xj@ra@hxAzc@pt@jFbp@`EjOn`@t^rSl]j\\rOdMnRrEpr@sDvoAbKdd@lZzUjz@zBvh@pJ`EfHu[|yGsNdb@{]x`@gN|W{SvxAeg@blAyCnl@`IpzApGtg@|Mhj@v^v}@|EpYkBtg@sVhp@kFz\\Hdr@`Itw@xd@nhAjJf{@vFnSbQnUby@jj@`h@pk@rNly@l^br@lEzd@cE``@_a@~dAeAbTjBxm@iChZka@tcAq\\lqBy@vc@`JztC}H`uBzCfa@nLfp@Xze@kE`Yc_@fqAcYjeBpBnG|ZlFaBqByJzIeQx[{x@zsDqEnr@hBriAqA~SoI`XqPlR_oCdkAaQxQsl@faAs~@dj@qL~Mw_@fsAuIblAca@tyAgPvpAux@xtAsGp^c@bp@{HlRaLlGy[z@sn@fQkm@`FwYhYma@~MyT`TgNbZ{MxHiEvbAwD~Mkg@nZoJf@}EtIab@~N_F~KyHr@_VeI{m@vEgJwCwJ`C_OcBkFzBqSnb@Ita@iXpeAe[jWeMla@uk@du@cOz_@yIz|@}Kp_@|IlXiN|[Vr^yDl^gVzn@aJdd@cJxNob@|]iVsBkHrE{^pz@kh@|e@iOj]sTdWoHr\\Xd~@}JzZzDn`@rXpTfQlWxQhJcJxRiRdJuHfN^~N{Ghe@}VfUmGdOkJfC_OzRcIj@gGbGaGdPcOlLiLtUw]vOwBtKs_@dv@k[|EsRd_@lAjk@`OvIsG`SvG~To@dNnJ~YzH~v@vFpIzLvFrS`]e@xXjMbv@vL|TzFle@~EwBhHxAbKdL|@pHgD`WbD`G^tOuBlF`U`f@oIq@~F~D\\lEcHfIeB`RdSvEW|DsDcCoE`BwBbNeDaIwCa@iCnCeDqAw@zDiMwEmUbCzF`PuBrP{Wdf@j@t^`Nb`AnD|DfCvRbPxDrN|NhDtQvG`CuEhOxCjOsIdCe@qFuA\\zB`LcElHx@bNeHuQgKcDgF`GeWcPqK_AwTe@uAlKwGkD~CfGkBbR\\eQuDkBoE?gBdD_DyBiGnCRpD_FJ\\tF`@gDbGjAL}DzIhCc@fFSaDyCv@wKrTzFfOcFfV`HfRhAfSsKhc@Lhk@aFfHaFkBkI`JsCkC",
   "items": [
    {
     "p": "stay",
     "t": "09:00",
     "note": "鬼怒川 出発（草津方面へ）",
     "leg": {
-     "d": 186.3,
-     "m": 186
-    }
-   },
-   {
-    "p": "yubatake",
-    "t": "13:00",
-    "note": "到着・湯畑周辺を散策",
-    "leg": {
-     "d": 1.2,
-     "m": 4
+     "d": 185.5,
+     "m": 179
     }
    },
    {
     "p": "hotel",
-    "t": "15:00",
-    "note": "チェックイン"
+    "t": "13:00",
+    "note": "到着・ホテルでチェックイン（早着なら荷物を預ける）"
+   },
+   {
+    "p": "yubatake",
+    "t": "14:00",
+    "note": "湯畑周辺を散策（ホテルから徒歩）"
    }
   ]
  },
@@ -736,15 +723,134 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&full)setFul
 window.addEventListener('resize',function(){if(engine)engine.resized();});
 window.addEventListener('orientationchange',function(){setTimeout(function(){if(engine)engine.resized();},300);});
 
-/* ---- 現在地 ---- */
+/* ---- 現在地（位置情報の許可ガイド付き） ---- */
+var UA=navigator.userAgent||'';
+var isIOS=/iPhone|iPad|iPod/.test(UA)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+var isAltBrowser=/CriOS|FxiOS|EdgiOS/.test(UA);
+var isAndroid=/Android/.test(UA);
+var elSheet=document.createElement('div');
+elSheet.id='lSheet';elSheet.className='lsheet';elSheet.hidden=true;
+elSheet.setAttribute('role','dialog');elSheet.setAttribute('aria-modal','true');elSheet.setAttribute('aria-labelledby','lTitle');
+document.body.appendChild(elSheet);
+var sheetKind='',locBusy=false;
+function setFlag(on){try{if(on)sessionStorage.setItem('locPend','1');else sessionStorage.removeItem('locPend');}catch(e){}}
+function askState(cb){
+ try{
+  if(navigator.permissions&&navigator.permissions.query){
+   navigator.permissions.query({name:'geolocation'}).then(function(r){cb(r.state);},function(){cb('unknown');});
+   return;
+  }
+ }catch(e){}
+ cb('unknown');
+}
+function stepsHtml(){
+ if(isIOS&&!isAltBrowser){
+  return '<p class="lh">かんたんな方法（Safariの中で完結）</p>'
+   +'<ol><li>アドレスバーの左にある<b>「ぁあ」（aA）</b>をタップ</li>'
+   +'<li><b>「Webサイトの設定」</b>をタップ</li>'
+   +'<li><b>「位置情報」</b>を<b>「許可」</b>にして「完了」</li></ol>'
+   +'<details><summary>設定アプリから変更する場合</summary><ol>'
+   +'<li>ホーム画面から<b>「設定」</b>アプリを開く</li>'
+   +'<li><b>「プライバシーとセキュリティ」→「位置情報サービス」</b>を開き、スイッチを<b>オン</b>にする</li>'
+   +'<li>同じ画面の一覧にある<b>「Safari Webサイト」</b>を開き、<b>「このAppの使用中のみ許可」</b>を選ぶ</li>'
+   +'<li>Safariに戻る（アプリの切り替えで戻れます）</li></ol></details>';
+ }
+ if(isIOS){
+  return '<ol><li>ホーム画面から<b>「設定」</b>アプリを開く</li>'
+   +'<li>下へスクロールして、使っているブラウザ（Chromeなど）を開く</li>'
+   +'<li><b>「位置情報」→「このAppの使用中のみ許可」</b>を選ぶ</li>'
+   +'<li>ブラウザに戻る</li></ol>'
+   +'<p class="sub">「プライバシーとセキュリティ → 位置情報サービス」がオフの場合は、先にオンにしてください。</p>';
+ }
+ if(isAndroid){
+  return '<ol><li>アドレスバー左の<b>鍵（または調整）アイコン</b>をタップ</li>'
+   +'<li><b>「権限」</b>から<b>「位置情報」</b>を<b>「許可」</b>にする</li>'
+   +'<li>端末の位置情報（クイック設定）がオンか確認する</li></ol>';
+ }
+ return '<ol><li>アドレスバー左のアイコンをクリック</li><li><b>「位置情報」</b>を<b>「許可」</b>に変更</li></ol>';
+}
+function openSheet(kind,stat){
+ var title,lead,steps='',retry=true;
+ sheetKind=kind;
+ if(kind==='denied'){
+  title='位置情報の許可が必要です';
+  lead='現在地を表示するには、このサイトの位置情報を「許可」にしてください。許可したあとこのページに戻ると、自動でもう一度試します。';
+  steps=stepsHtml();setFlag(true);
+ }else if(kind==='unavailable'){
+  title='現在地を取得できません';
+  lead=(isIOS?'位置情報サービスがオフ、または電波が弱い可能性があります。「設定 → プライバシーとセキュリティ → 位置情報サービス」がオンか確認してから、':'位置情報がオフ、または電波が弱い可能性があります。端末の位置情報がオンか確認してから、')+'もう一度お試しください。';
+  setFlag(true);
+ }else if(kind==='timeout'){
+  title='時間内に取得できませんでした';
+  lead='電波の良い場所（屋外や窓際）で、もう一度お試しください。';
+ }else{
+  title='現在地を取得できません';
+  lead='この端末・ブラウザは位置情報に対応していません。';retry=false;
+ }
+ elSheet.innerHTML='<div class="lbox"><h4 id="lTitle">'+title+'</h4><p class="lead">'+lead+'</p>'+steps
+  +'<p class="lstat" id="lStat">'+(stat||'')+'</p>'
+  +'<div class="acts">'+(retry?'<button type="button" class="pri" id="lRetry">もう一度試す</button>':'')+'<button type="button" id="lClose">閉じる</button></div></div>';
+ elSheet.hidden=false;
+ setTimeout(function(){var b=$(retry?'lRetry':'lClose');if(b)b.focus();},60);
+}
+function closeSheet(){elSheet.hidden=true;sheetKind='';setFlag(false);}
+function getPos(manual){
+ if(locBusy)return;
+ locBusy=true;
+ var label=btnLoc.textContent;btnLoc.disabled=true;btnLoc.textContent='取得中…';
+ function done(){locBusy=false;btnLoc.disabled=false;btnLoc.textContent=label;}
+ navigator.geolocation.getCurrentPosition(function(p){
+  done();closeSheet();
+  if(engine)engine.showMe([p.coords.latitude,p.coords.longitude],p.coords.accuracy||50);
+ },function(e){
+  done();
+  var kind=(e&&e.code===1)?'denied':((e&&e.code===2)?'unavailable':'timeout');
+  openSheet(kind,manual?'まだ取得できませんでした。設定を確認してから、もう一度お試しください。':'');
+ },{enableHighAccuracy:true,timeout:15000,maximumAge:10000});
+}
 function locate(){
  if(!engine)return;
- if(!navigator.geolocation){alert('この端末・ブラウザでは現在地を取得できません');return;}
- var label=btnLoc.textContent;btnLoc.disabled=true;btnLoc.textContent='取得中…';
- function done(){btnLoc.disabled=false;btnLoc.textContent=label;}
- navigator.geolocation.getCurrentPosition(function(p){done();if(engine)engine.showMe([p.coords.latitude,p.coords.longitude],p.coords.accuracy||50);},function(e){done();alert(e&&e.code===1?'位置情報の利用が許可されていません。ブラウザの設定で位置情報を許可してください。':'現在地を取得できませんでした。電波の良い場所でもう一度お試しください。');},{enableHighAccuracy:true,timeout:15000,maximumAge:10000});
+ if(!navigator.geolocation){openSheet('unsupported');return;}
+ getPos(false);
 }
+function retryLocate(manual){
+ if(!navigator.geolocation)return;
+ if(manual){getPos(true);return;}
+ askState(function(st){
+  if(st==='denied'){var s=$('lStat');if(s)s.textContent='まだ許可されていません。設定を確認してください。';return;}
+  getPos(false);
+ });
+}
+function onBack(){
+ if(elSheet.hidden||locBusy)return;
+ if(sheetKind!=='denied'&&sheetKind!=='unavailable')return;
+ retryLocate(false);
+}
+elSheet.addEventListener('click',function(e){
+ if(e.target===elSheet){closeSheet();return;}
+ var b=e.target.closest('button');if(!b)return;
+ if(b.id==='lClose')closeSheet();
+ else if(b.id==='lRetry')retryLocate(true);
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!elSheet.hidden)closeSheet();});
+document.addEventListener('visibilitychange',function(){if(!document.hidden)onBack();});
+window.addEventListener('pageshow',onBack);
+window.addEventListener('focus',onBack);
 btnLoc.addEventListener('click',locate);
+/* 設定から戻ったときにページが再読み込みされていた場合の自動再開 */
+(function(){
+ var n=0,iv=setInterval(function(){
+  n++;
+  if(!engine&&n<=40)return;
+  clearInterval(iv);
+  if(!engine)return;
+  try{
+   if(sessionStorage.getItem('locPend')){
+    askState(function(st){if(st==='granted'){setFlag(false);getPos(false);}});
+   }
+  }catch(e){}
+ },500);
+})();
 elF.addEventListener('click',function(e){var b=e.target.closest('button[data-f]');if(b)apply(b.getAttribute('data-f'));});
 elList.addEventListener('click',function(e){var b=e.target.closest('button[data-p]');if(!b)return;var k=b.getAttribute('data-p');if(!engine){window.open(gsearch(PLACES[k]),'_blank','noopener');return;}elMap.scrollIntoView({behavior:'smooth',block:'center'});engine.focus(k);});
 
