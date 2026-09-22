@@ -439,7 +439,10 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <button type="button" id="memSaveBtn" class="mem-pickbtn">📥 iPhoneに保存</button>
 </div>
 
-<button type="button" id="memPickBtn" class="mem-pickbtn">📍 地図で場所を指定</button>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<button type="button" id="memUseHereBtn" class="mem-pickbtn">📍 現在地を使う</button>
+<button type="button" id="memPickBtn" class="mem-pickbtn">🗺️ 地図で場所を指定</button>
+</div>
 <p id="memPickStatus" class="mem-msg" style="color:var(--sub)"></p>
 
 <label class="mem-label" style="margin-top:6px">ひとこと（任意・まとめて投稿する写真に共通で入ります）</label>
@@ -1103,7 +1106,7 @@ var elApp=$('memApp');
 var elLibraryBtn=$('memLibraryBtn'), elFileLibrary=$('memFileLibrary');
 var elPreview=$('memPreview'), elSelCount=$('memSelCount');
 var elCaption=$('memCaption'), elDay=$('memDay'), elUploadBtn=$('memUploadBtn'), elUploadMsg=$('memUploadMsg');
-var elMapDiv=$('memMap'), elGrid=$('memGrid'), elEmpty=$('memEmpty'), elPickBtn=$('memPickBtn'), elPickStatus=$('memPickStatus');
+var elMapDiv=$('memMap'), elGrid=$('memGrid'), elEmpty=$('memEmpty'), elPickBtn=$('memPickBtn'), elPickStatus=$('memPickStatus'), elUseHereBtn=$('memUseHereBtn');
 var elSaveWrap=$('memSaveWrap'), elSaveBtn=$('memSaveBtn');
 
 if(!elGate){return;} /* このタブが無いページでは何もしない */
@@ -1290,6 +1293,21 @@ function initAppOnce(){
     elPickBtn.classList.toggle('on',pickMode);
     elPickStatus.textContent=pickMode?'地図をタップして撮影場所を指定してください。':'';
   });
+  if(elUseHereBtn){
+    elUseHereBtn.addEventListener('click', function(){
+      elUseHereBtn.disabled=true;
+      elPickStatus.textContent='現在地を取得しています…';
+      tryDeviceLocation().then(function(loc){
+        elUseHereBtn.disabled=false;
+        if(loc){
+          setPick(loc.lat, loc.lng);
+          if(map) map.flyTo([loc.lat, loc.lng], Math.max(map.getZoom(),14), {duration:0.8});
+        }else{
+          elPickStatus.textContent='現在地を取得できませんでした。位置情報の利用を許可しているか確認してください。';
+        }
+      });
+    });
+  }
 
   /* ---- 写真を端末（iPhone）にも保存 ---- */
   if(elSaveBtn){
@@ -1492,6 +1510,13 @@ function initAppOnce(){
     var b=e.target.closest('button[data-id]'); if(!b)return;
     var it=itemsById[b.getAttribute('data-id')]; if(it)openViewer(it);
   });
+  /* 写真ごとにピンの色を変える（最大7色・同じ写真は常に同じ色になるよう写真IDから決める） */
+  var PIN_COLORS=['#B78A52','#2B6CB0','#DD6B20','#97266D','#38A169','#805AD5','#319795'];
+  function colorForId(id){
+    var h=0;
+    for(var i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))>>>0; }
+    return PIN_COLORS[h % PIN_COLORS.length];
+  }
   function renderPins(items){
     if(!map)return;
     var stillThere={};
@@ -1501,7 +1526,8 @@ function initAppOnce(){
       stillThere[it.id]=true;
       bounds.push([it.lat,it.lng]);
       if(markers[it.id])return;
-      var m=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="mem-pin"><img src="'+it.url+'" loading="lazy"></div>',iconSize:[36,36],iconAnchor:[18,36]})});
+      var color=colorForId(it.id);
+      var m=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="mem-pin" style="border-color:'+color+'"><img src="'+it.url+'" loading="lazy"></div>',iconSize:[36,36],iconAnchor:[18,36]})});
       m.on('click', function(){ openViewer(itemsById[it.id]||it); });
       m.addTo(map);
       markers[it.id]=m;
