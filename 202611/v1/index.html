@@ -144,6 +144,14 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .pick{margin:8px 0 10px;padding:9px 12px;background:var(--bg-accent);border-left:3px solid var(--gold);border-radius:4px;font-size:12.5px;line-height:1.65;color:var(--sub)}
 .pick .pk{display:inline-block;font-size:11px;color:var(--gold);border:1px solid var(--gold);padding:0 6px;border-radius:2px;margin-bottom:3px}
 .pick b{display:block;font-size:14px;color:var(--text);font-weight:600}
+.pick details{margin:0}
+.pick summary{cursor:pointer;list-style:none;padding:0;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px}
+.pick summary::-webkit-details-marker{display:none}
+.pick summary::marker{content:""}
+.pick summary .pk{margin:0}
+.pick summary b{display:inline;font-size:14px}
+.pick details[open] summary{margin-bottom:8px}
+.hint{font-size:11px;color:var(--dim);font-weight:400;margin-left:4px}
 .yt{position:relative;width:100%;aspect-ratio:16/9;margin:2px 0 4px;border-radius:6px;overflow:hidden;background:#000}
 .yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .yt-cap{font-size:10px;color:var(--dim);margin:0 0 10px}
@@ -240,8 +248,8 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <h4>昼食（各自）</h4>
 <p class="desc">車での移動中につき、昼食は集合せず各自で済ませます。道中のサービスエリア・パーキングエリア等をご利用ください。</p>
 <div class="pick">
-<details style="margin:0">
-<summary style="cursor:pointer;font-weight:600;color:var(--text)">🍜 おすすめ：佐野SA（下り）で休憩・腹ごしらえ（タップで詳細）</summary>
+<details>
+<summary><span class="pk">🍜 おすすめ</span><b>佐野SA（下り）で休憩・腹ごしらえ</b><span class="hint">（タップで開く）</span></summary>
 <p style="margin:8px 0 0">東北自動車道・佐野藤岡ICのすぐそば、栃木県内で最も南に位置するサービスエリアです。2022年に「ドラマチックエリア佐野」としてリニューアルし、24時間営業の「さのや」で味わえるご当地名物・佐野ラーメンのほか、スターバックス、広々とした芝生広場、ドッグランまで揃っています。休憩にも食事にもちょうどいい寄り道スポットです。</p>
 <div class="lodge-btns" style="margin-top:8px">
 <a class="gmap-btn" href="https://www.google.com/maps/search/?api=1&query=佐野サービスエリア（下り）栃木県佐野市黒袴町" target="_blank" rel="noopener noreferrer">📍 Googleマップで開く</a>
@@ -269,7 +277,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <p class="desc">4寝室・最大17名の一軒家を貸切。線路沿いの屋根付きテラスでBBQができ、SL大樹などの電車が目の前を通ります。鬼怒川ライン下りまでは車で約7分です。</p>
 <div class="lodge">
 <details>
-<summary>宿泊ルール・注意事項（タップで開く）</summary>
+<summary>宿泊ルール・注意事項<span class="hint">（タップで開く）</span></summary>
 <div class="lr"><b>駐車場</b>宿の前・敷地内は駐車禁止です。徒歩1分の「鬼怒川レジャー公園駐車場」に停めてください（隣家の敷地には立ち入らない）。</div>
 <div class="lr"><b>チェックイン</b>非対面（セルフ）です。事前にメッセージで案内される WEB名簿を全員分記入しないと、入室用の暗証番号が届きません。代表者の身分証の提出も必要です。</div>
 <div class="lr"><b>ルール</b>21:00〜翌7:00 はテラス使用不可。屋外で騒がない（声が近隣に響きます）。建物内は禁煙です。</div>
@@ -277,7 +285,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <div class="lr"><b>持っていく物</b>食材・調味料（宿にあるのは食用油と塩コショウのみ）、カセットボンベ、虫よけ、歯ブラシ。</div>
 <div class="lr"><b>音について</b>線路と道路に挟まれた立地のため、電車や車の音が聞こえます。</div>
 <details>
-<summary>SL大樹の通過時刻・周辺の買い物</summary>
+<summary>SL大樹の通過時刻・周辺の買い物<span class="hint">（タップで開く）</span></summary>
 <div class="lr"><b>下り</b>9:55頃 / 10:50頃 / 13:50頃 / 15:25頃（宿から特によく見えます）</div>
 <div class="lr"><b>上り</b>11:20頃 / 13:00頃 / 15:50頃 / 16:50頃</div>
 <div class="lr">宿の説明による目安です。日によって時刻が変わり、運休になることもあります。「SL大樹 時刻表」で当日の運行を確認してください。</div>
