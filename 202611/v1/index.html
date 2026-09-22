@@ -292,8 +292,6 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <p class="addr">吾妻郡東吾妻町松谷868-1</p>
 <img src="https://img.tabiiro.jp/plans.tabiiro.jp/plans/images/spots/1649330081-%E5%90%BE%E5%A6%BB%E5%B3%A1%E3%83%AC%E3%83%BC%E3%83%AB%E3%83%90%E3%82%A4%E3%82%AF+%E3%82%A2%E3%82%AC%E3%83%83%E3%82%BF%E3%83%B3.jpg" alt="アガッタン（吾妻峡レールバイク）" class="card-img">
 <p class="desc">10:30受付 / 10:45〜11:50 往復体験</p>
-<blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DWYbXmrgFNe/" data-instgrm-version="14" style="background:#FFF; border:0; border-radius:3px; box-shadow:0 0 1px 0 rgba(0,0,0,0.5),0 1px 10px 0 rgba(0,0,0,0.15); margin:2px auto 4px; max-width:400px; min-width:280px; padding:0; width:100%;"></blockquote>
-<p class="yt-cap">アガッタンに乗る様子（<a class="lnk" href="https://www.instagram.com/reel/DWYbXmrgFNe/" target="_blank" rel="noopener noreferrer">Instagramで見る</a>）</p>
 <a href="https://www.google.com/maps/search/?api=1&query=アガッタン+吾妻郡東吾妻町松谷868-1" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
 </div>
 </li>
@@ -412,17 +410,6 @@ document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'
 
 document.getElementById(tabId).classList.add('active');
 btn.classList.add('active');
-if (tabId === 'day3') { loadInstagramEmbed(); }
-}
-
-function loadInstagramEmbed() {
-if (window.instgrm && window.instgrm.Embeds) { window.instgrm.Embeds.process(); return; }
-if (window.__igEmbedLoading) { return; }
-window.__igEmbedLoading = true;
-var s = document.createElement('script');
-s.async = true;
-s.src = 'https://www.instagram.com/embed.js';
-document.body.appendChild(s);
 }
 
 function switchTabByCode(tabId) {
