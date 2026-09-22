@@ -163,6 +163,9 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .lsheet .acts{display:flex;gap:8px;margin-top:10px}
 .lsheet .acts button{flex:1;min-height:46px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit;font-weight:600;cursor:pointer}
 .lsheet .acts .pri{background:var(--route);border-color:var(--route);color:#fff}
+.vimg-wrap{position:relative;overflow:hidden;border-radius:10px;margin-bottom:6px;background:#000;touch-action:none;width:100%;height:min(65vh,520px)}
+.vimg-wrap img{width:100%;height:100%;object-fit:contain;display:block;transform-origin:0 0;will-change:transform;user-select:none;-webkit-user-drag:none}
+.vimg-hint{font-size:10.5px;color:var(--dim);text-align:center;margin:0 0 10px}
 .hero{position:relative;margin:0 0 4px;border-radius:8px;overflow:hidden}
 .hero img{display:block;width:100%;height:190px;object-fit:cover}
 .hero .hc{position:absolute;left:0;right:0;bottom:0;padding:28px 14px 9px;background:linear-gradient(transparent,rgba(20,28,40,.7));color:#fff}
@@ -426,11 +429,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <div class="card">
 <h4 style="margin-bottom:10px">写真を投稿する</h4>
 
-<div style="display:flex;gap:8px;margin-bottom:10px">
-<button type="button" id="memCaptureBtn" class="mem-btn" style="flex:1">📷 写真を撮る</button>
-<button type="button" id="memLibraryBtn" class="mem-btn" style="flex:1;background:var(--text)">🖼 ライブラリから選ぶ</button>
-</div>
-<input type="file" id="memFileCapture" accept="image/*" capture="environment" style="display:none">
+<button type="button" id="memLibraryBtn" class="mem-btn" style="width:100%;margin-bottom:10px">📷 写真を選ぶ</button>
 <input type="file" id="memFileLibrary" accept="image/*" multiple style="display:none">
 
 <div class="mem-grid" id="memPreview" style="display:none;margin-bottom:8px"></div>
@@ -1069,7 +1068,7 @@ function memEditSheet(name, caption){
 
 var elGate=$('memGate'), elGateInput=$('memPass'), elGateBtn=$('memUnlock'), elGateMsg=$('memGateMsg');
 var elApp=$('memApp');
-var elCaptureBtn=$('memCaptureBtn'), elLibraryBtn=$('memLibraryBtn'), elFileCapture=$('memFileCapture'), elFileLibrary=$('memFileLibrary');
+var elLibraryBtn=$('memLibraryBtn'), elFileLibrary=$('memFileLibrary');
 var elPreview=$('memPreview'), elSelCount=$('memSelCount');
 var elCaption=$('memCaption'), elDay=$('memDay'), elUploadBtn=$('memUploadBtn'), elUploadMsg=$('memUploadMsg');
 var elMapDiv=$('memMap'), elGrid=$('memGrid'), elEmpty=$('memEmpty'), elPickBtn=$('memPickBtn'), elPickStatus=$('memPickStatus');
@@ -1150,8 +1149,47 @@ function initAppOnce(){
   document.body.appendChild(elViewer);
   elViewer.addEventListener('click',function(e){if(e.target===elViewer)elViewer.hidden=true;});
 
+  /* ---- 写真をピンチ／ダブルタップで拡大できるようにする ---- */
+  function makeZoomable(wrap, img){
+    var scale=1, panX=0, panY=0, minScale=1, maxScale=5;
+    function apply(){ img.style.transform='translate('+panX+'px,'+panY+'px) scale('+scale+')'; }
+    function clampPan(){
+      if(scale<=1){ panX=0; panY=0; return; }
+      var maxX=(wrap.clientWidth*(scale-1))/2, maxY=(wrap.clientHeight*(scale-1))/2;
+      panX=Math.max(-maxX,Math.min(maxX,panX));
+      panY=Math.max(-maxY,Math.min(maxY,panY));
+    }
+    function reset(){ scale=1; panX=0; panY=0; apply(); }
+    function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
+    var startDist=0, startScale=1, dragging=false, dragStart={x:0,y:0}, lastTap=0;
+    wrap.addEventListener('dblclick', function(){ if(scale>1){reset();}else{scale=2.5;clampPan();apply();} });
+    wrap.addEventListener('touchstart', function(e){
+      if(e.touches.length===2){ startDist=dist(e.touches[0],e.touches[1]); startScale=scale; dragging=false; }
+      else if(e.touches.length===1){
+        var now=Date.now();
+        if(now-lastTap<300){ if(scale>1){reset();}else{scale=2.5;clampPan();apply();} }
+        lastTap=now;
+        dragging=scale>1;
+        dragStart={x:e.touches[0].clientX-panX, y:e.touches[0].clientY-panY};
+      }
+    }, {passive:true});
+    wrap.addEventListener('touchmove', function(e){
+      if(e.touches.length===2){
+        var d=dist(e.touches[0],e.touches[1]);
+        if(startDist>0){ scale=Math.min(maxScale, Math.max(minScale, startScale*(d/startDist))); clampPan(); apply(); }
+      }else if(e.touches.length===1 && dragging){
+        panX=e.touches[0].clientX-dragStart.x; panY=e.touches[0].clientY-dragStart.y;
+        clampPan(); apply();
+      }
+    }, {passive:true});
+    wrap.addEventListener('touchend', function(e){ if(e.touches.length===0){ dragging=false; startDist=0; if(scale<1.02) reset(); } });
+    return {reset:reset};
+  }
+
   function openViewer(it){
-    elViewer.innerHTML='<div class="lbox"><img src="'+it.url+'" style="width:100%;border-radius:10px;margin-bottom:10px;display:block">'
+    elViewer.innerHTML='<div class="lbox">'
+      +'<div class="vimg-wrap" id="memViewerImgWrap"><img src="'+it.url+'" id="memViewerImg" alt=""></div>'
+      +'<p class="vimg-hint">ピンチまたはダブルタップで拡大</p>'
       +'<h4>'+esc(it.name||'')+'</h4>'
       +(it.caption?'<p>'+esc(it.caption)+'</p>':'')
       +'<div class="acts">'
@@ -1160,6 +1198,8 @@ function initAppOnce(){
       +'<button type="button" class="pri" id="memViewerClose">閉じる</button>'
       +'</div></div>';
     elViewer.hidden=false;
+    var wrap=$('memViewerImgWrap'), img=$('memViewerImg');
+    if(wrap && img) makeZoomable(wrap, img);
     var b=$('memViewerClose'); if(b)b.addEventListener('click',function(){elViewer.hidden=true;});
     var bEdit=$('memViewerEdit');
     if(bEdit) bEdit.addEventListener('click', function(){
@@ -1322,15 +1362,10 @@ function initAppOnce(){
     });
     renderPreview();
   }
-  elCaptureBtn.addEventListener('click', function(){
-    elFileCapture.click();
-    primeDeviceLocation();
-  });
   elLibraryBtn.addEventListener('click', function(){
     elFileLibrary.click();
     primeDeviceLocation();
   });
-  elFileCapture.addEventListener('change', function(){ handleFilesSelected(elFileCapture.files); elFileCapture.value=''; });
   elFileLibrary.addEventListener('change', function(){ handleFilesSelected(elFileLibrary.files); elFileLibrary.value=''; });
 
   /* ---- 画像の縮小（EXIF回転補正込み。対応ブラウザのみ自動補正） ---- */
@@ -1435,7 +1470,7 @@ function initAppOnce(){
       bounds.push([it.lat,it.lng]);
       if(markers[it.id])return;
       var m=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="mem-pin"><img src="'+it.url+'" loading="lazy"></div>',iconSize:[36,36],iconAnchor:[18,36]})});
-      m.bindPopup('<div class="pp"><img src="'+it.url+'" style="width:100%;border-radius:6px;margin-bottom:6px;display:block"><strong>'+esc(it.name||'')+'</strong>'+(it.caption?'<div class="pp-n">'+esc(it.caption)+'</div>':'')+'</div>',{maxWidth:220});
+      m.on('click', function(){ openViewer(itemsById[it.id]||it); });
       m.addTo(map);
       markers[it.id]=m;
     });
