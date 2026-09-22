@@ -168,6 +168,24 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .hero .hc b{display:block;font-size:17px;letter-spacing:.06em;font-weight:600}
 .hero .hc span{font-size:12px;opacity:.92}
 .hero-cr{font-size:10px;color:#718096;margin:0 0 12px}
+
+/* ---- みんなの思い出 ---- */
+.mem-field{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;box-sizing:border-box;background:#fff;color:var(--text)}
+.mem-label{display:block;font-size:12px;color:var(--sub);margin:0 0 4px}
+.mem-msg{font-size:12px;margin:8px 0 0;min-height:1.2em}
+.mem-msg.err{color:#C53030}
+.mem-btn{background:var(--gold);color:#fff;border:0;padding:11px 16px;border-radius:6px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.mem-btn:disabled{opacity:.6}
+.mem-pickbtn{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--route);background:#EBF8FF;border:1px solid #BEE3F8;padding:6px 10px;border-radius:4px;font-weight:600;cursor:pointer}
+.mem-pickbtn.on{background:var(--route);color:#fff}
+#memMap{height:clamp(260px,50vh,420px);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;background:#E8E4DC}
+.mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.mem-thumb{position:relative;padding:0;border:0;background:var(--bg-accent);border-radius:6px;overflow:hidden;cursor:pointer;aspect-ratio:1/1}
+.mem-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.mem-nopin{position:absolute;right:3px;bottom:3px;font-size:9px;background:rgba(20,28,40,.65);color:#fff;padding:1px 5px;border-radius:3px}
+.mem-pin{width:36px;height:36px;border-radius:50% 50% 50% 0;background:#fff;border:3px solid var(--gold);transform:rotate(-45deg);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.mem-pin img{width:100%;height:100%;object-fit:cover;transform:rotate(45deg) scale(1.4)}
+.mem-empty{font-size:13px;color:var(--dim);text-align:center;padding:20px 0}
 </style>
 </head>
 <body>
@@ -187,6 +205,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <button class="tab-btn" onclick="switchTab(this, 'day3')">3日目</button>
 <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
 <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
+<button class="tab-btn" onclick="switchTab(this, 'memories')">📷 思い出</button>
 </nav>
 
 <!-- DAY 1 -->
@@ -378,6 +397,56 @@ html.map-locked,html.map-locked body{overflow:hidden}
 </div>
 </div>
 
+<!-- みんなの思い出 -->
+<div id="memories" class="tab-content">
+<div class="sec-h"><h3>みんなの思い出</h3></div>
+
+<div class="card" id="memGate">
+<p style="margin:0 0 10px">道中で撮った写真をアップロードすると、撮影場所が地図に並びます。合言葉を入力してください。</p>
+<div style="display:flex;gap:8px">
+<input type="password" id="memPass" class="mem-field" placeholder="合言葉" autocomplete="off">
+<button type="button" id="memUnlock" class="mem-btn" style="flex:none">開く</button>
+</div>
+<p id="memGateMsg" class="mem-msg err"></p>
+</div>
+
+<div id="memApp" style="display:none">
+
+<div class="card">
+<h4 style="margin-bottom:10px">写真を投稿する</h4>
+<label class="mem-label">お名前</label>
+<input type="text" id="memName" class="mem-field" placeholder="例：たけき" style="margin-bottom:10px">
+
+<label class="mem-label">写真</label>
+<input type="file" id="memFile" accept="image/*" style="width:100%;margin-bottom:8px">
+
+<button type="button" id="memPickBtn" class="mem-pickbtn">📍 地図で場所を指定</button>
+<p id="memPickStatus" class="mem-msg" style="color:var(--sub)"></p>
+
+<label class="mem-label" style="margin-top:6px">ひとこと（任意）</label>
+<textarea id="memCaption" class="mem-field" rows="2" maxlength="300" style="margin-bottom:10px;resize:vertical"></textarea>
+
+<select id="memDay" class="mem-field" style="margin-bottom:12px">
+<option value="">日程（任意）</option>
+<option value="d1">1日目</option>
+<option value="d2">2日目</option>
+<option value="d3">3日目</option>
+</select>
+
+<button type="button" id="memUploadBtn" class="mem-btn" style="width:100%">アップロード</button>
+<p id="memUploadMsg" class="mem-msg" style="color:var(--sub)"></p>
+</div>
+
+<div class="sec-h"><h3>地図で見る</h3></div>
+<div id="memMap" role="region" aria-label="思い出の地図"></div>
+
+<div class="sec-h"><h3>みんなの写真</h3></div>
+<div class="mem-grid" id="memGrid"></div>
+<p class="mem-empty" id="memEmpty" style="display:none">まだ写真がありません。最初の1枚を投稿してみましょう。</p>
+
+</div>
+</div>
+
 <!-- 精密広域マップ -->
 <section class="sec-h" id="map">
 <h3>ドライブ詳細ルートマップ</h3>
@@ -410,11 +479,12 @@ document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'
 
 document.getElementById(tabId).classList.add('active');
 btn.classList.add('active');
+if(tabId==='memories' && window.memMapInvalidate) window.memMapInvalidate();
 }
 
 function switchTabByCode(tabId) {
 const btns = document.querySelectorAll('.tab-btn');
-const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4};
+const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4, 'memories':5};
 if(targetMap[tabId] !== undefined) {
 switchTab(btns[targetMap[tabId]], tabId);
 }
@@ -901,6 +971,316 @@ apply(curF);
 
 apply('all');
 startMap();
+})();
+</script>
+
+<!-- ==== みんなの思い出（Firebase連携） ==== -->
+<script>
+(function(){
+'use strict';
+
+/* ===== 設定値（設定済み） =====
+   - firebaseConfig: Firebaseプロジェクト「TripPhotoSaveSystem」のWebアプリ設定値です。
+   - PASS_HASH: 合言葉「きたかんとう」のSHA-256ハッシュ値です。
+   - apiKey 等がソースに出ること自体は正常です（Firebaseの仕組み上、
+     Webアプリの設定値は公開情報です）。実際のアクセス制御は
+     Firestore / Storage のセキュリティルール側（匿名サインイン必須）で行います。
+===================================== */
+var TRIP_ID = 'kitakanto202611';
+var PASS_HASH = 'e29e2f66963bea747b3dcd3e35379b39fdb49e0114734e3ac005de6cffad768f';
+var firebaseConfig = {
+  apiKey: "AIzaSyA9IRYrJSnvYveqKcZn3yUWzICEDV4zg04",
+  authDomain: "tripphotosavesystem.firebaseapp.com",
+  projectId: "tripphotosavesystem",
+  storageBucket: "tripphotosavesystem.firebasestorage.app",
+  messagingSenderId: "129847832008",
+  appId: "1:129847832008:web:1c154e2f5418c626cb24fd"
+};
+/* ===================================== */
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.async=true;s.onload=res;s.onerror=function(){rej(new Error('load failed: '+src));};document.head.appendChild(s);});}
+function loadCss(href){return new Promise(function(res){var l=document.createElement('link');l.rel='stylesheet';l.href=href;l.onload=res;l.onerror=res;document.head.appendChild(l);});}
+
+var elGate=$('memGate'), elGateInput=$('memPass'), elGateBtn=$('memUnlock'), elGateMsg=$('memGateMsg');
+var elApp=$('memApp');
+var elName=$('memName'), elFile=$('memFile'), elCaption=$('memCaption'), elDay=$('memDay'), elUploadBtn=$('memUploadBtn'), elUploadMsg=$('memUploadMsg');
+var elMapDiv=$('memMap'), elGrid=$('memGrid'), elEmpty=$('memEmpty'), elPickBtn=$('memPickBtn'), elPickStatus=$('memPickStatus');
+
+if(!elGate){return;} /* このタブが無いページでは何もしない */
+
+var STORE_KEY_UNLOCK='mem_unlock_'+TRIP_ID;
+var STORE_KEY_NAME='mem_name';
+
+async function sha256hex(str){
+  var buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.prototype.map.call(new Uint8Array(buf), function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
+}
+
+/* ---- Firebase読み込み＆匿名サインイン ---- */
+var fbReady=null;
+function ensureFirebase(){
+  if(fbReady) return fbReady;
+  var v='10.14.1';
+  fbReady=loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-app-compat.js')
+    .then(function(){
+      return Promise.all([
+        loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-auth-compat.js'),
+        loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-firestore-compat.js'),
+        loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-storage-compat.js')
+      ]);
+    })
+    .then(function(){
+      firebase.initializeApp(firebaseConfig);
+      return firebase.auth().signInAnonymously();
+    });
+  return fbReady;
+}
+
+/* ---- 合言葉ゲート ---- */
+function unlockUI(){
+  elGate.style.display='none';
+  elApp.style.display='block';
+  try{
+    var savedName=localStorage.getItem(STORE_KEY_NAME);
+    if(savedName) elName.value=savedName;
+  }catch(e){}
+  initAppOnce();
+}
+function tryUnlock(pass){
+  elGateBtn.disabled=true; elGateMsg.textContent='確認中…';
+  sha256hex(pass).then(function(hash){
+    elGateBtn.disabled=false;
+    if(hash===PASS_HASH){
+      try{localStorage.setItem(STORE_KEY_UNLOCK,'1');}catch(e){}
+      elGateMsg.textContent='';
+      ensureFirebase().then(unlockUI).catch(function(){elGateMsg.textContent='読み込みに失敗しました。通信環境を確認してください。';});
+    }else{
+      elGateMsg.textContent='合言葉が違います。';
+    }
+  });
+}
+elGateBtn.addEventListener('click',function(){var v=elGateInput.value.trim();if(v)tryUnlock(v);});
+elGateInput.addEventListener('keydown',function(e){if(e.key==='Enter'){var v=elGateInput.value.trim();if(v)tryUnlock(v);}});
+try{
+  if(localStorage.getItem(STORE_KEY_UNLOCK)==='1'){
+    ensureFirebase().then(unlockUI).catch(function(){});
+  }
+}catch(e){}
+
+/* ---- アップロード＆ギャラリー（初期化は解錠後に一度だけ） ---- */
+var appInited=false;
+function initAppOnce(){
+  if(appInited)return; appInited=true;
+
+  var db=firebase.firestore();
+  var storage=firebase.storage();
+  var col=db.collection('trips').doc(TRIP_ID).collection('memories');
+
+  var pendingLoc=null;
+  var map=null, markers={}, pickMarker=null, pickMode=false, itemsById={};
+
+  var elViewer=document.createElement('div');
+  elViewer.className='lsheet'; elViewer.hidden=true;
+  document.body.appendChild(elViewer);
+  elViewer.addEventListener('click',function(e){if(e.target===elViewer)elViewer.hidden=true;});
+
+  function openViewer(it){
+    elViewer.innerHTML='<div class="lbox"><img src="'+it.url+'" style="width:100%;border-radius:10px;margin-bottom:10px;display:block">'
+      +'<h4>'+esc(it.name||'')+'</h4>'
+      +(it.caption?'<p>'+esc(it.caption)+'</p>':'')
+      +'<div class="acts">'
+      +'<button type="button" id="memViewerEdit">✏️ 編集</button>'
+      +'<button type="button" id="memViewerDelete">🗑 削除</button>'
+      +'<button type="button" class="pri" id="memViewerClose">閉じる</button>'
+      +'</div></div>';
+    elViewer.hidden=false;
+    var b=$('memViewerClose'); if(b)b.addEventListener('click',function(){elViewer.hidden=true;});
+    var bEdit=$('memViewerEdit');
+    if(bEdit) bEdit.addEventListener('click', function(){
+      var newName=prompt('名前', it.name||'');
+      if(newName===null) return;
+      var newCaption=prompt('コメント（任意）', it.caption||'');
+      if(newCaption===null) return;
+      newName=newName.trim().slice(0,40);
+      newCaption=newCaption.trim().slice(0,300);
+      bEdit.disabled=true;
+      col.doc(it.id).update({name:newName, caption:newCaption}).then(function(){
+        elViewer.hidden=true;
+      }).catch(function(err){
+        console.error(err);
+        bEdit.disabled=false;
+        alert('更新に失敗しました。通信環境を確認してもう一度お試しください。');
+      });
+    });
+    var bDelete=$('memViewerDelete');
+    if(bDelete) bDelete.addEventListener('click', function(){
+      if(!confirm('この写真を削除します。この操作は取り消せません。よろしいですか？')) return;
+      bDelete.disabled=true;
+      col.doc(it.id).delete().then(function(){
+        if(it.storagePath){ return storage.ref(it.storagePath).delete().catch(function(){/* ファイル削除は失敗しても無視 */}); }
+      }).then(function(){
+        elViewer.hidden=true;
+      }).catch(function(err){
+        console.error(err);
+        bDelete.disabled=false;
+        alert('削除に失敗しました。通信環境を確認してもう一度お試しください。');
+      });
+    });
+  }
+
+  function startMemMap(){
+    Promise.all([loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'), window.L?Promise.resolve():loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')]).then(function(){
+      map=L.map(elMapDiv,{scrollWheelZoom:false});
+      L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',{maxZoom:18,attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener noreferrer">地理院タイル</a>'}).addTo(map);
+      map.setView([36.65,139.2],9);
+      map.on('click',function(){map.scrollWheelZoom.enable();});
+      map.on('mouseout',function(){map.scrollWheelZoom.disable();});
+      map.on('click',function(e){ if(pickMode) setPick(e.latlng.lat,e.latlng.lng); });
+      window.memMapInvalidate=function(){ if(map) map.invalidateSize(); };
+      subscribeMemories();
+    }).catch(function(){elMapDiv.innerHTML='<p style="padding:16px;font-size:13px">地図を読み込めませんでした。下の一覧はご覧いただけます。</p>';});
+  }
+
+  function setPick(lat,lng){
+    pendingLoc={lat:lat,lng:lng,manual:true};
+    if(pickMarker)map.removeLayer(pickMarker);
+    pickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:#DD6B20">📍</div>',iconSize:[26,26],iconAnchor:[13,26]})}).addTo(map);
+    elPickStatus.textContent='地図上に仮ピンを置きました。この位置でアップロードします。';
+  }
+  elPickBtn.addEventListener('click',function(){
+    pickMode=!pickMode;
+    elPickBtn.classList.toggle('on',pickMode);
+    elPickStatus.textContent=pickMode?'地図をタップして撮影場所を指定してください。':'';
+  });
+
+  /* ---- EXIF位置情報の読み取り ---- */
+  var exifReady=null;
+  function ensureExifr(){
+    if(exifReady)return exifReady;
+    exifReady=loadScript('https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js');
+    return exifReady;
+  }
+  elFile.addEventListener('change', function(){
+    pendingLoc=null;
+    if(pickMarker && map){map.removeLayer(pickMarker);pickMarker=null;}
+    elPickStatus.textContent='';
+    var f=elFile.files&&elFile.files[0];
+    if(!f)return;
+    ensureExifr().then(function(){ return exifr.gps(f); }).then(function(gps){
+      if(gps && typeof gps.latitude==='number'){
+        pendingLoc={lat:gps.latitude,lng:gps.longitude,manual:false};
+        elPickStatus.textContent='写真から位置情報を読み取りました（'+gps.latitude.toFixed(4)+', '+gps.longitude.toFixed(4)+'）。';
+      }else{
+        elPickStatus.textContent='この写真に位置情報がありません。地図をタップして指定するか、そのまま投稿できます。';
+      }
+    }).catch(function(){
+      elPickStatus.textContent='位置情報の読み取りに失敗しました。地図で指定するか、そのまま投稿できます。';
+    });
+  });
+
+  /* ---- 画像の縮小（EXIF回転補正込み。対応ブラウザのみ自動補正） ---- */
+  function resizeImage(file, maxSize, quality){
+    var opt={};
+    try{ opt.imageOrientation='from-image'; }catch(e){}
+    return createImageBitmap(file, opt).then(function(bmp){
+      var scale=Math.min(1, maxSize/Math.max(bmp.width,bmp.height));
+      var dW=Math.max(1,Math.round(bmp.width*scale)), dH=Math.max(1,Math.round(bmp.height*scale));
+      var canvas=document.createElement('canvas');
+      canvas.width=dW; canvas.height=dH;
+      var ctx=canvas.getContext('2d');
+      ctx.drawImage(bmp,0,0,dW,dH);
+      return new Promise(function(resolve){canvas.toBlob(resolve,'image/jpeg',quality||0.82);});
+    });
+  }
+
+  /* ---- アップロード ---- */
+  elUploadBtn.addEventListener('click', function(){
+    var files=elFile.files;
+    if(!files || !files.length){ elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='写真を選んでください。'; return; }
+    var name=elName.value.trim();
+    if(!name){ elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='お名前を入力してください。'; return; }
+    try{localStorage.setItem(STORE_KEY_NAME,name);}catch(e){}
+    elUploadBtn.disabled=true;
+    elUploadMsg.className='mem-msg'; elUploadMsg.textContent='アップロード中…';
+    var f=files[0];
+    resizeImage(f, 1600, 0.82).then(function(blob){
+      var id=col.doc().id;
+      var path='trips/'+TRIP_ID+'/memories/'+id+'.jpg';
+      var ref=storage.ref().child(path);
+      return ref.put(blob, {contentType:'image/jpeg'}).then(function(){ return ref.getDownloadURL(); }).then(function(url){
+        var data={
+          name: name.slice(0,40),
+          caption: elCaption.value.trim().slice(0,300),
+          day: elDay.value || null,
+          storagePath: path,
+          url: url,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if(pendingLoc){ data.lat=pendingLoc.lat; data.lng=pendingLoc.lng; data.hasLoc=true; }
+        else { data.hasLoc=false; }
+        return col.doc(id).set(data);
+      });
+    }).then(function(){
+      elUploadMsg.className='mem-msg'; elUploadMsg.textContent='投稿しました！';
+      elFile.value=''; elCaption.value='';
+      pendingLoc=null; if(pickMarker && map){map.removeLayer(pickMarker);pickMarker=null;}
+      elPickStatus.textContent='';
+      elUploadBtn.disabled=false;
+    }).catch(function(err){
+      console.error(err);
+      elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='アップロードに失敗しました。通信環境を確認してもう一度お試しください。';
+      elUploadBtn.disabled=false;
+    });
+  });
+
+  /* ---- 一覧・地図へのリアルタイム反映 ---- */
+  function subscribeMemories(){
+    col.orderBy('createdAt','desc').limit(300).onSnapshot(function(snap){
+      var items=[];
+      snap.forEach(function(doc){ var d=doc.data(); d.id=doc.id; items.push(d); });
+      renderGrid(items);
+      renderPins(items);
+    }, function(err){
+      console.error(err);
+      elEmpty.style.display='block'; elEmpty.textContent='読み込みに失敗しました。';
+    });
+  }
+  function renderGrid(items){
+    itemsById={};
+    items.forEach(function(it){ itemsById[it.id]=it; });
+    if(!items.length){ elGrid.innerHTML=''; elEmpty.style.display='block'; elEmpty.textContent='まだ写真がありません。最初の1枚を投稿してみましょう。'; return; }
+    elEmpty.style.display='none';
+    elGrid.innerHTML=items.map(function(it){
+      return '<button type="button" class="mem-thumb" data-id="'+it.id+'"><img src="'+it.url+'" alt="" loading="lazy">'+(it.hasLoc?'':'<span class="mem-nopin">📍なし</span>')+'</button>';
+    }).join('');
+  }
+  elGrid.addEventListener('click', function(e){
+    var b=e.target.closest('button[data-id]'); if(!b)return;
+    var it=itemsById[b.getAttribute('data-id')]; if(it)openViewer(it);
+  });
+  function renderPins(items){
+    if(!map)return;
+    var stillThere={};
+    var bounds=[];
+    items.forEach(function(it){
+      if(!it.hasLoc)return;
+      stillThere[it.id]=true;
+      bounds.push([it.lat,it.lng]);
+      if(markers[it.id])return;
+      var m=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="mem-pin"><img src="'+it.url+'" loading="lazy"></div>',iconSize:[36,36],iconAnchor:[18,36]})});
+      m.bindPopup('<div class="pp"><img src="'+it.url+'" style="width:100%;border-radius:6px;margin-bottom:6px;display:block"><strong>'+esc(it.name||'')+'</strong>'+(it.caption?'<div class="pp-n">'+esc(it.caption)+'</div>':'')+'</div>',{maxWidth:220});
+      m.addTo(map);
+      markers[it.id]=m;
+    });
+    Object.keys(markers).forEach(function(id){ if(!stillThere[id]){ map.removeLayer(markers[id]); delete markers[id]; } });
+    if(bounds.length) map.fitBounds(bounds,{padding:[30,30],maxZoom:14});
+  }
+
+  startMemMap();
+}
+
 })();
 </script>
 </body>
