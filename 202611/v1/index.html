@@ -170,7 +170,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .hero .hc span{font-size:12px;opacity:.92}
 .hero-cr{font-size:10px;color:#718096;margin:0 0 12px}
 
-/* ---- みんなの思い出 ---- */
+/* ---- 写真共有 ---- */
 .mem-field{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;box-sizing:border-box;background:#fff;color:var(--text)}
 .mem-label{display:block;font-size:12px;color:var(--sub);margin:0 0 4px}
 .mem-msg{font-size:12px;margin:8px 0 0;min-height:1.2em}
@@ -184,6 +184,15 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .mem-thumb{position:relative;padding:0;border:0;background:var(--bg-accent);border-radius:6px;overflow:hidden;cursor:pointer;aspect-ratio:1/1}
 .mem-thumb img{width:100%;height:100%;object-fit:cover;display:block}
 .mem-nopin{position:absolute;right:3px;bottom:3px;font-size:9px;background:rgba(20,28,40,.65);color:#fff;padding:1px 5px;border-radius:3px}
+.mem-thumb .rm{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(20,28,40,.65);color:#fff;font-size:13px;line-height:20px;text-align:center;border:0;padding:0;cursor:pointer;z-index:2}
+.mem-thumb .locbadge{position:absolute;left:3px;bottom:3px;font-size:9px;background:rgba(20,28,40,.65);color:#fff;padding:1px 5px;border-radius:3px}
+.mem-sheet{position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;background:rgba(31,42,56,.45)}
+.mem-sheet .mbox{width:100%;max-width:480px;max-height:88vh;max-height:88dvh;overflow:auto;background:var(--bg-card);border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2);font-size:13.5px;line-height:1.75;color:var(--text);letter-spacing:.02em}
+.mem-sheet h4{margin:0 0 10px;font-size:16px}
+.mem-sheet .acts{display:flex;gap:8px;margin-top:14px}
+.mem-sheet .acts button{flex:1;min-height:46px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit;font-weight:600;cursor:pointer}
+.mem-sheet .acts .pri{background:var(--route);border-color:var(--route);color:#fff}
+.mem-sheet .acts .danger{background:#C53030;border-color:#C53030;color:#fff}
 .mem-pin{width:36px;height:36px;border-radius:50% 50% 50% 0;background:#fff;border:3px solid var(--gold);transform:rotate(-45deg);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .mem-pin img{width:100%;height:100%;object-fit:cover;transform:rotate(45deg) scale(1.4)}
 .mem-empty{font-size:13px;color:var(--dim);text-align:center;padding:20px 0}
@@ -197,7 +206,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <p class="kicker">Trip Schedule ｜ 鬼怒川・草津・伊香保</p>
 <h1>北関東旅行</h1>
 <p class="date">2026.11.21(土) - 11.23(月・祝)</p>
-<a href="javascript:void(0)" onclick="switchTabByCode('memories')" class="mem-quicklink">📷 思い出だけ</a>
+<a href="javascript:void(0)" onclick="switchTabByCode('memories')" class="mem-quicklink">📷 写真を共有する</a>
 </header>
 
 <!-- タブUI -->
@@ -207,7 +216,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <button class="tab-btn" onclick="switchTab(this, 'day3')">3日目</button>
 <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
 <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
-<button class="tab-btn" onclick="switchTab(this, 'memories')">📷 思い出</button>
+<button class="tab-btn" onclick="switchTab(this, 'memories')">📷 写真共有</button>
 </nav>
 
 <!-- DAY 1 -->
@@ -399,9 +408,9 @@ html.map-locked,html.map-locked body{overflow:hidden}
 </div>
 </div>
 
-<!-- みんなの思い出 -->
+<!-- 写真共有 -->
 <div id="memories" class="tab-content">
-<div class="sec-h"><h3>みんなの思い出</h3></div>
+<div class="sec-h"><h3>写真共有</h3></div>
 
 <div class="card" id="memGate">
 <p style="margin:0 0 10px">道中で撮った写真をアップロードすると、撮影場所が地図に並びます。合言葉を入力してください。</p>
@@ -416,8 +425,16 @@ html.map-locked,html.map-locked body{overflow:hidden}
 
 <div class="card">
 <h4 style="margin-bottom:10px">写真を投稿する</h4>
-<label class="mem-label">写真</label>
-<input type="file" id="memFile" accept="image/*" style="width:100%;margin-bottom:8px">
+
+<div style="display:flex;gap:8px;margin-bottom:10px">
+<button type="button" id="memCaptureBtn" class="mem-btn" style="flex:1">📷 写真を撮る</button>
+<button type="button" id="memLibraryBtn" class="mem-btn" style="flex:1;background:var(--text)">🖼 ライブラリから選ぶ</button>
+</div>
+<input type="file" id="memFileCapture" accept="image/*" capture="environment" style="display:none">
+<input type="file" id="memFileLibrary" accept="image/*" multiple style="display:none">
+
+<div class="mem-grid" id="memPreview" style="display:none;margin-bottom:8px"></div>
+<p id="memSelCount" class="mem-msg" style="color:var(--sub)"></p>
 
 <div id="memSaveWrap" style="display:none;margin-bottom:8px">
 <button type="button" id="memSaveBtn" class="mem-pickbtn">📥 iPhoneに保存</button>
@@ -426,7 +443,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <button type="button" id="memPickBtn" class="mem-pickbtn">📍 地図で場所を指定</button>
 <p id="memPickStatus" class="mem-msg" style="color:var(--sub)"></p>
 
-<label class="mem-label" style="margin-top:6px">ひとこと（任意）</label>
+<label class="mem-label" style="margin-top:6px">ひとこと（任意・まとめて投稿する写真に共通で入ります）</label>
 <textarea id="memCaption" class="mem-field" rows="2" maxlength="300" style="margin-bottom:10px;resize:vertical"></textarea>
 
 <select id="memDay" class="mem-field" style="margin-bottom:12px">
@@ -441,7 +458,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 </div>
 
 <div class="sec-h"><h3>地図で見る</h3></div>
-<div id="memMap" role="region" aria-label="思い出の地図"></div>
+<div id="memMap" role="region" aria-label="写真共有の地図"></div>
 
 <div class="sec-h"><h3>みんなの写真</h3></div>
 <div class="mem-grid" id="memGrid"></div>
@@ -977,7 +994,7 @@ startMap();
 })();
 </script>
 
-<!-- ==== みんなの思い出（Firebase連携） ==== -->
+<!-- ==== 写真共有（Firebase連携） ==== -->
 <script>
 (function(){
 'use strict';
@@ -1006,9 +1023,55 @@ function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
 function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.async=true;s.onload=res;s.onerror=function(){rej(new Error('load failed: '+src));};document.head.appendChild(s);});}
 function loadCss(href){return new Promise(function(res){var l=document.createElement('link');l.rel='stylesheet';l.href=href;l.onload=res;l.onerror=res;document.head.appendChild(l);});}
 
+/* ---- 独自の確認/入力/通知シート（ブラウザ標準のprompt/confirm/alertは
+   サイトのアドレスが表示されてしまうため使わない） ---- */
+function memSheet(innerHtml){
+  var el=document.createElement('div');
+  el.className='mem-sheet';
+  el.innerHTML='<div class="mbox">'+innerHtml+'</div>';
+  document.body.appendChild(el);
+  function close(){ if(el.parentNode) el.parentNode.removeChild(el); }
+  el.addEventListener('click',function(e){ if(e.target===el) close(); });
+  return {el:el, close:close};
+}
+function memAlert(msg){
+  var s=memSheet('<p>'+esc(msg)+'</p><div class="acts"><button type="button" class="pri" id="memAlertOk">OK</button></div>');
+  s.el.querySelector('#memAlertOk').addEventListener('click', s.close);
+}
+function memConfirm(msg, okLabel){
+  return new Promise(function(resolve){
+    var s=memSheet('<p>'+esc(msg)+'</p><div class="acts"><button type="button" id="memConfCancel">キャンセル</button><button type="button" class="danger" id="memConfOk">'+esc(okLabel||'OK')+'</button></div>');
+    s.el.querySelector('#memConfCancel').addEventListener('click', function(){ s.close(); resolve(false); });
+    s.el.querySelector('#memConfOk').addEventListener('click', function(){ s.close(); resolve(true); });
+  });
+}
+function memEditSheet(name, caption){
+  return new Promise(function(resolve){
+    var s=memSheet(
+      '<h4>編集</h4>'+
+      '<label class="mem-label">お名前（任意）</label>'+
+      '<input type="text" id="memEditName" class="mem-field" style="margin-bottom:10px">'+
+      '<label class="mem-label">ひとこと（任意）</label>'+
+      '<textarea id="memEditCaption" class="mem-field" rows="2" maxlength="300" style="resize:vertical"></textarea>'+
+      '<div class="acts"><button type="button" id="memEditCancel">キャンセル</button><button type="button" class="pri" id="memEditSave">保存</button></div>'
+    );
+    s.el.querySelector('#memEditName').value=name||'';
+    s.el.querySelector('#memEditCaption').value=caption||'';
+    s.el.querySelector('#memEditCancel').addEventListener('click', function(){ s.close(); resolve(null); });
+    s.el.querySelector('#memEditSave').addEventListener('click', function(){
+      var n=s.el.querySelector('#memEditName').value.trim().slice(0,40);
+      var c=s.el.querySelector('#memEditCaption').value.trim().slice(0,300);
+      s.close();
+      resolve({name:n, caption:c});
+    });
+  });
+}
+
 var elGate=$('memGate'), elGateInput=$('memPass'), elGateBtn=$('memUnlock'), elGateMsg=$('memGateMsg');
 var elApp=$('memApp');
-var elFile=$('memFile'), elCaption=$('memCaption'), elDay=$('memDay'), elUploadBtn=$('memUploadBtn'), elUploadMsg=$('memUploadMsg');
+var elCaptureBtn=$('memCaptureBtn'), elLibraryBtn=$('memLibraryBtn'), elFileCapture=$('memFileCapture'), elFileLibrary=$('memFileLibrary');
+var elPreview=$('memPreview'), elSelCount=$('memSelCount');
+var elCaption=$('memCaption'), elDay=$('memDay'), elUploadBtn=$('memUploadBtn'), elUploadMsg=$('memUploadMsg');
 var elMapDiv=$('memMap'), elGrid=$('memGrid'), elEmpty=$('memEmpty'), elPickBtn=$('memPickBtn'), elPickStatus=$('memPickStatus');
 var elSaveWrap=$('memSaveWrap'), elSaveBtn=$('memSaveBtn');
 
@@ -1077,7 +1140,9 @@ function initAppOnce(){
   var storage=firebase.storage();
   var col=db.collection('trips').doc(TRIP_ID).collection('memories');
 
-  var pendingLoc=null;
+  var selected=[]; /* アップロード待ちの写真: {file,url,loc,locStatus} */
+  var batchManualLoc=null; /* 地図タップで指定した位置（位置情報が無い写真に使う） */
+  var deviceLocPromise=null; /* 撮影/選択ボタンを押した瞬間に取得を始める現在地 */
   var map=null, markers={}, pickMarker=null, pickMode=false, itemsById={};
 
   var elViewer=document.createElement('div');
@@ -1098,33 +1163,32 @@ function initAppOnce(){
     var b=$('memViewerClose'); if(b)b.addEventListener('click',function(){elViewer.hidden=true;});
     var bEdit=$('memViewerEdit');
     if(bEdit) bEdit.addEventListener('click', function(){
-      var newName=prompt('名前', it.name||'');
-      if(newName===null) return;
-      var newCaption=prompt('コメント（任意）', it.caption||'');
-      if(newCaption===null) return;
-      newName=newName.trim().slice(0,40);
-      newCaption=newCaption.trim().slice(0,300);
-      bEdit.disabled=true;
-      col.doc(it.id).update({name:newName, caption:newCaption}).then(function(){
-        elViewer.hidden=true;
-      }).catch(function(err){
-        console.error(err);
-        bEdit.disabled=false;
-        alert('更新に失敗しました。通信環境を確認してもう一度お試しください。');
+      memEditSheet(it.name, it.caption).then(function(res){
+        if(res===null) return;
+        bEdit.disabled=true;
+        col.doc(it.id).update({name:res.name, caption:res.caption}).then(function(){
+          elViewer.hidden=true;
+        }).catch(function(err){
+          console.error(err);
+          bEdit.disabled=false;
+          memAlert('更新に失敗しました。通信環境を確認してもう一度お試しください。');
+        });
       });
     });
     var bDelete=$('memViewerDelete');
     if(bDelete) bDelete.addEventListener('click', function(){
-      if(!confirm('この写真を削除します。この操作は取り消せません。よろしいですか？')) return;
-      bDelete.disabled=true;
-      col.doc(it.id).delete().then(function(){
-        if(it.storagePath){ return storage.ref(it.storagePath).delete().catch(function(){/* ファイル削除は失敗しても無視 */}); }
-      }).then(function(){
-        elViewer.hidden=true;
-      }).catch(function(err){
-        console.error(err);
-        bDelete.disabled=false;
-        alert('削除に失敗しました。通信環境を確認してもう一度お試しください。');
+      memConfirm('この写真を削除します。この操作は取り消せません。よろしいですか？','削除する').then(function(ok){
+        if(!ok) return;
+        bDelete.disabled=true;
+        col.doc(it.id).delete().then(function(){
+          if(it.storagePath){ return storage.ref(it.storagePath).delete().catch(function(){/* ファイル削除は失敗しても無視 */}); }
+        }).then(function(){
+          elViewer.hidden=true;
+        }).catch(function(err){
+          console.error(err);
+          bDelete.disabled=false;
+          memAlert('削除に失敗しました。通信環境を確認してもう一度お試しください。');
+        });
       });
     });
   }
@@ -1143,10 +1207,11 @@ function initAppOnce(){
   }
 
   function setPick(lat,lng){
-    pendingLoc={lat:lat,lng:lng,manual:true};
+    batchManualLoc={lat:lat,lng:lng};
     if(pickMarker)map.removeLayer(pickMarker);
     pickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:#DD6B20">📍</div>',iconSize:[26,26],iconAnchor:[13,26]})}).addTo(map);
-    elPickStatus.textContent='地図上に仮ピンを置きました。この位置でアップロードします。';
+    elPickStatus.textContent='地図上に仮ピンを置きました。位置情報のない写真にはこの場所を使います。';
+    renderPreview();
   }
   elPickBtn.addEventListener('click',function(){
     pickMode=!pickMode;
@@ -1157,21 +1222,25 @@ function initAppOnce(){
   /* ---- 写真を端末（iPhone）にも保存 ---- */
   if(elSaveBtn){
     elSaveBtn.addEventListener('click', function(){
-      var f=elFile.files&&elFile.files[0];
-      if(!f)return;
-      if(navigator.share && navigator.canShare && navigator.canShare({files:[f]})){
-        navigator.share({files:[f], title:f.name||'思い出の写真'}).catch(function(){});
+      var files=selected.map(function(s){return s.file;});
+      if(!files.length)return;
+      if(navigator.share && navigator.canShare && navigator.canShare({files:files})){
+        navigator.share({files:files, title:'写真'}).catch(function(){});
       }else{
-        var url=URL.createObjectURL(f);
-        var a=document.createElement('a');
-        a.href=url; a.download=f.name||'photo.jpg';
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        setTimeout(function(){URL.revokeObjectURL(url);},4000);
+        files.forEach(function(f,i){
+          setTimeout(function(){
+            var url=URL.createObjectURL(f);
+            var a=document.createElement('a');
+            a.href=url; a.download=f.name||('photo'+(i+1)+'.jpg');
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            setTimeout(function(){URL.revokeObjectURL(url);},4000);
+          }, i*300);
+        });
       }
     });
   }
 
-  /* ---- EXIF位置情報の読み取り（取れない場合は現在地で代用） ---- */
+  /* ---- 位置情報の取得: EXIF→ダメなら現在地 ---- */
   var exifReady=null;
   function ensureExifr(){
     if(exifReady)return exifReady;
@@ -1186,31 +1255,83 @@ function initAppOnce(){
       }, function(){ resolve(null); }, {enableHighAccuracy:true, timeout:8000, maximumAge:120000});
     });
   }
-  elFile.addEventListener('change', function(){
-    pendingLoc=null;
-    if(pickMarker && map){map.removeLayer(pickMarker);pickMarker=null;}
-    var f=elFile.files&&elFile.files[0];
-    if(elSaveWrap) elSaveWrap.style.display = f ? 'block' : 'none';
-    if(!f){elPickStatus.textContent='';return;}
-    elPickStatus.textContent='位置情報を確認しています…';
-    ensureExifr().then(function(){ return exifr.gps(f); }).catch(function(){ return null; }).then(function(gps){
+  /* 撮る/選ぶボタンを押した「その瞬間」に現在地の取得を始める。
+     EXIF確認などを待ってから位置情報を求めると、iOSでは許可ダイアログが
+     ボタン操作から離れすぎて出ないことがあるため、必ずタップ直後に呼ぶ。 */
+  function primeDeviceLocation(){
+    deviceLocPromise = tryDeviceLocation();
+    return deviceLocPromise;
+  }
+
+  /* ---- 選択中の写真のプレビュー ---- */
+  function badgeFor(s){
+    if(s.locStatus==='checking') return '確認中…';
+    if(s.locStatus==='exif') return '📍写真';
+    if(s.locStatus==='device') return '📍現在地';
+    if(s.locStatus==='none' && batchManualLoc) return '📍地図指定';
+    return '位置情報なし';
+  }
+  function renderPreview(){
+    if(!elPreview) return;
+    if(!selected.length){
+      elPreview.style.display='none'; elPreview.innerHTML='';
+      if(elSelCount) elSelCount.textContent='';
+      if(elSaveWrap) elSaveWrap.style.display='none';
+      return;
+    }
+    elPreview.style.display='grid';
+    elPreview.innerHTML = selected.map(function(s,i){
+      return '<div class="mem-thumb"><img src="'+s.url+'" alt=""><span class="locbadge">'+esc(badgeFor(s))+'</span><button type="button" class="rm" data-idx="'+i+'" aria-label="削除">×</button></div>';
+    }).join('');
+    if(elSelCount) elSelCount.textContent=selected.length+'枚選択中';
+    if(elSaveWrap) elSaveWrap.style.display='block';
+  }
+  if(elPreview){
+    elPreview.addEventListener('click', function(e){
+      var b=e.target.closest('button.rm'); if(!b)return;
+      var i=parseInt(b.getAttribute('data-idx'),10);
+      if(!isNaN(i) && selected[i]){ try{URL.revokeObjectURL(selected[i].url);}catch(e2){} selected.splice(i,1); renderPreview(); }
+    });
+  }
+
+  function resolveFileLocation(item){
+    ensureExifr().then(function(){ return exifr.gps(item.file); }).catch(function(){ return null; }).then(function(gps){
       if(gps && typeof gps.latitude==='number'){
-        pendingLoc={lat:gps.latitude,lng:gps.longitude,manual:false};
-        elPickStatus.textContent='写真から位置情報を読み取りました（'+gps.latitude.toFixed(4)+', '+gps.longitude.toFixed(4)+'）。';
+        item.loc={lat:gps.latitude,lng:gps.longitude};
+        item.locStatus='exif';
+        renderPreview();
         return;
       }
       /* iPhoneのSafariは写真のEXIF位置情報を渡す前に消してしまうことが多いため、
-         その場合は許可を得たうえで「今いる場所」を代わりに使う */
-      return tryDeviceLocation().then(function(loc){
-        if(loc){
-          pendingLoc={lat:loc.lat,lng:loc.lng,manual:false};
-          elPickStatus.textContent='現在地を位置情報として設定しました（'+loc.lat.toFixed(4)+', '+loc.lng.toFixed(4)+'）。違う場合は地図をタップして直せます。';
-        }else{
-          elPickStatus.textContent='位置情報を取得できませんでした。地図をタップして指定するか、そのまま投稿できます。';
-        }
+         その場合は撮影/選択ボタンを押した時点から取得していた現在地を代わりに使う */
+      var lp = deviceLocPromise || tryDeviceLocation();
+      return lp.then(function(loc){
+        if(loc){ item.loc=loc; item.locStatus='device'; }
+        else { item.locStatus='none'; }
+        renderPreview();
       });
     });
+  }
+  function handleFilesSelected(fileList){
+    var files=Array.prototype.slice.call(fileList||[]);
+    if(!files.length) return;
+    files.forEach(function(f){
+      var item={file:f, url:URL.createObjectURL(f), loc:null, locStatus:'checking'};
+      selected.push(item);
+      resolveFileLocation(item);
+    });
+    renderPreview();
+  }
+  elCaptureBtn.addEventListener('click', function(){
+    elFileCapture.click();
+    primeDeviceLocation();
   });
+  elLibraryBtn.addEventListener('click', function(){
+    elFileLibrary.click();
+    primeDeviceLocation();
+  });
+  elFileCapture.addEventListener('change', function(){ handleFilesSelected(elFileCapture.files); elFileCapture.value=''; });
+  elFileLibrary.addEventListener('change', function(){ handleFilesSelected(elFileLibrary.files); elFileLibrary.value=''; });
 
   /* ---- 画像の縮小（EXIF回転補正込み。対応ブラウザのみ自動補正） ---- */
   function resizeImage(file, maxSize, quality){
@@ -1227,41 +1348,55 @@ function initAppOnce(){
     });
   }
 
-  /* ---- アップロード ---- */
+  /* ---- アップロード（複数枚まとめて） ---- */
   elUploadBtn.addEventListener('click', function(){
-    var files=elFile.files;
-    if(!files || !files.length){ elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='写真を選んでください。'; return; }
+    if(!selected.length){ elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='写真を選んでください。'; return; }
     elUploadBtn.disabled=true;
-    elUploadMsg.className='mem-msg'; elUploadMsg.textContent='アップロード中…';
-    var f=files[0];
-    resizeImage(f, 1600, 0.82).then(function(blob){
-      var id=col.doc().id;
-      var path='trips/'+TRIP_ID+'/memories/'+id+'.jpg';
-      var ref=storage.ref().child(path);
-      return ref.put(blob, {contentType:'image/jpeg'}).then(function(){ return ref.getDownloadURL(); }).then(function(url){
-        var data={
-          name: '',
-          caption: elCaption.value.trim().slice(0,300),
-          day: elDay.value || null,
-          storagePath: path,
-          url: url,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        };
-        if(pendingLoc){ data.lat=pendingLoc.lat; data.lng=pendingLoc.lng; data.hasLoc=true; }
-        else { data.hasLoc=false; }
-        return col.doc(id).set(data);
+    var items=selected.slice();
+    var total=items.length, done=0, failed=0;
+    var caption=elCaption.value.trim().slice(0,300);
+    var day=elDay.value || null;
+    elUploadMsg.className='mem-msg'; elUploadMsg.textContent='アップロード中…（0/'+total+'）';
+    var tasks=items.map(function(s){
+      return resizeImage(s.file, 1600, 0.82).then(function(blob){
+        var id=col.doc().id;
+        var path='trips/'+TRIP_ID+'/memories/'+id+'.jpg';
+        var ref=storage.ref().child(path);
+        return ref.put(blob, {contentType:'image/jpeg'}).then(function(){ return ref.getDownloadURL(); }).then(function(url){
+          var loc = s.loc || (s.locStatus==='none' ? batchManualLoc : null);
+          var data={
+            name: '',
+            caption: caption,
+            day: day,
+            storagePath: path,
+            url: url,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          };
+          if(loc){ data.lat=loc.lat; data.lng=loc.lng; data.hasLoc=true; }
+          else { data.hasLoc=false; }
+          return col.doc(id).set(data);
+        });
+      }).then(function(){
+        done++; elUploadMsg.textContent='アップロード中…（'+done+'/'+total+'）';
+      }).catch(function(err){
+        console.error(err); failed++; done++; elUploadMsg.textContent='アップロード中…（'+done+'/'+total+'）';
       });
-    }).then(function(){
-      elUploadMsg.className='mem-msg'; elUploadMsg.textContent='投稿しました！';
-      elFile.value=''; elCaption.value='';
-      if(elSaveWrap) elSaveWrap.style.display='none';
-      pendingLoc=null; if(pickMarker && map){map.removeLayer(pickMarker);pickMarker=null;}
+    });
+    Promise.all(tasks).then(function(){
+      selected.forEach(function(s){ try{URL.revokeObjectURL(s.url);}catch(e){} });
+      selected=[]; batchManualLoc=null;
+      renderPreview();
+      elCaption.value='';
+      if(pickMarker && map){map.removeLayer(pickMarker);pickMarker=null;}
       elPickStatus.textContent='';
       elUploadBtn.disabled=false;
-    }).catch(function(err){
-      console.error(err);
-      elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='アップロードに失敗しました。通信環境を確認してもう一度お試しください。';
-      elUploadBtn.disabled=false;
+      if(failed){
+        elUploadMsg.className='mem-msg err';
+        elUploadMsg.textContent=(total-failed)+'/'+total+'枚を投稿しました。'+failed+'枚は失敗しました。通信環境を確認してもう一度お試しください。';
+      }else{
+        elUploadMsg.className='mem-msg';
+        elUploadMsg.textContent=(total>1?total+'枚投稿しました！':'投稿しました！');
+      }
     });
   });
 
