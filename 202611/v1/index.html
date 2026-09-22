@@ -207,6 +207,18 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .mem-pin{width:36px;height:36px;border-radius:50% 50% 50% 0;background:#fff;border:3px solid var(--gold);transform:rotate(-45deg);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .mem-pin img{width:100%;height:100%;object-fit:cover;transform:rotate(45deg) scale(1.4)}
 .mem-empty{font-size:13px;color:var(--dim);text-align:center;padding:20px 0}
+
+/* ---- アップデート内容 ---- */
+.changelog{margin:0 20px 24px;padding:10px 12px;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;font-size:12.5px;line-height:1.65;color:var(--sub)}
+.changelog details{margin:0}
+.changelog summary{cursor:pointer;font-size:14px;color:var(--text);font-weight:600;padding:2px 0}
+.changelog details[open] summary{margin-bottom:8px}
+.changelog .v{display:inline-block;font:700 11px var(--f-num);color:var(--gold);border:1px solid var(--gold);padding:0 6px;border-radius:2px;margin-right:6px}
+.changelog ul{list-style:none;margin:0;padding:0}
+.changelog li{padding:8px 0;border-bottom:1px dashed var(--line)}
+.changelog li:last-child{border-bottom:0}
+.changelog .d{font-size:10.5px;color:var(--dim);margin-right:2px}
+.changelog .t{display:block;margin-top:3px;color:var(--sub);font-size:12.5px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -520,6 +532,40 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <div id="daySum"></div>
 <ul class="stop-list" id="stopList"></ul>
 </div>
+</div>
+<!-- アップデート内容 -->
+<div class="changelog">
+<details>
+<summary>アップデート内容<span class="hint">（タップで開く）</span></summary>
+<ul>
+<li><span class="v">v1.25</span><span class="d">9/22</span><span class="t">詳細ボックスのデザインを統一(タップで開く表記・おすすめバッジを共通化)</span></li>
+<li><span class="v">v1.24</span><span class="d">9/22</span><span class="t">1日目の昼食に佐野SA(下り)のおすすめ情報を追加(タップで開く・Googleマップ中継地点指定ボタン付き)</span></li>
+<li><span class="v">v1.23</span><span class="d">9/22</span><span class="t">1日目に「昼食(各自)」を追加、Airbnbの宿泊ルールを折りたたみ表示に変更</span></li>
+<li><span class="v">v1.22</span><span class="d">9/22</span><span class="t">位置情報なしの写真に「現在地を使う」ボタンを追加、写真共有の地図ピンを最大7色でランダムに色分け</span></li>
+<li><span class="v">v1.21</span><span class="d">9/22</span><span class="t">タブを左右スワイプで切り替えられるように対応</span></li>
+<li><span class="v">v1.20</span><span class="d">9/22</span><span class="t">撮影ボタンを削除し選ぶのみに、地図上の写真をタップで拡大表示(ピンチ/ダブルタップズーム対応)</span></li>
+<li><span class="v">v1.19</span><span class="d">9/22</span><span class="t">写真共有にリネーム、一括アップロード対応、撮る/選ぶボタン追加、位置情報取得を強化、編集・削除ダイアログを自前実装に変更</span></li>
+<li><span class="v">v1.18</span><span class="d">9/22</span><span class="t">名前入力を削除、位置情報取得を改善(EXIF失敗時は現在地)、保存ボタン追加</span></li>
+<li><span class="v">v1.17</span><span class="d">9/22</span><span class="t">合言葉を1121に変更、タブバー修正、思い出だけリンク追加</span></li>
+<li><span class="v">v1.16</span><span class="d">9/22</span><span class="t">ファイルを追加</span></li>
+<li><span class="v">v1.15</span><span class="d">9/22</span><span class="t">「あがったん」のInstagram動画埋め込みを削除</span></li>
+<li><span class="v">v1.14</span><span class="d">9/22</span><span class="t">3日目タブ表示中のみ読み込むよう変更し、Instagram埋め込みの表示崩れを修正</span></li>
+<li><span class="v">v1.13</span><span class="d">9/22</span><span class="t">「あがったん」の写真を差し替え、動画をInstagramリールに変更</span></li>
+<li><span class="v">v1.12</span><span class="d">9/22</span><span class="t">湯畑カード・2日目ヒーロー写真・西の河原の写真を更新</span></li>
+<li><span class="v">v1.11</span><span class="d">9/22</span><span class="t">1日目のヒーロー写真とライン下りの写真を更新</span></li>
+<li><span class="v">v1.10</span><span class="d">9/22</span><span class="t">草津タブに簡易マップ画像を埋め込み、フルサイズPDFへのリンクを追加</span></li>
+<li><span class="v">v1.9</span><span class="d">9/22</span><span class="t">3日目の昼食スポットにうどんの写真を追加</span></li>
+<li><span class="v">v1.8</span><span class="d">9/21</span><span class="t">各日の冒頭に風景写真(ヒーロー画像)を追加</span></li>
+<li><span class="v">v1.7</span><span class="d">9/21</span><span class="t">2日目をチェックイン優先の構成に変更、モデルルート・湯もみ動画・フッターを削除、位置情報許可の案内シートを追加</span></li>
+<li><span class="v">v1.6</span><span class="d">9/21</span><span class="t">タイトルを「北関東旅行」に変更、写真・動画・万葉亭のおすすめ・お土産リンクを追加</span></li>
+<li><span class="v">v1.5</span><span class="d">9/21</span><span class="t">1日目の宿泊情報(Airbnb)を追加、地図のピン・ルートを更新</span></li>
+<li><span class="v">v1.4</span><span class="d">9/21</span><span class="t">未使用のGoogleマップAPIコードを削除し、地理院地図/OSMベースの地図に整理</span></li>
+<li><span class="v">v1.3</span><span class="d">9/21</span><span class="t">地図にGoogleマップ対応・現在地表示・全画面表示・高さ調整・ピンの拡大縮小を追加</span></li>
+<li><span class="v">v1.2</span><span class="d">9/21</span><span class="t">地図をLeafletによるインタラクティブ地図に変更(実際の走行ルートを表示)</span></li>
+<li><span class="v">v1.1</span><span class="d">9/21</span><span class="t">内容を更新</span></li>
+<li><span class="v">v1.0</span><span class="d">9/21</span><span class="t">初版公開</span></li>
+</ul>
+</details>
 </div>
 
 <script>
