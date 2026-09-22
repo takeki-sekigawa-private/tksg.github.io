@@ -508,6 +508,38 @@ if(targetMap[tabId] !== undefined) {
 switchTab(btns[targetMap[tabId]], tabId);
 }
 }
+
+/* ---- スワイプでタブ切り替え ---- */
+(function(){
+var TAB_ORDER=['day1','day2','day3','kusatsu','info','memories'];
+/* 地図（Leafletのドラッグ操作）・モーダル・入力欄の上でのスワイプはタブ切り替えの対象外にする */
+var EXCLUDE_SEL='.leaflet-container, .tab-nav, .lsheet, .mem-sheet, input, textarea, select';
+var startX=0, startY=0, startT=0, tracking=false;
+document.addEventListener('touchstart', function(e){
+if(e.touches.length!==1){ tracking=false; return; }
+var t=e.target;
+if(t && t.closest && t.closest(EXCLUDE_SEL)){ tracking=false; return; }
+tracking=true;
+startX=e.touches[0].clientX; startY=e.touches[0].clientY; startT=Date.now();
+}, {passive:true});
+document.addEventListener('touchend', function(e){
+if(!tracking) return;
+tracking=false;
+var touch=e.changedTouches && e.changedTouches[0];
+if(!touch) return;
+var dx=touch.clientX-startX, dy=touch.clientY-startY, dt=Date.now()-startT;
+if(dt>700) return;
+if(Math.abs(dx)<60) return;
+if(Math.abs(dx) < Math.abs(dy)*1.5) return;
+var cur=document.querySelector('.tab-content.active');
+var curId=cur?cur.id:TAB_ORDER[0];
+var idx=TAB_ORDER.indexOf(curId);
+if(idx<0) return;
+var next = dx<0 ? idx+1 : idx-1;
+if(next<0 || next>=TAB_ORDER.length) return;
+switchTabByCode(TAB_ORDER[next]);
+}, {passive:true});
+})();
 </script>
 
 <script>
