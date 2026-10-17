@@ -15,6 +15,13 @@
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#F5F3EF">
 <title>北関東旅行</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="北関東旅行">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Zen+Kurenaido&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
@@ -228,6 +235,80 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .changelog li:last-child{border-bottom:0}
 .changelog .d{font-size:10.5px;color:var(--dim);margin-right:2px}
 .changelog .t{display:block;margin-top:3px;color:var(--sub);font-size:12.5px;line-height:1.6}
+
+/* ---- 今日の見どころ・天気 (v1.25) ---- */
+.today{background:var(--bg-card);border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:8px 0 18px}
+.today-k{font:700 11px/1.4 var(--f-num);letter-spacing:.14em;color:var(--gold);margin:0 0 8px}
+.hl{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.hl li{display:flex;gap:9px;align-items:center;font-size:13.5px;line-height:1.5;color:var(--text)}
+.hl .ic{flex:none;width:28px;height:28px;border-radius:50%;background:var(--bg-accent);display:flex;align-items:center;justify-content:center;font-size:15px}
+.wx{display:flex;align-items:center;gap:12px;margin-top:11px;padding-top:11px;border-top:1px dashed var(--line);min-height:44px}
+.wx .wi{font-size:30px;line-height:1;flex:none}
+.wx .wb{flex:1;min-width:0}
+.wx .wt{font:700 15px/1.3 var(--f-num);color:var(--text)}
+.wx .wt .hi{color:#C05621}
+.wx .wt .lo{color:var(--route)}
+.wx .wd{font-size:11.5px;color:var(--sub);line-height:1.5}
+.wx-tip{font-size:12px;color:var(--sub);background:#FFFAF0;border:1px solid #FBD38D;border-radius:6px;padding:6px 9px;margin-top:9px;line-height:1.55}
+.tl li.is-done{opacity:.45}
+.tl li.is-next .bd h4::before{content:"NEXT";display:inline-block;font:700 10px/1 var(--f-num);letter-spacing:.1em;color:#fff;background:#C05621;padding:3px 6px;border-radius:3px;margin-right:6px;vertical-align:2px}
+.tl li.is-next .rl::before{background:#C05621!important;box-shadow:0 0 0 4px rgba(192,86,33,.2)}
+
+/* ---- 次の予定バー ---- */
+.nextbar{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+.nextbar[hidden]{display:none}
+.nb{pointer-events:auto;width:100%;max-width:420px;display:flex;align-items:center;gap:8px;background:rgba(31,42,56,.95);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);color:#fff;border-radius:14px;padding:9px 8px 9px 14px;box-shadow:0 8px 24px rgba(0,0,0,.28)}
+.nb-main{flex:1;min-width:0;cursor:pointer;background:none;border:0;color:inherit;text-align:left;font:inherit;padding:0;letter-spacing:.03em}
+.nb-k{display:block;font:700 10.5px/1.4 var(--f-num);letter-spacing:.1em;color:#F6C98B}
+.nb-t{display:block;font-size:14.5px;font-weight:600;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nb-s{display:block;font-size:11px;opacity:.8;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nb-go{flex:none;background:var(--gold);color:#fff;border-radius:10px;padding:10px 12px;font-size:12.5px;font-weight:600;white-space:nowrap;border:0;font-family:inherit;cursor:pointer}
+.nb-x{flex:none;background:none;border:0;color:#fff;opacity:.55;font-size:18px;line-height:1;padding:6px 4px;cursor:pointer}
+body.has-nextbar{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
+html.map-locked .nextbar{display:none}
+
+/* ---- 旅のビンゴ ---- */
+.bg-intro{font-size:13px;color:var(--sub);margin:0 0 12px;text-align:center}
+.bingo{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:0 0 12px}
+.bg-cell{aspect-ratio:1/1;position:relative;border:1px solid var(--line);background:var(--bg-card);border-radius:10px;padding:6px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:inherit;font-size:11.5px;line-height:1.35;letter-spacing:.02em;color:var(--text);cursor:pointer;text-align:center;transition:transform .15s,background .2s;-webkit-tap-highlight-color:transparent;overflow:hidden}
+.bg-cell .e{font-size:26px;line-height:1}
+.bg-cell.free{border:1.5px dashed var(--gold)}
+.bg-cell:active{transform:scale(.95)}
+.bg-cell.on{background:#FFF7EA;border-color:var(--gold)}
+.bg-cell.on .e,.bg-cell.on .tx{opacity:.7}
+.bg-cell.on::after{content:"達成";position:absolute;top:5px;right:5px;width:38px;height:38px;transform:rotate(-14deg);border:2.5px solid rgba(197,48,48,.85);border-radius:50%;background:rgba(255,255,255,.85);color:rgba(197,48,48,.95);font:700 12px/1 var(--f-hand);display:flex;align-items:center;justify-content:center;letter-spacing:.1em;animation:stamp .35s ease-out}
+.bg-cell.line{background:#FCE3C4;border:2px solid #C05621;box-shadow:0 0 0 3px rgba(192,86,33,.15)}
+@keyframes stamp{0%{transform:rotate(-14deg) scale(2);opacity:0}100%{transform:rotate(-14deg) scale(1);opacity:1}}
+.bg-stat{display:flex;justify-content:center;gap:18px;font-size:13px;color:var(--sub);margin:0 0 12px}
+.bg-stat b{font:700 20px var(--f-num);color:var(--gold);margin:0 2px}
+.bg-reset{display:block;margin:4px auto 0;background:none;border:0;color:var(--dim);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
+.bg-celebrate{position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(31,42,56,.5);overflow:hidden}
+.bg-celebrate .bx{position:relative;z-index:2;background:#fff;border-radius:16px;padding:22px 22px 18px;width:min(86vw,340px);text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+.bg-celebrate .big{font:700 34px/1.1 var(--f-num);letter-spacing:.08em;color:#C05621;margin:0 0 6px}
+.bg-celebrate p{font-size:13.5px;color:var(--sub);margin:0 0 14px}
+.bg-celebrate .acts{display:flex;gap:8px}
+.bg-celebrate .acts button{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:600;color:var(--text);cursor:pointer}
+.bg-celebrate .acts .pri{background:var(--gold);border-color:var(--gold);color:#fff}
+.cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards;z-index:1}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* ---- ホーム画面追加・オフライン・割り勘 ---- */
+.install{display:none;align-items:center;gap:10px;margin:14px auto 0;max-width:380px;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:9px 10px 9px 12px;font-size:12px;line-height:1.55;color:var(--sub)}
+.install.show{display:flex}
+.install .ii{font-size:20px;flex:none}
+.install .it{flex:1}
+.install .it b{display:block;color:var(--text);font-size:12.5px}
+.install button{flex:none;font:inherit;font-size:12px;font-weight:600;border-radius:8px;border:0;cursor:pointer}
+.install .ib{background:var(--gold);color:#fff;padding:7px 10px}
+.install .ix{background:none;color:var(--dim);font-size:16px;padding:2px 4px}
+.offline-pill{position:fixed;top:calc(8px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:950;background:#1F2A38;color:#fff;font-size:12px;padding:5px 12px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.offline-pill[hidden]{display:none}
+.quicklinks{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.warica-card{display:flex;align-items:center;gap:12px;text-decoration:none}
+.warica-card .wi{font-size:26px}
+.warica-card .wt b{display:block;color:var(--text);font-size:14.5px}
+.warica-card .wt span{font-size:12px;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -238,7 +319,12 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <p class="kicker">Trip Schedule ｜ 鬼怒川・草津・伊香保</p>
 <h1>北関東旅行</h1>
 <p class="date">2026.11.21(土) - 11.23(月・祝)</p>
+<div class="quicklinks">
 <a href="javascript:void(0)" onclick="switchTabByCode('memories')" class="mem-quicklink">📷 写真を共有する</a>
+<a href="javascript:void(0)" onclick="switchTabByCode('bingo')" class="mem-quicklink">🎯 旅のビンゴ</a>
+<a href="#" data-walica target="_blank" rel="noopener noreferrer" class="mem-quicklink" hidden style="display:none">💴 割り勘</a>
+</div>
+<div class="install" id="installHint"><span class="ii">📲</span><span class="it"></span><button type="button" class="ib" hidden>追加</button><button type="button" class="ix" aria-label="閉じる">×</button></div>
 </header>
 
 <!-- タブUI -->
@@ -248,12 +334,14 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <button class="tab-btn" onclick="switchTab(this, 'day3')">3日目</button>
 <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
 <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
+<button class="tab-btn" onclick="switchTab(this, 'bingo')">🎯 ビンゴ</button>
 <button class="tab-btn" onclick="switchTab(this, 'memories')">📷 写真共有</button>
 </nav>
 
 <!-- DAY 1 -->
 <div id="day1" class="tab-content active">
 <figure class="hero"><img src="https://static.gltjp.com/glt/data/article/21000/20481/20231016_145611_8547d946_w1920.webp" alt="鬼怒川温泉の渓谷と紅葉"><figcaption class="hc"><b>1日目 11/21(土)</b><span>品川 → 鬼怒川</span></figcaption></figure>
+<section class="today" data-day="day1" aria-label="今日の見どころと天気"><p class="today-k">TODAY'S HIGHLIGHTS ｜ 今日の見どころ</p><ul class="hl"><li><span class="ic">🚣</span>貸切船で鬼怒川の渓谷をくだる</li><li><span class="ic">🚂</span>目の前を走るSL大樹を見ながらテラスBBQ</li><li><span class="ic">🏠</span>17人泊まれる一軒家をまるごと貸切</li></ul><div class="wx" aria-live="polite"></div></section>
 <ol class="tl">
 <li class="stop">
 <div class="tm">10:00</div><div class="rl"></div>
@@ -326,6 +414,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <!-- DAY 2 -->
 <div id="day2" class="tab-content">
 <figure class="hero"><img src="https://img.rurubu.jp/img_srw/andmore/images/0000656965/A3400wctND9UFqlVTkYoG9FhkfGIA3x09NXeZ0mL.jpg" alt="草津温泉のご当地スナック"><figcaption class="hc"><b>2日目 11/22(日)</b><span>鬼怒川 → 草津</span></figcaption></figure>
+<section class="today" data-day="day2" aria-label="今日の見どころと天気"><p class="today-k">TODAY'S HIGHLIGHTS ｜ 今日の見どころ</p><ul class="hl"><li><span class="ic">♨️</span>毎分4,000Lが湧き出る湯畑を散策</li><li><span class="ic">🪵</span>名物「湯もみと踊り」ショー（15:30〜）</li><li><span class="ic">🌙</span>夜の湯畑はライトアップで幻想的に</li></ul><div class="wx" aria-live="polite"></div></section>
 <ol class="tl">
 <li class="stop">
 <div class="tm">09:00</div><div class="rl"></div>
@@ -360,6 +449,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <div id="day3" class="tab-content">
 <figure class="hero"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ikaho%20Onsen%20steps%20from%20above.jpg?width=1000" alt="伊香保温泉 石段街"><figcaption class="hc"><b>3日目 11/23(月・祝)</b><span>草津 → 吾妻峡 → 伊香保 → 品川</span></figcaption></figure>
 <p class="hero-cr">写真: NMaia / CC BY-SA 4.0 / Wikimedia Commons（伊香保温泉 石段街）</p>
+<section class="today" data-day="day3" aria-label="今日の見どころと天気"><p class="today-k">TODAY'S HIGHLIGHTS ｜ 今日の見どころ</p><ul class="hl"><li><span class="ic">🚲</span>吾妻峡の線路をレールバイクで走る</li><li><span class="ic">🍜</span>コシの強い水沢うどんでランチ</li><li><span class="ic">⛩️</span>伊香保の石段街をのんびり散策</li></ul><div class="wx" aria-live="polite"></div></section>
 <ol class="tl">
 <li class="stop">
 <div class="tm">09:45</div><div class="rl"></div>
@@ -429,6 +519,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 
 <!-- 持ち物＆お土産 -->
 <div id="info" class="tab-content">
+<a class="card warica-card" data-walica href="#" target="_blank" rel="noopener noreferrer" hidden style="display:none"><span class="wi">💴</span><span class="wt"><b>旅費の割り勘（Walica）</b><span>立て替えた高速代・ガソリン・BBQ食材などを記録して、最後にまとめて精算</span></span></a>
 <div class="sec-h">
 <h3>持ち物チェックリスト</h3>
 </div>
@@ -458,6 +549,16 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <h4>伊香保温泉</h4>
 <p><strong>・水沢うどん</strong>（半生麺パックはお土産に最適）<br><strong><a class="lnk" href="https://www.shougetsudo.net/" target="_blank" rel="noopener noreferrer">・勝月堂の湯の花まんじゅう</a></strong>（温泉饅頭発祥の店）</p>
 </div>
+</div>
+
+<!-- 旅のビンゴ -->
+<div id="bingo" class="tab-content">
+<div class="sec-h"><h3>🎯 旅のビンゴ</h3></div>
+<p class="bg-intro">ミッションを達成したらマスをタップ。<br>縦・横・ななめに3つそろえばビンゴ！</p>
+<div class="bg-stat"><span>達成<b id="bingoDone">0</b>/ 9</span><span>ビンゴ<b id="bingoLines">0</b>列</span></div>
+<div class="bingo" id="bingoGrid" role="group" aria-label="旅のビンゴ"></div>
+<p class="map-note" style="text-align:center">達成の記録はこの端末に保存されます。証拠写真は「📷 写真共有」へどうぞ。</p>
+<button type="button" class="bg-reset" id="bingoReset">リセット</button>
 </div>
 
 <!-- 写真共有 -->
@@ -542,11 +643,14 @@ html.map-locked,html.map-locked body{overflow:hidden}
 <ul class="stop-list" id="stopList"></ul>
 </div>
 </div>
+<div class="nextbar" id="nextBar" hidden><div class="nb"><button type="button" class="nb-main"><span class="nb-k"></span><span class="nb-t"></span><span class="nb-s"></span></button><button type="button" class="nb-go"></button><button type="button" class="nb-x" aria-label="今日は閉じる">×</button></div></div>
+<div class="offline-pill" id="offlinePill" hidden>📴 オフライン表示中（保存済みの内容）</div>
 <!-- アップデート内容 -->
 <div class="changelog">
 <details>
 <summary>アップデート内容<span class="hint">（タップで開く）</span></summary>
 <ul>
+<li><span class="v">v1.25</span><span class="d">10/17</span><span class="t">各日の冒頭に「今日の見どころ」と天気予報を追加、画面下に「次の予定」バー(カウントダウン・ナビ)を追加、旅のビンゴタブを追加、持ち物チェックを端末に保存、ホーム画面への追加とオフライン表示に対応</span></li>
 <li><span class="v">v1.24</span><span class="d">9/22</span><span class="t">1日目の昼食に佐野SA(下り)のおすすめ情報を追加(タップで開く・Googleマップ中継地点指定ボタン付き)</span></li>
 <li><span class="v">v1.23</span><span class="d">9/22</span><span class="t">1日目に「昼食(各自)」を追加、Airbnbの宿泊ルールを折りたたみ表示に変更</span></li>
 <li><span class="v">v1.22</span><span class="d">9/22</span><span class="t">位置情報なしの写真に「現在地を使う」ボタンを追加、写真共有の地図ピンを最大7色でランダムに色分け</span></li>
@@ -596,7 +700,7 @@ switchTab(btns[targetMap[tabId]], tabId);
 
 /* ---- スワイプでタブ切り替え ---- */
 (function(){
-var TAB_ORDER=['day1','day2','day3','kusatsu','info','memories'];
+var TAB_ORDER=Array.prototype.map.call(document.querySelectorAll('.tab-content'),function(el){return el.id;});
 /* 地図（Leafletのドラッグ操作）・モーダル・入力欄の上でのスワイプはタブ切り替えの対象外にする */
 var EXCLUDE_SEL='.leaflet-container, .tab-nav, .lsheet, .mem-sheet, input, textarea, select';
 var startX=0, startY=0, startT=0, tracking=false;
@@ -1621,6 +1725,264 @@ function initAppOnce(){
   startMemMap();
 }
 
+})();
+</script>
+<script>
+/* ===== v1.25: 今日の見どころ天気 / 次の予定バー / 旅のビンゴ / ホーム画面追加・オフライン ===== */
+(function(){
+'use strict';
+var WALICA_URL=''; /* 割り勘グループ（Walica）のURL。空なら割り勘リンクは非表示 */
+var TRIP_ID='kitakanto202611';
+
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');}
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function track(name,params){try{if(window.gtag)gtag('event',name,params||{});}catch(e){}}
+
+/* テスト用: ?now=2026-11-21T13:00 で現在時刻を上書き */
+var NOW_OVERRIDE=(function(){var m=location.search.match(/[?&]now=([^&]+)/);if(!m)return null;var d=new Date(decodeURIComponent(m[1])+'+09:00');return isNaN(d)?null:d;})();
+var OVERRIDE_BASE=Date.now();
+function now(){return NOW_OVERRIDE?new Date(NOW_OVERRIDE.getTime()+(Date.now()-OVERRIDE_BASE)):new Date();}
+function jst(dateStr,hm){return new Date(dateStr+'T'+(hm||'00:00')+':00+09:00');}
+function ymd(d){var j=new Date(d.getTime()+9*3600e3);return j.toISOString().slice(0,10);}
+
+var DAYS=[
+ {id:'day1',date:'2026-11-21',label:'1日目',place:'鬼怒川',lat:36.818,lon:139.712,norm:{hi:11,lo:1}},
+ {id:'day2',date:'2026-11-22',label:'2日目',place:'草津',lat:36.623,lon:138.597,norm:{hi:7,lo:-2}},
+ {id:'day3',date:'2026-11-23',label:'3日目',place:'伊香保',lat:36.497,lon:138.921,norm:{hi:10,lo:2}}
+];
+
+/* ---------- タブ切り替え（全タブ共通） ---------- */
+window.switchTabByCode=function(tabId){
+ var btn=document.querySelector('.tab-btn[onclick*="\''+tabId+'\'"]');
+ if(btn&&$(tabId))switchTab(btn,tabId);
+};
+var _sw=window.switchTab;
+window.switchTab=function(btn,tabId){_sw(btn,tabId);try{btn.scrollIntoView({block:'nearest',inline:'center'});}catch(e){}track('tab_view',{tab:tabId});};
+
+/* ---------- 天気予報 ---------- */
+var WMO=function(c){
+ if(c===0)return['☀️','快晴'];if(c===1)return['🌤️','晴れ'];if(c===2)return['⛅','晴れ時々くもり'];if(c===3)return['☁️','くもり'];
+ if(c===45||c===48)return['🌫️','霧'];if(c>=51&&c<=57)return['🌦️','霧雨'];if(c>=61&&c<=67)return['🌧️','雨'];
+ if(c>=71&&c<=77)return['🌨️','雪'];if(c>=80&&c<=82)return['🌦️','にわか雨'];if(c===85||c===86)return['🌨️','にわか雪'];
+ if(c>=95)return['⛈️','雷雨'];return['🌡️','—'];
+};
+function tipFor(hi,lo,pop,code,place){
+ var t=[];
+ if(code>=71&&code<=86&&!(code>=80&&code<=82))t.push('❄️ 雪の予報です。山道の路面凍結に注意し、冬タイヤ・チェーンを確認しましょう');
+ else if(lo<=0)t.push('🧤 朝晩は氷点下。手袋・ニット帽・厚手の上着があると安心です');
+ else if(lo<=4)t.push('🧥 朝晩は冷え込みます。上着を1枚多めに');
+ if(pop!=null&&pop>=50)t.push('☂️ 降水確率'+pop+'%。折りたたみ傘を忘れずに');
+ return t.join('<br>');
+}
+function renderWx(day,el,data,isForecast){
+ var hi=Math.round(data.hi),lo=Math.round(data.lo),w=isForecast?WMO(data.code):['🍂','11月下旬の目安'];
+ var sub=isForecast?(day.place+'の予報 ・ '+w[1]+(data.pop!=null?' ・ 降水'+data.pop+'%':'')+(data.at?'<br>更新 '+data.at:''))
+   :(day.place+' ・ 例年の気温の目安です<br>天気予報は11/6ごろから自動で表示されます');
+ el.innerHTML='<span class="wi">'+w[0]+'</span><div class="wb"><div class="wt"><span class="hi">'+hi+'℃</span> / <span class="lo">'+lo+'℃</span></div><div class="wd">'+sub+'</div></div>';
+ var tip=tipFor(hi,lo,isForecast?data.pop:null,isForecast?data.code:-1,day.place);
+ var tipEl=el.parentNode.querySelector('.wx-tip');
+ if(tip){if(!tipEl){tipEl=document.createElement('div');tipEl.className='wx-tip';el.parentNode.appendChild(tipEl);}tipEl.innerHTML=tip;}
+ else if(tipEl)tipEl.remove();
+}
+function loadWeather(){
+ DAYS.forEach(function(day){
+  var el=document.querySelector('.today[data-day="'+day.id+'"] .wx');if(!el)return;
+  var key='wx_'+TRIP_ID+'_'+day.id,cached=null;
+  try{cached=JSON.parse(lsGet(key)||'null');}catch(e){}
+  if(cached)renderWx(day,el,cached,true);else renderWx(day,el,day.norm,false);
+  var daysAhead=(jst(day.date)-jst(ymd(now())))/864e5;
+  if(daysAhead<0||daysAhead>15)return; /* 予報は16日先まで */
+  if(cached&&Date.now()-(cached.ts||0)<3*3600e3)return;
+  var url='https://api.open-meteo.com/v1/forecast?latitude='+day.lat+'&longitude='+day.lon+'&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&start_date='+day.date+'&end_date='+day.date;
+  fetch(url).then(function(r){if(!r.ok)throw 0;return r.json();}).then(function(j){
+   var d=j.daily;if(!d||!d.time||!d.time.length||d.temperature_2m_max[0]==null)return;
+   var t=new Date(),at=(t.getMonth()+1)+'/'+t.getDate()+' '+t.getHours()+':'+('0'+t.getMinutes()).slice(-2);
+   var data={hi:d.temperature_2m_max[0],lo:d.temperature_2m_min[0],code:d.weather_code[0],pop:d.precipitation_probability_max?d.precipitation_probability_max[0]:null,at:at,ts:Date.now()};
+   lsSet(key,JSON.stringify(data));renderWx(day,el,data,true);
+  }).catch(function(){});
+ });
+}
+
+/* ---------- 次の予定バー ---------- */
+var EVENTS=[];
+function collectEvents(){
+ DAYS.forEach(function(day,di){
+  var lis=document.querySelectorAll('#'+day.id+' .tl > li');
+  Array.prototype.forEach.call(lis,function(li){
+   var tm=(li.querySelector('.tm')||{}).textContent,h=li.querySelector('.bd h4');
+   if(!tm||!h||!/^\d{1,2}:\d{2}$/.test(tm.trim()))return;
+   var a=li.querySelector('.bd > a.gmap-btn')||li.querySelector('.lodge-btns a[href*="google.com/maps"]');
+   EVENTS.push({day:day,di:di,li:li,hm:tm.trim(),t:jst(day.date,('0'+tm.trim()).slice(-5)),title:h.textContent.trim(),nav:a?a.href:null});
+  });
+ });
+ EVENTS.forEach(function(e,i){
+  if(!e.nav){var n=EVENTS[i+1];if(n&&n.nav)e.navNext=n;}
+ });
+}
+function fmtDur(ms){var m=Math.max(0,Math.round(ms/60000));if(m<60)return m+'分';var h=Math.floor(m/60);m=m%60;return h+'時間'+(m?m+'分':'');}
+var barClosedKey='nextbar_closed_'+TRIP_ID;
+function renderBar(){
+ var bar=$('nextBar');if(!bar||!EVENTS.length)return;
+ var n=now(),first=EVENTS[0],last=EVENTS[EVENTS.length-1];
+ var next=null,cur=null;
+ for(var i=0;i<EVENTS.length;i++){if(EVENTS[i].t>n){next=EVENTS[i];break;}cur=EVENTS[i];}
+ /* タイムラインのハイライト */
+ EVENTS.forEach(function(e){e.li.classList.remove('is-next','is-done');});
+ var tripOn=n>=jst(first.day.date)&&n<jst('2026-11-24');
+ if(tripOn){EVENTS.forEach(function(e){if(e.t<=n&&e!==cur)e.li.classList.add('is-done');});if(next&&ymd(next.t)===ymd(n))next.li.classList.add('is-next');}
+ var k,t,s,goLabel,goAct,target;
+ if(n<jst(first.day.date)){
+  var dd=Math.round((jst(first.day.date)-jst(ymd(n)))/864e5);
+  k='COUNTDOWN ・ 出発まで あと '+dd+' 日';
+  t='🚗 11/21(土) '+first.hm+' '+first.title;
+  s=dd<=7?'持ち物チェックと天気予報の確認を忘れずに':'鬼怒川・草津・伊香保をめぐる2泊3日';
+  goLabel=dd<=7?'持ち物':'1日目へ';goAct=dd<=7?function(){switchTabByCode('info');scrollTo(0,0);}:function(){jump(first);};target=first;
+ }else if(next){
+  var same=ymd(next.t)===ymd(n);
+  var dt=next.t-n;
+  if(next===first)k='まもなく出発 ・ あと '+fmtDur(dt);
+  else if(same)k='NEXT ・ あと '+fmtDur(dt);
+  var free=!same&&cur&&ymd(cur.t)===ymd(n)&&new Date(n.getTime()+9*3600e3).getUTCHours()<18;
+  if(!same)k=free?'このあとは自由時間 ✨ 次の予定は明日':'おつかれさま！ 明日の最初の予定';
+  t=(same?'':'明日 ')+next.hm+' '+next.title;
+  s=cur&&cur!==next&&(same||free)?'いま：'+cur.title:(same?next.day.label+' '+next.day.place+'方面':'明日もたのしもう 🌙');
+  target=next;
+  var navTo=next.nav?next:(next.navNext||null);
+  if(navTo&&same){goLabel='🧭 ナビ';goAct=function(){track('nextbar_nav',{to:navTo.title});window.open(navTo.nav,'_blank','noopener');};}
+  else if(free&&cur.day.id==='day2'){goLabel='草津ガイド';goAct=function(){switchTabByCode('kusatsu');scrollTo(0,0);};}
+  else{goLabel='予定を見る';goAct=function(){jump(next);};}
+ }else{
+  var home=n<jst('2026-11-24');
+  k=home?'帰り道も安全運転で 🚗':'おかえりなさい！';
+  t=home?'旅のビンゴ、いくつ揃った？':'みんなの写真で旅を振り返ろう';
+  s='📷 写真共有に思い出をアップしよう';
+  goLabel=home?'ビンゴ':'写真を見る';goAct=function(){switchTabByCode(home?'bingo':'memories');scrollTo(0,0);};target=null;
+ }
+ bar.querySelector('.nb-k').textContent=k;
+ bar.querySelector('.nb-t').textContent=t;
+ bar.querySelector('.nb-s').textContent=s;
+ var go=bar.querySelector('.nb-go');go.textContent=goLabel;go.onclick=goAct;
+ bar.querySelector('.nb-main').onclick=function(){if(target)jump(target);else goAct();};
+ if(lsGet(barClosedKey)===ymd(n)){bar.hidden=true;document.body.classList.remove('has-nextbar');}
+ else{bar.hidden=false;document.body.classList.add('has-nextbar');}
+}
+function jump(ev){
+ switchTabByCode(ev.day.id);
+ setTimeout(function(){var r=ev.li.getBoundingClientRect();window.scrollTo({top:window.pageYOffset+r.top-90,behavior:'smooth'});},30);
+}
+function initBar(){
+ var bar=$('nextBar');if(!bar)return;
+ bar.querySelector('.nb-x').addEventListener('click',function(){lsSet(barClosedKey,ymd(now()));bar.hidden=true;document.body.classList.remove('has-nextbar');});
+ collectEvents();renderBar();
+ setInterval(renderBar,30000);
+ document.addEventListener('visibilitychange',function(){if(!document.hidden)renderBar();});
+ /* 旅行当日は、その日のタブを自動で開く */
+ var today=ymd(now());
+ DAYS.forEach(function(d){if(d.date===today&&!location.hash)switchTabByCode(d.id);});
+}
+
+/* ---------- 旅のビンゴ ---------- */
+var MISSIONS=[
+ {e:'🚂',t:'SL大樹を<br>写真に撮る'},
+ {e:'🚣',t:'ライン下りで<br>渓谷を満喫'},
+ {e:'🍜',t:'佐野ラーメン<br>を食べる'},
+ {e:'🍖',t:'テラスBBQで<br>かんぱい'},
+ {e:'♨️',t:'湯畑の前で<br>全員集合写真',free:true},
+ {e:'🪵',t:'湯もみショー<br>を見る'},
+ {e:'🍡',t:'温泉まんじゅう<br>食べ比べ'},
+ {e:'🚲',t:'アガッタンで<br>鉄橋を渡る'},
+ {e:'⛩️',t:'伊香保の石段<br>を上りきる'}
+];
+var LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+var BKEY='bingo_'+TRIP_ID;
+function bState(){var s=null;try{s=JSON.parse(lsGet(BKEY)||'null');}catch(e){}return Array.isArray(s)&&s.length===9?s:[0,0,0,0,0,0,0,0,0];}
+function bLines(s){return LINES.filter(function(l){return l.every(function(i){return s[i];});});}
+function renderBingo(){
+ var box=$('bingoGrid');if(!box)return;
+ var s=bState(),lines=bLines(s),inLine={};
+ lines.forEach(function(l){l.forEach(function(i){inLine[i]=1;});});
+ box.innerHTML=MISSIONS.map(function(m,i){
+  return '<button type="button" class="bg-cell'+(m.free?' free':'')+(s[i]?' on':'')+(inLine[i]?' line':'')+'" data-i="'+i+'" aria-pressed="'+(s[i]?'true':'false')+'"><span class="e">'+m.e+'</span><span class="tx">'+m.t+'</span></button>';
+ }).join('');
+ $('bingoDone').textContent=s.filter(Boolean).length;
+ $('bingoLines').textContent=lines.length;
+}
+function celebrate(title,msg){
+ var el=document.createElement('div');el.className='bg-celebrate';
+ var colors=['#C05621','#B78A52','#2B6CB0','#38A169','#D53F8C','#ECC94B'],cf='';
+ for(var i=0;i<60;i++){cf+='<i class="cf" style="left:'+(Math.random()*100)+'%;background:'+colors[i%colors.length]+';animation-duration:'+(1.8+Math.random()*1.8)+'s;animation-delay:'+(Math.random()*.6)+'s"></i>';}
+ el.innerHTML=cf+'<div class="bx"><div class="big">'+title+'</div><p>'+msg+'</p><div class="acts"><button type="button" class="cl">とじる</button><button type="button" class="pri ph">📷 写真を投稿</button></div></div>';
+ document.body.appendChild(el);
+ function close(){if(el.parentNode)el.parentNode.removeChild(el);}
+ el.addEventListener('click',function(e){if(e.target===el)close();});
+ el.querySelector('.cl').addEventListener('click',close);
+ el.querySelector('.ph').addEventListener('click',function(){close();switchTabByCode('memories');scrollTo(0,0);});
+ if(navigator.vibrate)try{navigator.vibrate([60,40,120]);}catch(e){}
+}
+function initBingo(){
+ var box=$('bingoGrid');if(!box)return;
+ renderBingo();
+ box.addEventListener('click',function(e){
+  var b=e.target.closest('.bg-cell');if(!b)return;
+  var i=+b.getAttribute('data-i'),s=bState(),before=bLines(s).length;
+  s[i]=s[i]?0:1;lsSet(BKEY,JSON.stringify(s));renderBingo();
+  var after=bLines(s).length;
+  if(s[i])track('bingo_check',{mission:i});
+  if(s.every(Boolean))celebrate('PERFECT!!','9マス全部達成！最高の旅になりましたね 🎉');
+  else if(after>before)celebrate('BINGO!',after===1?'1列そろいました！この調子で次のラインも狙おう':after+'列目がそろいました！');
+ });
+ $('bingoReset').addEventListener('click',function(){
+  var el=document.createElement('div');el.className='bg-celebrate';
+  el.innerHTML='<div class="bx"><p style="color:var(--text);margin-bottom:16px">ビンゴをすべてリセットしますか？</p><div class="acts"><button type="button" class="cl">キャンセル</button><button type="button" class="pri ok">リセット</button></div></div>';
+  document.body.appendChild(el);
+  el.querySelector('.cl').onclick=function(){el.remove();};
+  el.querySelector('.ok').onclick=function(){lsSet(BKEY,'[0,0,0,0,0,0,0,0,0]');renderBingo();el.remove();};
+ });
+}
+
+/* ---------- 持ち物チェックを端末に保存 ---------- */
+function initChecklist(){
+ var key='chk_'+TRIP_ID,st={};try{st=JSON.parse(lsGet(key)||'{}');}catch(e){}
+ Array.prototype.forEach.call(document.querySelectorAll('#info .chk-list input[type=checkbox]'),function(cb,i){
+  cb.checked=!!st[i];
+  cb.addEventListener('change',function(){st[i]=cb.checked?1:0;lsSet(key,JSON.stringify(st));});
+  var li=cb.closest('li');if(li){li.style.cursor='pointer';li.addEventListener('click',function(e){if(e.target!==cb){cb.checked=!cb.checked;cb.dispatchEvent(new Event('change'));}});}
+ });
+}
+
+/* ---------- 割り勘（Walica） ---------- */
+function initWalica(){
+ if(!WALICA_URL)return;
+ Array.prototype.forEach.call(document.querySelectorAll('[data-walica]'),function(el){el.href=WALICA_URL;el.hidden=false;el.style.display='';el.addEventListener('click',function(){track('walica_open');});});
+}
+
+/* ---------- ホーム画面に追加・オフライン ---------- */
+function initPwa(){
+ if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
+  window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});
+ }
+ var standalone=window.matchMedia&&matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ var box=$('installHint'),dkey='install_hint_closed_'+TRIP_ID;
+ var ua=navigator.userAgent,isIOS=/iPhone|iPad|iPod/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1);
+ var deferred=null;
+ function show(html,btn){if(!box||standalone||lsGet(dkey))return;box.querySelector('.it').innerHTML=html;var b=box.querySelector('.ib');if(btn){b.hidden=false;}else{b.hidden=true;}box.classList.add('show');}
+ if(box){
+  box.querySelector('.ix').addEventListener('click',function(){box.classList.remove('show');lsSet(dkey,'1');});
+  box.querySelector('.ib').addEventListener('click',function(){if(!deferred)return;deferred.prompt();deferred.userChoice.then(function(c){track('pwa_install',{outcome:c.outcome});if(c.outcome==='accepted')box.classList.remove('show');});deferred=null;});
+ }
+ if(isIOS&&/Safari/.test(ua)&&!/CriOS|FxiOS|Line\//.test(ua)){
+  show('<b>ホーム画面に追加しておくと便利</b>Safariの共有ボタン（□に↑）→「ホーム画面に追加」で、電波が弱い山道でも予定を見られます',false);
+ }
+ window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferred=e;show('<b>ホーム画面に追加しておくと便利</b>電波が弱い山道でも予定を見られます',true);});
+ var pill=$('offlinePill');
+ function net(){if(pill)pill.hidden=navigator.onLine;}
+ window.addEventListener('online',function(){net();loadWeather();});window.addEventListener('offline',net);net();
+}
+
+function init(){initBar();loadWeather();initBingo();initChecklist();initWalica();initPwa();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 </body>
