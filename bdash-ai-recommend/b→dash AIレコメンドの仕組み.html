@@ -1,0 +1,1454 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>b→dash AIレコメンドの仕組み</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap">
+<style>
+/* Layout: 章ごとに「問い → 例え → 図 → 説明 → ポイント」の順。図はすべてインラインSVGでテーマ色に追従 */
+:root{
+  --bg:#f4f6f9; --paper:#ffffff; --ink:#1f2633; --muted:#5d6675; --line:#dbe0e8; --soft:#eef1f5;
+  --accent:#1f5fa8; --accent-soft:#e3edf9;
+  --teal:#13806f; --teal-soft:#dff2ee;
+  --amber:#c27a12; --amber-soft:#fcf0d9;
+  --off:#1f5fa8; --off-bg:#e3edf9; --gen:#5b6b2e; --gen-bg:#eef2e1; --chk:#b3401f; --chk-bg:#fbe9e3;
+  --point-bg:#fff8e0; --point-line:#e7c65a;
+  --display:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --body:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151c; --paper:#192029; --ink:#e4e8ef; --muted:#9aa4b3; --line:#2d3542; --soft:#222a35;
+  --accent:#7fb0ea; --accent-soft:#1e2d40; --teal:#5fcab6; --teal-soft:#16302b; --amber:#f0b45a; --amber-soft:#3a2d16;
+  --off:#8dbbf0; --off-bg:#1e2d40; --gen:#b9cc84; --gen-bg:#262d1a; --chk:#f0a088; --chk-bg:#3a2119;
+  --point-bg:#2b2716; --point-line:#8a7530; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151c; --paper:#192029; --ink:#e4e8ef; --muted:#9aa4b3; --line:#2d3542; --soft:#222a35;
+  --accent:#7fb0ea; --accent-soft:#1e2d40; --teal:#5fcab6; --teal-soft:#16302b; --amber:#f0b45a; --amber-soft:#3a2d16;
+  --off:#8dbbf0; --off-bg:#1e2d40; --gen:#b9cc84; --gen-bg:#262d1a; --chk:#f0a088; --chk-bg:#3a2119;
+  --point-bg:#2b2716; --point-line:#8a7530; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.8}
+.wrap{max-width:860px;margin:0 auto;padding-block:32px 80px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;line-height:1.45}
+h1{font-size:2.1rem;font-weight:900;margin:0}
+h3{font-size:1.08rem;margin:26px 0 8px}
+p{margin:8px 0} ul,ol{margin:8px 0;padding-left:1.4em} li{margin:3px 0}
+strong{color:var(--accent)}
+.src{font-size:.78rem;color:var(--muted)}
+.b{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;padding:1px 8px;border-radius:4px;vertical-align:2px;white-space:nowrap}
+.b.off{color:var(--off);background:var(--off-bg)} .b.gen{color:var(--gen);background:var(--gen-bg)} .b.chk{color:var(--chk);background:var(--chk-bg)}
+
+/* SVG共通 */
+svg.fig{width:100%;height:auto;display:block}
+.figbox{background:var(--soft);border-radius:10px;padding:14px;margin:14px 0}
+.figcap{font-size:.8rem;color:var(--muted);margin-top:6px;text-align:center}
+.t{fill:var(--ink);font-family:var(--body)} .tm{fill:var(--muted);font-family:var(--body)} .tw{fill:var(--paper);font-family:var(--display);font-weight:700}
+.ta{fill:var(--accent);font-family:var(--display);font-weight:700} .tt{fill:var(--teal);font-family:var(--display);font-weight:700} .tam{fill:var(--amber);font-family:var(--display);font-weight:700}
+.f-paper{fill:var(--paper)} .f-acc{fill:var(--accent)} .f-accs{fill:var(--accent-soft)} .f-teal{fill:var(--teal)} .f-teals{fill:var(--teal-soft)} .f-amb{fill:var(--amber)} .f-ambs{fill:var(--amber-soft)} .f-mut{fill:var(--muted)} .f-line{fill:var(--line)}
+.s-line{stroke:var(--line)} .s-acc{stroke:var(--accent)} .s-teal{stroke:var(--teal)} .s-amb{stroke:var(--amber)} .s-mut{stroke:var(--muted)} .s-ink{stroke:var(--ink)}
+.nofill{fill:none}
+
+/* ヘッダー */
+header.hero{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px 26px 18px;margin-bottom:20px}
+.hero .lead{color:var(--muted);margin:8px 0 6px}
+.hero .meta{font-size:.82rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.86rem;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line)}
+
+/* 目次 */
+nav.toc{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px}
+@media (max-width:640px){nav.toc{grid-template-columns:1fr 1fr}}
+nav.toc a{display:flex;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink);text-decoration:none;font-size:.88rem;line-height:1.4;min-width:0}
+nav.toc a:hover,nav.toc a:focus-visible{border-color:var(--accent);outline:none}
+nav.toc .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:900;font-family:var(--display)}
+
+/* 章 */
+section{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:28px;margin-bottom:28px}
+@media (max-width:560px){section{padding:20px 16px}}
+.chap{display:flex;gap:14px;align-items:flex-start;margin-bottom:6px}
+.chap .n{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);color:var(--paper);display:grid;place-items:center;font:900 1.2rem var(--display)}
+.chap h2{margin:0;font-size:1.4rem}
+.chap .sub{font-size:.85rem;color:var(--muted);font-family:var(--body);font-weight:500;display:block}
+.ask{display:flex;gap:10px;align-items:flex-start;background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:14px 0}
+.ask svg{flex:none;width:28px;height:28px}
+.ask p{margin:0;font-weight:700}
+
+.analogy{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}
+@media (max-width:640px){.analogy{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0;background:var(--paper)}
+.card h4{margin:0 0 4px;font-size:1.02rem}
+.say{font-family:var(--display);font-weight:700;color:var(--accent);margin:4px 0}
+.card.teal .say{color:var(--teal)}
+
+.tbl{overflow-x:auto;margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:520px}
+th,td{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{background:var(--accent-soft);font-weight:700}
+td.c{text-align:center;font-variant-numeric:tabular-nums}
+.yes{color:var(--off);font-weight:700}.no{color:var(--muted)}
+
+.warn{border:1px solid var(--chk);background:var(--chk-bg);border-radius:8px;padding:8px 12px;font-size:.9rem;margin:10px 0}
+.point{background:var(--point-bg);border-left:4px solid var(--point-line);border-radius:6px;padding:10px 16px;margin-top:22px}
+.point b{font-family:var(--display);display:block;margin-bottom:4px}
+.point ol{margin:0}
+
+/* アルゴリズム3グループ */
+.algo{display:grid;grid-template-columns:1.1fr 1.3fr .8fr;gap:12px;margin:14px 0}
+@media (max-width:700px){.algo{grid-template-columns:1fr}}
+.grp{border-radius:12px;padding:12px;min-width:0}
+.grp h4{margin:0 0 8px;font-size:.95rem;display:flex;gap:8px;align-items:center}
+.grp h4 svg{width:20px;height:20px;flex:none}
+.grp.site{background:var(--accent-soft)} .grp.both{background:var(--teal-soft)} .grp.mail{background:var(--amber-soft)}
+.grp ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.grp li{background:var(--paper);border-radius:8px;padding:6px 10px;font-size:.84rem;line-height:1.5;display:flex;gap:8px;margin:0}
+.grp li .no{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;flex:none}
+.grp li em{font-style:normal;font-size:.72rem;color:var(--chk);display:block}
+
+/* 手順 */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0}
+@media (max-width:760px){.steps{grid-template-columns:1fr}}
+.st{background:var(--soft);border-radius:12px;padding:12px;text-align:center;min-width:0;position:relative}
+.st svg{width:54px;height:54px;margin:0 auto 4px;display:block}
+.st .k{font:900 .78rem var(--display);color:var(--accent);letter-spacing:.06em}
+.st h4{margin:2px 0 4px;font-size:.95rem}
+.st p{font-size:.8rem;color:var(--muted);margin:0;line-height:1.5}
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.detail{grid-template-columns:1fr}}
+
+details{border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin:10px 0;background:var(--paper)}
+details summary{cursor:pointer;font-weight:700}
+details summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* FAQ吹き出し */
+.chat{display:flex;flex-direction:column;gap:10px;margin:18px 0 22px}
+.bub{display:flex;gap:10px;align-items:flex-start;max-width:92%}
+.bub svg{flex:none;width:36px;height:36px}
+.bub .tx{border-radius:12px;padding:10px 14px;min-width:0}
+.bub.q .tx{background:var(--soft);font-weight:700}
+.bub.a{align-self:flex-end;flex-direction:row-reverse}
+.bub.a .tx{background:var(--accent-soft)}
+.bub.a .tx p{margin:4px 0}
+
+/* クイズ */
+.quiz{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:640px){.quiz{grid-template-columns:1fr}}
+.qz{border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.qz .qn{font:900 .8rem var(--display);color:var(--accent)}
+.qz p.q{font-weight:700;margin:2px 0 6px}
+.qz ul{list-style:none;padding:0;font-size:.88rem}
+.qz details{margin:6px 0 0;padding:6px 10px;background:var(--soft);border:none}
+
+.talk{border-left:3px solid var(--accent);padding:6px 14px;margin:10px 0;background:var(--soft);border-radius:0 8px 8px 0}
+
+dl.gl{display:grid;grid-template-columns:minmax(120px,200px) 1fr;border-top:1px solid var(--line);margin:0}
+dl.gl dt,dl.gl dd{margin:0;padding:8px 6px;border-bottom:1px solid var(--line);min-width:0}
+dl.gl dt{font-weight:700}
+@media (max-width:560px){dl.gl{grid-template-columns:1fr} dl.gl dt{border-bottom:none;padding-bottom:0}}
+ol.refs{font-size:.85rem;word-break:break-all} ol.refs a{color:var(--accent)}
+@media (prefers-reduced-motion:no-preference){nav.toc a{transition:border-color .15s}}
+</style>
+<style>
+/* カリキュラム用の追加スタイル */
+.route{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0 6px}
+@media (max-width:720px){.route{grid-template-columns:1fr 1fr}}
+.route a{display:block;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:12px;color:var(--ink);text-decoration:none;min-width:0;position:relative}
+.route a:hover,.route a:focus-visible{border-color:var(--accent);outline:none}
+.route .m{font:900 .8rem var(--display);color:var(--accent);letter-spacing:.05em}
+.route .nm{font:700 .98rem var(--display);display:block;margin:2px 0 4px;line-height:1.4}
+.route .tm{font-size:.76rem;color:var(--muted)}
+.route .bar{height:5px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}
+.route .bar i{display:block;height:100%;width:0;background:var(--teal);transition:width .2s}
+.phase{font:700 .8rem var(--display);color:var(--muted);margin:14px 0 0;letter-spacing:.05em}
+.total{display:flex;gap:12px;align-items:center;font-size:.86rem;color:var(--muted);margin-top:6px}
+.total .bar{flex:1;height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.total .bar i{display:block;height:100%;width:0;background:var(--teal)}
+.howto{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+@media (max-width:640px){.howto{grid-template-columns:1fr}}
+.howto div{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:.88rem;min-width:0}
+.howto b{display:block;font-family:var(--display)}
+.modmeta{display:flex;flex-wrap:wrap;gap:6px 10px;margin:10px 0 4px;font-size:.82rem}
+.modmeta span{background:var(--soft);border-radius:999px;padding:2px 10px}
+.goal{border:2px solid var(--accent);border-radius:10px;padding:10px 14px;margin:12px 0}
+.goal b{font-family:var(--display);color:var(--accent)}
+.checks{list-style:none;padding:0;margin:8px 0}
+.checks li{display:flex;gap:10px;align-items:flex-start;margin:6px 0}
+.checks input{width:18px;height:18px;margin-top:5px;flex:none;accent-color:var(--teal)}
+.checks label{cursor:pointer}
+.endbox{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+@media (max-width:700px){.endbox{grid-template-columns:1fr}}
+.endbox>div{min-width:0}
+.endbox h4{margin:0 0 6px;font-family:var(--display)}
+.qq details{margin:6px 0}
+.qq .lv{font-size:.72rem;color:var(--muted);font-weight:700;margin-right:6px}
+.myth{display:grid;grid-template-columns:1fr auto;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:12px 0}
+.myth>div{padding:10px 12px;border-bottom:1px solid var(--line);font-size:.9rem;min-width:0}
+.myth>div:nth-last-child(-n+2){border-bottom:none}
+.myth .v{font-weight:700;white-space:nowrap;text-align:center}
+.v.ng{color:var(--chk)} .v.half{color:var(--amber)} .v.ok{color:var(--teal)}
+/* アプリ画面のイメージ */
+.wins{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
+@media (max-width:820px){.wins{grid-template-columns:1fr}}
+.win{border:1.5px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper);min-width:0;display:flex;flex-direction:column}
+.win .tb{display:flex;align-items:center;gap:6px;background:var(--soft);padding:6px 10px;font:700 .85rem var(--display)}
+.win .tb i{width:8px;height:8px;border-radius:50%;background:var(--line);display:inline-block}
+.win .tb .ap{margin-left:6px}
+.win .bd{display:grid;grid-template-columns:44% 1fr;flex:1}
+.win .mn{background:var(--soft);padding:8px;font-size:.76rem;display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--line)}
+.win .mn span{padding:3px 6px;border-radius:4px;color:var(--muted)}
+.win .mn span.on{background:var(--accent);color:var(--paper);font-weight:700}
+.win .mn span.sub{padding-left:14px}
+.win .mn span.sub.on{background:var(--accent-soft);color:var(--accent)}
+.win .ct{padding:8px;font-size:.76rem;display:flex;flex-direction:column;gap:5px;min-width:0}
+.win .ct .row{display:flex;justify-content:space-between;gap:6px;background:var(--soft);border-radius:4px;padding:3px 6px}
+.win .ct .tg{width:26px;height:14px;border-radius:7px;background:var(--line);position:relative;flex:none;margin-top:2px}
+.win .ct .tg.on{background:var(--teal)}
+.win .ct .tg::after{content:"";position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--paper)}
+.win .ct .tg.on::after{left:14px}
+.win .ct .btn{align-self:flex-start;background:var(--accent);color:var(--paper);border-radius:4px;padding:2px 8px;font-weight:700}
+.win .ct .lbl{font-weight:700;color:var(--ink)}
+.win .ft{border-top:1px solid var(--line);padding:8px 10px;font-size:.82rem}
+.chip2{display:inline-block;border-radius:4px;padding:0 6px;font-size:.72rem;font-weight:700}
+.chip2.r{background:var(--chk-bg);color:var(--chk)} .chip2.bl{background:var(--off-bg);color:var(--off)}
+.onetag{border:2px solid var(--accent);border-radius:12px;padding:12px;margin:12px 0}
+.onetag .ttl{font:700 .95rem var(--display);color:var(--accent);margin-bottom:8px}
+.onetag .tags{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media (max-width:560px){.onetag .tags{grid-template-columns:1fr 1fr}}
+.onetag .tags span{background:var(--soft);border-radius:8px;padding:6px 8px;font-size:.84rem;text-align:center}
+.onetag .tags span.ai{background:var(--accent);color:var(--paper);font-weight:700}
+.trouble{display:flex;flex-direction:column;gap:0;margin:14px 0}
+.tr{display:grid;grid-template-columns:40px 1fr;gap:12px}
+.tr .no{width:32px;height:32px;border-radius:50%;background:var(--chk-bg);color:var(--chk);display:grid;place-items:center;font:900 .9rem var(--display)}
+.tr .ln{display:flex;flex-direction:column;align-items:center}
+.tr .ln i{flex:1;width:2px;background:var(--line);margin:2px 0}
+.tr:last-child .ln i{display:none}
+.tr .bx{padding-bottom:14px;min-width:0}
+.tr .bx b{font-family:var(--display)}
+.tr .bx p{margin:2px 0;font-size:.9rem}
+.unknown td:first-child{white-space:nowrap}
+.roleplay details{border-left:3px solid var(--accent)}
+</style>
+
+<style>
+/* 案B: 質問3つの共通形 */
+.qa{border-top:1px solid var(--line);padding:22px 0 18px}
+.qa .qh{display:flex;gap:10px;align-items:flex-start;margin:0 0 10px}
+.qa .qn{flex:none;font:900 .8rem var(--display);color:var(--paper);background:var(--accent);border-radius:6px;padding:4px 8px;margin-top:3px}
+.qa .qh h3{margin:0;font-size:1.12rem}
+.qa .ans{font:700 1.02rem var(--display);background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin:0 0 4px;line-height:1.75}
+.qa .lbl{font:700 .78rem var(--display);color:var(--muted);letter-spacing:.08em;margin:14px 0 6px}
+.qa .lbl::before{content:"";display:inline-block;width:14px;height:2px;background:var(--muted);vertical-align:middle;margin-right:6px}
+.qa .tbl{margin:0}
+.cols{display:flex;flex-direction:column;gap:10px}
+.cols .mrow{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:start}
+@media (max-width:520px){.cols .mrow{grid-template-columns:1fr}}
+.cols .mname{font:700 .9rem var(--display)}
+.cols .chips{display:flex;flex-wrap:wrap;gap:6px}
+.cc{border-radius:6px;padding:3px 10px;font-size:.84rem;border:1.5px solid var(--accent)}
+.cc.req{background:var(--accent);color:var(--paper);font-weight:700}
+.cc.opt{background:var(--paper);color:var(--accent)}
+.keyline{display:flex;gap:14px;font-size:.8rem;color:var(--muted);margin-top:8px;flex-wrap:wrap}
+.share{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;text-align:center;font-size:.88rem}
+@media (max-width:560px){.share{grid-template-columns:1fr}}
+.share .bx{border-radius:10px;padding:10px;min-width:0}
+.share .arrow{font:900 1.2rem var(--display);color:var(--muted)}
+.flowmini{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.flowmini div{display:flex;gap:10px;align-items:center;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:.9rem;flex:1 1 140px}
+.flowmini b{flex:none;width:24px;height:24px;border-radius:50%;background:var(--accent);color:var(--paper);display:grid;place-items:center;font:900 .8rem var(--display)}
+.form{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.84rem;margin-top:10px}
+.form span{background:var(--soft);border-radius:6px;padding:3px 10px}
+.form span.on{background:var(--accent);color:var(--paper);font-weight:700}
+</style>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-person" viewBox="0 0 40 40"><circle cx="20" cy="13" r="7"/><path d="M6 37c0-8 6-13 14-13s14 5 14 13z"/></symbol>
+    <symbol id="i-item" viewBox="0 0 40 40"><rect x="5" y="9" width="30" height="26" rx="4"/><path d="M13 9V7a7 7 0 0 1 14 0v2" fill="none" stroke="currentColor" stroke-width="3"/></symbol>
+    <symbol id="i-book" viewBox="0 0 40 40"><rect x="8" y="4" width="24" height="32" rx="3"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 40 40"><rect x="4" y="9" width="32" height="22" rx="3"/><path d="M5 11l15 11 15-11" fill="none" stroke="var(--paper)" stroke-width="2.5"/></symbol>
+    <symbol id="i-screen" viewBox="0 0 40 40"><rect x="3" y="6" width="34" height="22" rx="3"/><rect x="15" y="30" width="10" height="3"/><rect x="11" y="33" width="18" height="3" rx="1.5"/></symbol>
+    <symbol id="i-db" viewBox="0 0 150 76" preserveAspectRatio="none"><path d="M1 11 A74 10 0 0 1 149 11 V65 A74 10 0 0 1 1 65 Z"/><path d="M1 11 A74 10 0 0 0 149 11" fill="none" stroke="var(--paper)" stroke-width="2" opacity=".85"/></symbol>
+    <symbol id="i-q" viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><text x="20" y="27" text-anchor="middle" font-size="20" font-weight="900" fill="var(--paper)" font-family="sans-serif">?</text></symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header class="hero">
+  <h1>b→dash AIレコメンドの仕組み</h1>
+  <p class="lead">顧客に「AIレコメンドってどう動くの?」と聞かれたとき、仕組み・データ・設定・タグ・運用・トラブル・データの扱いまで、<b>自分の言葉で説明できる</b>ようになるためのカリキュラムです。</p>
+  <div class="figbox" style="margin:14px 0 6px"><svg class="fig" viewBox="0 0 760 190" role="img" aria-label="お客様の行動データと商品データをAIが読み、1人1人に合うおすすめ商品を表示する流れのイラスト">
+      <!-- お客様 -->
+      <use href="#i-person" x="30" y="40" width="70" height="70" class="f-acc"/>
+      <text x="65" y="135" text-anchor="middle" class="t" font-size="14">お客様</text>
+      <text x="65" y="155" text-anchor="middle" class="tm" font-size="12">見る・買う・検索する</text>
+      <!-- データ -->
+      <g>
+        <use href="#i-db" x="160" y="18" width="150" height="54" class="f-teals"/>
+        <text x="235" y="55" text-anchor="middle" class="tt" font-size="14">行動・購入の履歴</text>
+        <use href="#i-db" x="160" y="80" width="150" height="54" class="f-ambs"/>
+        <text x="235" y="115" text-anchor="middle" class="tam" font-size="14">商品データ(説明文)</text>
+      </g>
+      <path d="M105 75 H150" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <path d="M318 78 H372" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- AI -->
+      <rect x="380" y="35" width="130" height="90" rx="16" class="f-acc"/>
+      <text x="445" y="75" text-anchor="middle" class="tw" font-size="17">おすすめを計算</text>
+      <text x="445" y="100" text-anchor="middle" class="tw" font-size="11">AIがパターンを見つける</text>
+      <path d="M518 78 H566" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- おすすめ -->
+      <rect x="574" y="22" width="166" height="118" rx="12" class="f-paper s-line" stroke-width="1.5"/>
+      <text x="657" y="44" text-anchor="middle" class="ta" font-size="13">あなたへのおすすめ</text>
+      <use href="#i-item" x="590" y="56" width="40" height="40" class="f-acc" color="var(--accent)"/>
+      <use href="#i-item" x="637" y="56" width="40" height="40" class="f-teal" color="var(--teal)"/>
+      <use href="#i-item" x="684" y="56" width="40" height="40" class="f-amb" color="var(--amber)"/>
+      <text x="657" y="120" text-anchor="middle" class="tm" font-size="12">サイト・メール・LINE</text>
+      <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="f-mut"/></marker></defs>
+    </svg></div>
+  <p class="meta">更新: 2026-10-31 / 参照: b→dash公式サポートサイト(FAQ 24本を出典として使用)、Qiita 4本(一般論)・2本(書き方の参考)</p>
+  <div class="legend">
+    <span>情報の種類:</span>
+    <span><span class="b off">公式</span> b→dash公式サポートサイトの仕様</span>
+    <span><span class="b gen">一般論</span> レコメンド全般の考え方。b→dashの仕様ではない</span>
+    <span><span class="b chk">要確認</span> 公式に見つからなかった点</span>
+  </div>
+</header>
+
+<section id="map">
+  <div class="chap"><span class="n" style="font-size:.9rem">MAP</span><h2>カリキュラム全体<span class="sub">8モジュール・合計約8時間。最短コースは約3時間</span></h2></div>
+  <div class="howto">
+    <div><b>1. 目的で読む所を選ぶ</b>説明できるようになりたいだけなら最短コース(約3時間): M1 → M2 → M7後半(データの扱い)→ 総合ロープレ。顧客の設定を手伝うときは、M3 → M4 → M5 → M6 → M7前半を足します。</div>
+    <div><b>2. 到達チェックで区切る</b>各モジュール最後の「到達チェック」が全部付いたら完了です。3つ目の「説明」は、先輩や同僚に聞き手役を頼んで、相手が分かったと言えたら付けます。チェックはこのブラウザに保存されます。</div>
+    <div><b>3. 最後にロープレ</b>総合ロープレで、顧客役の質問7本に答えます。詰まったところだけ、元のモジュールに戻ります。</div>
+  </div>
+  <div class="form"><b>どの章も同じ形:</b><span class="on">Q1</span><span class="on">Q2</span><span class="on">Q3</span><span>それぞれ 答え → 図 → 根拠</span><span>→ ポイント・確認問題・到達チェック</span></div>
+  <p class="src">質問は、顧客のマーケ担当(専門家ではない人)が実際に聞きそうな言い方にしています。</p>
+  <p class="phase">基礎: 仕組みを知る</p>
+  <div class="route">
+    <a href="#m0"><span class="m">M0 · 45分</span><span class="nm">レコメンド超入門</span><span class="tm">3つの選び方と弱点</span><span class="bar"><i data-bar="m0"></i></span></a>
+    <a href="#m1"><span class="m">M1 · 45分</span><span class="nm">AIレコメンドとは</span><span class="tm">従来版との違い・誤解</span><span class="bar"><i data-bar="m1"></i></span></a>
+    <a href="#m2"><span class="m">M2 · 60分</span><span class="nm">アルゴリズムの地図</span><span class="tm">12種とロジックの関係</span><span class="bar"><i data-bar="m2"></i></span></a>
+    <a href="#m3"><span class="m">M3 · 90分</span><span class="nm">データセット</span><span class="tm">マスタ・履歴・カラム</span><span class="bar"><i data-bar="m3"></i></span></a>
+  </div>
+  <p class="phase">実践: 設定して動かす</p>
+  <div class="route">
+    <a href="#m4"><span class="m">M4 · 90分</span><span class="nm">アプリと設定</span><span class="tm">3つのアプリ・3種類の設定</span><span class="bar"><i data-bar="m4"></i></span></a>
+    <a href="#m5"><span class="m">M5 · 60分</span><span class="nm">タグと表示</span><span class="tm">ワンタグ・リレーション</span><span class="bar"><i data-bar="m5"></i></span></a>
+    <a href="#m6"><span class="m">M6 · 45分</span><span class="nm">実績と運用</span><span class="tm">配信実績・ログ・上限</span><span class="bar"><i data-bar="m6"></i></span></a>
+    <a href="#m7"><span class="m">M7 · 60分</span><span class="nm">トラブルとデータの扱い</span><span class="tm">切り分け・ポリシー</span><span class="bar"><i data-bar="m7"></i></span></a>
+  </div>
+  <div class="total"><span>全体の進み具合</span><span class="bar"><i id="totalbar"></i></span><span id="totaltxt">0 / 0</span></div>
+  <p style="margin-top:14px">最後に <a href="#rp">総合ロープレ</a> / <a href="#unknown">要確認リスト</a> / <a href="#gl">用語集・参照元</a> があります。</p>
+</section>
+
+<!-- M0 -->
+<section id="m0">
+<div class="chap"><span class="n">M0</span><h2>レコメンド超入門<span class="sub">おすすめの選び方は大きく3つ</span></h2></div>
+  <div class="modmeta"><span>目安 45分</span><span>前提: なし</span><span>種類: <b>一般論</b>のみ</span></div>
+  <div class="goal"><b>ゴール</b> 内容ベース・協調フィルタリング・人気順の3つを、それぞれ1文で比べて説明できる。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「おすすめって、結局どうやって選んでるんですか?」</h3></div>
+<p class="ans">大きく3つです。「見ている商品に似た商品」を選ぶ、「好みが似ている人が買った商品」を選ぶ、「みんなに人気の商品」を選ぶ、のどれかか組み合わせです。</p>
+<div class="lbl">図</div>
+<div class="analogy" style="margin:0">
+  <div class="card"><h4>内容ベース(本屋の店員)</h4><p class="say">「このミステリーが好きなら、同じ作家のこれも」</p><svg class="fig" viewBox="0 0 340 170" role="img" aria-label="読んだ本と同じタグを持つ本がおすすめされる図">
+        <use href="#i-book" x="20" y="30" width="70" height="90" class="f-acc"/>
+        <text x="55" y="140" text-anchor="middle" class="t" font-size="12">読んだ本</text>
+        <rect x="22" y="56" width="66" height="18" rx="9" class="f-paper"/><text x="55" y="69" text-anchor="middle" class="ta" font-size="10">ミステリー</text>
+        <rect x="22" y="78" width="66" height="18" rx="9" class="f-paper"/><text x="55" y="91" text-anchor="middle" class="ta" font-size="10">作家X</text>
+        <path d="M100 75 H150" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+        <text x="125" y="66" text-anchor="middle" class="tm" font-size="10">特徴が同じ</text>
+        <use href="#i-book" x="160" y="30" width="70" height="90" class="f-acc"/>
+        <rect x="162" y="56" width="66" height="18" rx="9" class="f-paper"/><text x="195" y="69" text-anchor="middle" class="ta" font-size="10">ミステリー</text>
+        <rect x="162" y="78" width="66" height="18" rx="9" class="f-paper"/><text x="195" y="91" text-anchor="middle" class="ta" font-size="10">作家X</text>
+        <text x="195" y="140" text-anchor="middle" class="ta" font-size="12">おすすめ</text>
+        <use href="#i-book" x="250" y="30" width="70" height="90" class="f-line"/>
+        <rect x="252" y="56" width="66" height="18" rx="9" class="f-paper"/><text x="285" y="69" text-anchor="middle" class="tm" font-size="10">料理</text>
+        <text x="285" y="140" text-anchor="middle" class="tm" font-size="12">選ばれない</text>
+      </svg></div>
+  <div class="card teal"><h4>協調フィルタリング(好みの似た友達)</h4><p class="say">「この商品を買った人は、こんな商品も」</p><svg class="fig" viewBox="0 0 340 170" role="img" aria-label="好みが似た人が買った商品が、自分にもおすすめされる図">
+        <use href="#i-person" x="20" y="18" width="46" height="46" class="f-teal"/>
+        <text x="43" y="80" text-anchor="middle" class="t" font-size="12">あなた</text>
+        <use href="#i-person" x="20" y="96" width="46" height="46" class="f-mut"/>
+        <text x="43" y="158" text-anchor="middle" class="t" font-size="12">似た人</text>
+        <use href="#i-item" x="140" y="20" width="40" height="40" class="f-teal" color="var(--teal)"/>
+        <use href="#i-item" x="200" y="20" width="40" height="40" class="f-teal" color="var(--teal)"/>
+        <use href="#i-item" x="140" y="100" width="40" height="40" class="f-teal" color="var(--teal)"/>
+        <use href="#i-item" x="200" y="100" width="40" height="40" class="f-teal" color="var(--teal)"/>
+        <use href="#i-item" x="270" y="100" width="40" height="40" class="f-amb" color="var(--amber)"/>
+        <path d="M72 42 H132 M72 120 H132" class="s-line" stroke-width="2"/>
+        <text x="190" y="80" text-anchor="middle" class="tm" font-size="11">買ったものが同じ</text>
+        <path d="M290 96 C290 70 290 50 252 42" class="s-amb nofill" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#ah)"/>
+        <rect x="262" y="12" width="70" height="20" rx="10" class="f-ambs"/>
+        <text x="297" y="26" text-anchor="middle" class="tam" font-size="11">おすすめ</text>
+      </svg></div>
+</div>
+<div class="lbl">根拠</div>
+<p><span class="b gen">一般論</span> 内容ベースは商品の特徴(ジャンル・作者・説明文の単語など)が似ているものを選ぶ[7][10]。協調フィルタリングは購入・閲覧の履歴が似ている人が選んだものを選び、商品の中身は見ない[7][8][9]。人気順は個人の好みを反映せず、全員に同じものを出す[10]。</p>
+<p>この3つで、b→dashの12種のうち5種(ランキング4種と#5)の考え方が分かります。公式が挙げる「商品紹介文を読んで似た商品を出す」例は内容ベースに近い考え方です(公式は手法名を書いていません)。残りの7種は、この3つだけでは説明できません。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「『この商品を買った人はこれも』って、どういう仕組み?」</h3></div>
+<p class="ans">あなたと買い方・好みが近い人を探して、その人が気に入っている商品をすすめています。近い人ほど、その人の好みを強く参考にします。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0"><svg class="fig" viewBox="0 0 720 200" role="img" aria-label="AさんとBさんの採点が似ているので、Bさんが高く評価したキーマカレーをAさんにすすめる例">
+      <text x="140" y="30" text-anchor="middle" class="t" font-size="13">バターチキン</text>
+      <text x="270" y="30" text-anchor="middle" class="t" font-size="13">グリーン</text>
+      <text x="400" y="30" text-anchor="middle" class="t" font-size="13">野菜</text>
+      <text x="530" y="30" text-anchor="middle" class="t" font-size="13">キーマ</text>
+      <g font-size="13">
+        <use href="#i-person" x="14" y="44" width="30" height="30" class="f-teal"/><text x="52" y="65" class="t">Aさん</text>
+        <rect x="95" y="46" width="90" height="28" rx="6" class="f-teals"/><text x="140" y="65" text-anchor="middle" class="tt">5点</text>
+        <rect x="225" y="46" width="90" height="28" rx="6" class="f-teals"/><text x="270" y="65" text-anchor="middle" class="tt">4点</text>
+        <rect x="355" y="46" width="90" height="28" rx="6" class="f-soft f-line"/><text x="400" y="65" text-anchor="middle" class="tm">1点</text>
+        <rect x="485" y="46" width="90" height="28" rx="6" class="f-ambs s-amb" stroke-width="2" stroke-dasharray="4 3"/><text x="530" y="65" text-anchor="middle" class="tam">? 未体験</text>
+        <use href="#i-person" x="14" y="92" width="30" height="30" class="f-teal"/><text x="52" y="113" class="t">Bさん</text>
+        <rect x="95" y="94" width="90" height="28" rx="6" class="f-teals"/><text x="140" y="113" text-anchor="middle" class="tt">5点</text>
+        <rect x="225" y="94" width="90" height="28" rx="6" class="f-teals"/><text x="270" y="113" text-anchor="middle" class="tt">5点</text>
+        <rect x="355" y="94" width="90" height="28" rx="6" class="f-line"/><text x="400" y="113" text-anchor="middle" class="tm">2点</text>
+        <rect x="485" y="94" width="90" height="28" rx="6" class="f-teals"/><text x="530" y="113" text-anchor="middle" class="tt">5点</text>
+        <use href="#i-person" x="14" y="140" width="30" height="30" class="f-mut"/><text x="52" y="161" class="t">Cさん</text>
+        <rect x="95" y="142" width="90" height="28" rx="6" class="f-line"/><text x="140" y="161" text-anchor="middle" class="tm">1点</text>
+        <rect x="225" y="142" width="90" height="28" rx="6" class="f-line"/><text x="270" y="161" text-anchor="middle" class="tm">2点</text>
+        <rect x="355" y="142" width="90" height="28" rx="6" class="f-teals"/><text x="400" y="161" text-anchor="middle" class="tt">5点</text>
+        <rect x="485" y="142" width="90" height="28" rx="6" class="f-line"/><text x="530" y="161" text-anchor="middle" class="tm">2点</text>
+      </g>
+      <path d="M580 108 C640 108 640 60 584 60" class="s-amb nofill" stroke-width="2.5" marker-end="url(#ah)"/>
+      <text x="650" y="78" class="tam" font-size="12">Aさんと好みが</text>
+      <text x="650" y="94" class="tam" font-size="12">近いBさんが</text>
+      <text x="650" y="110" class="tam" font-size="12">高評価 →</text>
+      <text x="650" y="126" class="tam" font-size="12">すすめる</text>
+    </svg><p class="figcap">点数は架空。Qiita[8]のカレー推薦の考え方を借りています。</p></div>
+<div class="lbl">根拠</div>
+<p><span class="b gen">一般論</span> Aさんと点の付け方が近いのはBさんなので、Bさんが高く評価したキーマカレーをAさんにすすめる。どれくらい似ているかを表す数字を<strong>類似度</strong>と呼び、似ている人ほどその人の評価を強く効かせる[8][9]。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「新商品が全然おすすめに出てこないのは、なぜ?」</h3></div>
+<p class="ans">「誰が買ったか」で選ぶ方法は、まだ誰も買っていない新商品を選べないからです。人気順や「商品の特徴」で選ぶ方法は、この影響を受けにくいです。</p>
+<div class="lbl">図</div>
+<div class="tbl"><table>
+    <tr><th>観点</th><th>内容ベース</th><th>協調フィルタリング</th><th>人気順</th></tr>
+    <tr><td>意外な出会い</td><td>出にくい</td><td class="yes">出やすい</td><td>出にくい(全員同じ)</td></tr>
+    <tr><td>新商品・新規会員(コールドスタート)</td><td class="yes">新商品も特徴があれば出せる</td><td>弱い</td><td class="yes">新規会員にも出せる</td></tr>
+    <tr><td>利用者が少ないサービス</td><td class="yes">向く</td><td>向かない</td><td>—</td></tr>
+    <tr><td>商品知識(特徴の設計)</td><td>必要</td><td class="yes">不要</td><td class="yes">不要</td></tr>
+    <tr><td>1人1人への合わせ方</td><td>好みの特徴に合わせる</td><td class="yes">似た人の行動に合わせる</td><td>合わせない</td></tr>
+  </table></div>
+<div class="lbl">根拠</div>
+<p><span class="b gen">一般論</span> 履歴が少ない新商品・新規会員にうまくおすすめを出せない問題を<strong>コールドスタート</strong>と呼ぶ。協調フィルタリングはこの問題に弱い[9][10]。実務では方法を組み合わせる「ハイブリッド」が多い[10]。</p>
+<p><span class="b chk">要確認</span> b→dashで新商品・新規会員をどう扱うかは、公式に見つかりませんでした。</p>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>内容ベースは「商品が似ている」、協調フィルタリングは「人が似ている」、人気順は「全員に同じ」で選ぶ。</li>
+    <li>協調フィルタリングは意外な出会いに強いが、新商品・新規会員(コールドスタート)に弱い。</li>
+    <li>実務では組み合わせて使うことが多い。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>「コールドスタート」とは何?</summary><p>履歴が少ない新商品・新規会員に、うまくおすすめを出せない問題。</p></details>
+      <details><summary><span class="lv">仕組み</span>協調フィルタリングが新商品に弱いのはなぜ?</summary><p>「誰が何を買った・見たか」の履歴で選ぶので、まだ誰も買っていない商品は候補に上がらないから。</p></details>
+      <details><summary><span class="lv">言い換え</span>顧客に「新商品がおすすめに出てこない」と言われたら、一般論としてどう説明する?</summary><p>例:「行動履歴をもとに選ぶ方法は、まだ買われていない新商品を出しにくい性質があります。ランキングや商品の特徴で選ぶ方法と組み合わせると出やすくなります」。b→dashでの具体的な挙動は要確認。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m0">
+      <li><input type="checkbox" id="c-m0-1"><label for="c-m0-1">3つの方法を、それぞれ1文で比べて言える</label></li>
+      <li><input type="checkbox" id="c-m0-2"><label for="c-m0-2">「新商品がおすすめに出にくい理由」をコールドスタートで説明できる</label></li>
+      <li><input type="checkbox" id="c-m0-3"><label for="c-m0-3"><b>説明</b>: 「レコメンドって何で選んでるの?」に資料を見ずに1分で答え、聞き手役(先輩・同僚)が「分かった」と言えた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M1 -->
+<section id="m1">
+<div class="chap"><span class="n">M1</span><h2>b→dash AIレコメンドとは<span class="sub">定義・従来版との違い・よくある誤解</span></h2></div>
+  <div class="modmeta"><span>目安 45分</span><span>前提: M0(なくても可)</span></div>
+  <div class="goal"><b>ゴール</b>「普通のレコメンドと何が違う?」に30秒で答えられる。オプション契約が要ることを言える。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「今使っているレコメンドと、何が違うんですか?」</h3></div>
+<p class="ans">商品説明の文章まで読んで似た商品を探せる点と、購入・閲覧の履歴からAIがパターンを見つけて、購入につながりやすい商品を出す点が違います。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0"><svg class="fig" viewBox="0 0 720 230" role="img" aria-label="AIレコメンドが読むもの3つ: 商品説明のテキスト、行動・購入履歴のパターン、季節で入れ替わる商品">
+      <rect x="250" y="70" width="220" height="90" rx="18" class="f-acc"/>
+      <text x="360" y="110" text-anchor="middle" class="tw" font-size="20">AIレコメンド</text>
+      <text x="360" y="136" text-anchor="middle" class="tw" font-size="12">1人1人に合う商品を算出</text>
+      <!-- 1 テキスト -->
+      <rect x="20" y="20" width="200" height="74" rx="12" class="f-ambs"/>
+      <rect x="36" y="34" width="34" height="44" rx="4" class="f-paper s-amb" stroke-width="1.5"/>
+      <path d="M42 46h22M42 54h22M42 62h16" class="s-amb" stroke-width="2"/>
+      <text x="80" y="50" class="tam" font-size="13">① 商品説明の</text>
+      <text x="80" y="70" class="tam" font-size="13">テキストを読む</text>
+      <path d="M222 70 L246 92" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- 2 パターン -->
+      <rect x="20" y="136" width="200" height="74" rx="12" class="f-teals"/>
+      <circle cx="44" cy="160" r="6" class="f-teal"/><circle cx="62" cy="186" r="6" class="f-teal"/><circle cx="80" cy="166" r="6" class="f-teal"/>
+      <path d="M44 160 L62 186 L80 166" class="s-teal nofill" stroke-width="2"/>
+      <text x="96" y="166" class="tt" font-size="13">② 履歴から</text>
+      <text x="96" y="186" class="tt" font-size="13">パターンを発見</text>
+      <path d="M222 160 L246 140" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- 3 季節 -->
+      <rect x="500" y="78" width="200" height="74" rx="12" class="f-accs"/>
+      <circle cx="530" cy="115" r="14" class="nofill s-acc" stroke-width="2.5"/>
+      <path d="M530 101 A14 14 0 0 1 544 115" class="s-acc nofill" stroke-width="2.5" marker-end="url(#ah)"/>
+      <text x="556" y="110" class="ta" font-size="13">③ 活用シーン:</text>
+      <text x="556" y="130" class="ta" font-size="13">季節で入れ替わる商品</text>
+      <path d="M496 115 H474" class="s-mut" stroke-width="2"/>
+    </svg><p class="figcap">出典: 公式[1][2]</p></div>
+<div class="lbl">根拠</div>
+<ul>
+<li><span class="b off">公式</span> 「従来のレコメンドでは解析することができなかった商品説明の『テキスト』などを解析」[1][2]。例: 閲覧したページの商品紹介文やタグを読み取って類似の商品を自動抽出する[1]</li>
+<li><span class="b off">公式</span> 行動履歴・購入履歴から「AI自ら発見した特徴や行動パターン」を活かし、従来よりもコンバージョンに到達する商品を算出する[1]</li>
+<li><span class="b off">公式</span> 季節ごとに入れ替わる商品のレコメンドを自動で表示したい場合、は活用シーンとして書かれている[1]</li>
+</ul>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「今のレコメンドの設定やタグは、そのまま使えますか?」</h3></div>
+<p class="ans">使えません。AIレコメンドは、アプリ・データの作り方・タグがすべて別です。使うにはオプション契約も必要です。</p>
+<div class="lbl">図</div>
+<div class="tbl"><table>
+    <tr><th>観点</th><th>レコメンド(従来)</th><th>AIレコメンド</th></tr>
+    <tr><td>使うデータ</td><td>「サイトレコメンド用データ」「メールレコメンド用データ」を作る[H]</td><td>共通設定で「データセット」を作る[4]</td></tr>
+    <tr><td>計算方法の選び方</td><td>「メインロジック」を選び、足りない分を「サブロジック」で補う。2つまで選べる[H]</td><td>アルゴリズムを1つ選ぶ。中ではロジックの組み合わせや割合を調整して最適化される[3][5]</td></tr>
+    <tr><td>種類の数</td><td>サイト用11種・メール用7種[H]</td><td>全12種(サイト用11種・配信用7種)[3]</td></tr>
+    <tr><td>商品説明の文章</td><td>解析できない[1]</td><td>解析する[1]</td></tr>
+    <tr><td>タグ</td><td>レコメンドタグ</td><td>AIレコメンドタグ(別機能。新しく設定が必要)[A][C]</td></tr>
+  </table></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> AIレコメンドの利用には別途オプション契約が必要[1][2]。AIレコメンドタグは「通常の『レコメンドタグ』とは別の機能」なので、レコメンドタグを設定済みでも新しく設定する[A][C]。従来アプリの仕組みは[H]。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「AIが勝手に一番いい出し方を選んでくれるんですよね?」</h3></div>
+<p class="ans">いいえ。どの出し方(アルゴリズム)を使うかは、こちらで1つ選びます。選んだ出し方の中で、計算の組み合わせが調整される仕組みです。</p>
+<div class="lbl">図</div>
+<div class="tbl"><table>
+    <tr><th style="color:var(--teal)">言える(公式)</th><th style="color:var(--chk)">言わない(公式と違う/書いていない)</th><th style="color:var(--amber)">確認してから答える(要確認)</th></tr>
+    <tr><td>商品説明のテキストを解析する[1]</td><td>AIが最適なアルゴリズムを自動で選ぶ</td><td>AIの学習の頻度</td></tr>
+    <tr><td>アルゴリズムはこちらで1つ選ぶ[5]</td><td>精度が上がり続ける</td><td>設定してから反映までの時間</td></tr>
+    <tr><td>行動・購入履歴からAIがパターンを見つける[1]</td><td>画像を解析してアイテムを抽出する</td><td>メール本文への差し込み方</td></tr>
+    <tr><td>利用にはオプション契約が要る[1][2]</td><td>メールでもリアルタイムに出せる</td><td>新商品・新規会員のときの挙動</td></tr>
+  </table></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> アルゴリズムはユーザーが選ぶ[5][J]。組み合わせや割合の調整で最適化されると書かれているのは、アルゴリズムの中のロジックセット・ロジック[3]。</p>
+<details><summary>ネットや生成AIのまとめで見かけた説明と、公式の照らし合わせ</summary><div class="myth">
+    <div>「AIが複数のアルゴリズムから最適なものを自動で選ぶ」</div><div class="v ng">違う</div>
+    <div class="src" style="grid-column:1/-1;padding-top:0">アルゴリズムはユーザーが1つ選びます[5][J]。調整されると書かれているのは、アルゴリズムの中のロジックの組み合わせや割合です[3]。</div>
+    <div>「学習によって精度が上がり続ける」</div><div class="v half">記載なし</div>
+    <div class="src" style="grid-column:1/-1;padding-top:0">「AI自ら発見した特徴や行動パターンを活かし」という記載はありますが[1]、精度が上がり続けるとは書かれていません。</div>
+    <div>「画像を解析して、コーディネート画像の中のアイテムを抽出する」</div><div class="v half">記載なし</div>
+    <div class="src" style="grid-column:1/-1;padding-top:0">公式にあるのはテキストの解析です[1]。画像マスタに「解析用画像アドレス」という列はありますが[D]、何をどう解析するかは書かれていません。</div>
+    <div>「メール・LINEでもリアルタイムにおすすめを出せる」</div><div class="v half">記載なし</div>
+    <div class="src" style="grid-column:1/-1;padding-top:0">公式で「リアルタイム」と書かれているのはサイト側だけです(#12「リアルタイムでのサイト表示のため、配信用では利用不可」)。配信用がリアルタイムかどうかは書かれていません[3]。</div>
+    <div>「ページ種別に『選択肢の選択画面』がある」</div><div class="v ng">違う</div>
+    <div class="src" style="grid-column:1/-1;padding-top:0">9種の最後は「その他」です[5]。</div>
+  </div></details>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>AIレコメンドは、商品説明のテキストまで読み、履歴からパターンを見つけてコンバージョンにつながる商品を出す。</li>
+    <li>従来の「レコメンド」アプリとはデータ・計算方法の選び方・タグがすべて別。使うにはオプション契約が要る。</li>
+    <li>「アルゴリズムを自動で選ぶ」は公式と違う。「メールでもリアルタイム」は公式に書かれていないので言わない。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>AIレコメンドを使うのに、通常の契約のほかに何が要る?</summary><p>別途オプション契約[1][2]。</p></details>
+      <details><summary><span class="lv">仕組み</span>従来のレコメンドで「解析できなかった」ものは?</summary><p>商品説明の「テキスト」など[1]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「AIが一番いい方法を勝手に選んでくれるんですよね?」と聞かれたら?</summary><p>例:「どのアルゴリズムを使うかは、こちらで1つ選んで設定します。選んだアルゴリズムの中で、計算の組み合わせが調整される仕組みです」。調整の頻度などは要確認。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m1">
+      <li><input type="checkbox" id="c-m1-1"><label for="c-m1-1">従来との違いを30秒で言える(「従来ではできなかった」と公式が書いているのはテキスト解析。パターン発見は「従来よりCVに到達する」という比較。季節商品は活用シーン)</label></li>
+      <li><input type="checkbox" id="c-m1-2"><label for="c-m1-2">よくある誤解のうち、「公式と違う」ものと「書いていない」ものを分けて言える</label></li>
+      <li><input type="checkbox" id="c-m1-3"><label for="c-m1-3"><b>説明</b>: 「普通のレコメンドと何が違う?」に資料を見ずに30秒で答え、聞き手役が言い直せた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M2 -->
+<section id="m2">
+<div class="chap"><span class="n">M2</span><h2>アルゴリズムの地図<span class="sub">ロジック・ロジックセット・アルゴリズムと全12種</span></h2></div>
+  <div class="modmeta"><span>目安 60分</span><span>前提: M0、M1</span></div>
+  <div class="goal"><b>ゴール</b> 3つの言葉の関係を図で説明でき、12種のうちサイトだけ・両方・配信だけを分けて言える。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「『アルゴリズム』とか『ロジック』って、要するに何ですか?」</h3></div>
+<p class="ans">アルゴリズムは「おすすめの出し方」のことです。料理で言えば、ロジックが調味料、ロジックセットが合わせ調味料、アルゴリズムがレシピです。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0"><svg class="fig" viewBox="0 0 740 250" role="img" aria-label="ロジックを調味料、ロジックセットを合わせ調味料、アルゴリズムをレシピに例えた図">
+      <!-- ロジック -->
+      <text x="110" y="24" text-anchor="middle" class="ta" font-size="15">ロジック</text>
+      <text x="110" y="42" text-anchor="middle" class="tm" font-size="11">最小単位 = 調味料</text>
+      <g>
+        <rect x="30" y="58" width="44" height="64" rx="10" class="f-accs s-acc" stroke-width="1.5"/><rect x="40" y="50" width="24" height="10" rx="3" class="f-acc"/>
+        <rect x="88" y="58" width="44" height="64" rx="10" class="f-teals s-teal" stroke-width="1.5"/><rect x="98" y="50" width="24" height="10" rx="3" class="f-teal"/>
+        <rect x="146" y="58" width="44" height="64" rx="10" class="f-ambs s-amb" stroke-width="1.5"/><rect x="156" y="50" width="24" height="10" rx="3" class="f-amb"/>
+      </g>
+      <text x="52" y="142" text-anchor="middle" class="t" font-size="11">ランキング</text>
+      <text x="110" y="158" text-anchor="middle" class="t" font-size="11">協調フィルタリング</text>
+      <text x="168" y="174" text-anchor="middle" class="t" font-size="11">類似ユーザー相関</text>
+      <path d="M210 100 H262" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- ロジックセット -->
+      <text x="350" y="24" text-anchor="middle" class="ta" font-size="15">ロジックセット</text>
+      <text x="350" y="42" text-anchor="middle" class="tm" font-size="11">ロジックのまとまり = 合わせ調味料</text>
+      <path d="M280 70 Q350 160 420 70 Z" class="f-paper s-ink" stroke-width="2"/>
+      <circle cx="330" cy="88" r="9" class="f-acc"/><circle cx="352" cy="100" r="9" class="f-teal"/><circle cx="372" cy="86" r="9" class="f-amb"/>
+      <path d="M440 100 H492" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- アルゴリズム -->
+      <text x="610" y="24" text-anchor="middle" class="ta" font-size="15">アルゴリズム</text>
+      <text x="610" y="42" text-anchor="middle" class="tm" font-size="11">計算手法の種類 = レシピ</text>
+      <rect x="505" y="54" width="210" height="150" rx="12" class="f-paper s-acc" stroke-width="2"/>
+      <text x="522" y="80" class="t" font-size="12">組み合わせと割合</text>
+      <rect x="522" y="92" width="176" height="12" rx="6" class="f-line"/><rect x="522" y="92" width="110" height="12" rx="6" class="f-acc"/>
+      <rect x="522" y="114" width="176" height="12" rx="6" class="f-line"/><rect x="522" y="114" width="60" height="12" rx="6" class="f-teal"/>
+      <rect x="522" y="136" width="176" height="12" rx="6" class="f-line"/><rect x="522" y="136" width="140" height="12" rx="6" class="f-amb"/>
+      <text x="610" y="176" text-anchor="middle" class="t" font-size="12">「どのデータを、どう計算するか」</text>
+      <text x="610" y="194" text-anchor="middle" class="tm" font-size="11">割合を調整して最適化</text>
+      <text x="370" y="236" text-anchor="middle" class="tm" font-size="11">※ 調味料の例えとバーの長さは説明用のイメージです</text>
+    </svg></div>
+<div class="lbl">根拠</div>
+<ul>
+<li><span class="b off">公式</span> ロジック: アルゴリズムを構成する最小単位(例: ランキング、協調フィルタリング、類似ユーザー相関)[3]</li>
+<li><span class="b off">公式</span> ロジックセット: 複数のロジックを組み合わせたまとまり[3]</li>
+<li><span class="b off">公式</span> アルゴリズム: ロジックセットとロジックを組み合わせた計算手法の種類。組み合わせや割合を調整することで最適化される[3]</li>
+<li><span class="b off">公式</span> ユーザーが選ぶのはアルゴリズム1つ[5][E]。配信用・web接客用では「集計期間」(例: 直近7日間)も選ぶ[E][J]</li>
+</ul>
+<p><span class="b chk">要確認</span> 割合を誰が・いつ・どう調整するか、学習の頻度は公式に見つかりませんでした。同じ3つの名前がロジックとロジックセットの両方の例に挙がっており、どちらに当たるかも読み取れません。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「どんな出し方ができるんですか?」</h3></div>
+<p class="ans">全部で12種類あります。サイトで使えるのが11種類、メール/LINEで使えるのが7種類で、両方で使えるのは6種類です。</p>
+<div class="lbl">図</div>
+<div class="algo">
+    <div class="grp site">
+      <h4><svg><use href="#i-screen" class="f-acc"/></svg>サイトだけ(5種)</h4>
+      <ul>
+        <li><span class="no">8</span><span>履歴からおすすめのアイテムを自動で表示<em>サイト側でのみデータを保持</em></span></li>
+        <li><span class="no">9</span><span>履歴からおすすめのコーディネートを自動で表示</span></li>
+        <li><span class="no">10</span><span>キーワード履歴からおすすめのアイテムを自動で表示</span></li>
+        <li><span class="no">11</span><span>閲覧履歴を表示</span></li>
+        <li><span class="no">12</span><span>外部データでアイテムに関連するおすすめを表示<em>リアルタイム表示のため配信不可</em></span></li>
+      </ul>
+    </div>
+    <div class="grp both">
+      <h4><svg><use href="#i-screen" class="f-teal"/></svg><svg><use href="#i-mail" class="f-teal"/></svg>両方で使える(6種)</h4>
+      <ul>
+        <li><span class="no">1</span><span>購入回数が多いアイテムのランキング</span></li>
+        <li><span class="no">2</span><span>売上金額が高いアイテムのランキング</span></li>
+        <li><span class="no">3</span><span>閲覧回数が多いアイテムのランキング</span></li>
+        <li><span class="no">4</span><span>アイテムデータを用いたランキング</span></li>
+        <li><span class="no">5</span><span>関連したユーザーの購買/閲覧履歴からおすすめを表示<em>配信用で協調フィルタリングが使えるのはこれだけ</em></span></li>
+        <li><span class="no">6</span><span>外部データでユーザーに関連するおすすめを表示<em>b→dash外のデータ連携が前提</em></span></li>
+      </ul>
+    </div>
+    <div class="grp mail">
+      <h4><svg><use href="#i-mail" class="f-amb"/></svg>配信だけ(1種)</h4>
+      <ul><li><span class="no">7</span><span>ランダムでアイテムを表示</span></li></ul>
+    </div>
+  </div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 「サイト用レコメンド」と「配信用レコメンド」で使えるアルゴリズムが異なる[3]。</p>
+<details><summary>全12種の正式名を表で見る</summary>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>アルゴリズム(公式名)</th><th>サイト</th><th>配信</th><th>M0の分け方で言うと</th></tr>
+    <tr><td class="c">1</td><td>購入回数が多いアイテムをランキング形式で表示</td><td class="c yes">○</td><td class="c yes">○</td><td>人気順</td></tr>
+    <tr><td class="c">2</td><td>売上金額が高いアイテムをランキング形式で表示</td><td class="c yes">○</td><td class="c yes">○</td><td>人気順</td></tr>
+    <tr><td class="c">3</td><td>閲覧回数が多いアイテムをランキング形式で表示</td><td class="c yes">○</td><td class="c yes">○</td><td>人気順</td></tr>
+    <tr><td class="c">4</td><td>アイテムデータを用いてアイテムをランキング形式で表示</td><td class="c yes">○</td><td class="c yes">○</td><td>—(何で並べるかは要確認)</td></tr>
+    <tr><td class="c">5</td><td>関連したユーザーの購買/閲覧履歴からおすすめのアイテムを表示(サイト用では「購買」「閲覧」に分かれる)</td><td class="c yes">○</td><td class="c yes">○</td><td>協調フィルタリング(公式が明言)</td></tr>
+    <tr><td class="c">6</td><td>外部データを用いてユーザーに関連のあるおすすめのアイテムを表示</td><td class="c yes">○</td><td class="c yes">○</td><td>—</td></tr>
+    <tr><td class="c">7</td><td>ランダムでアイテムを表示</td><td class="c no">×</td><td class="c yes">○</td><td>—</td></tr>
+    <tr><td class="c">8</td><td>ユーザーの履歴からおすすめのアイテムを自動で表示</td><td class="c yes">○</td><td class="c no">×</td><td>—</td></tr>
+    <tr><td class="c">9</td><td>ユーザーの履歴からおすすめのコーディネートを自動で表示</td><td class="c yes">○</td><td class="c no">×</td><td>—</td></tr>
+    <tr><td class="c">10</td><td>ユーザーのキーワード履歴からおすすめのアイテムを自動で表示</td><td class="c yes">○</td><td class="c no">×</td><td>—</td></tr>
+    <tr><td class="c">11</td><td>閲覧履歴を表示</td><td class="c yes">○</td><td class="c no">×</td><td>—</td></tr>
+    <tr><td class="c">12</td><td>外部データを用いてアイテムに関連のあるおすすめのアイテムを表示</td><td class="c yes">○</td><td class="c no">×</td><td>—</td></tr>
+  </table></div>
+  <p class="src">右端の列は説明用の目安で、公式の分類ではありません(#5のみ公式が協調フィルタリングと明言)</p>
+  </details>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「メールでも『似たお客様が買った商品』を出せますか?」</h3></div>
+<p class="ans">出せます。ただしメールで使えるのは「関連したユーザーの購買/閲覧履歴からおすすめのアイテムを表示」の1種類だけです。</p>
+<div class="lbl">図</div>
+<div class="share">
+<div class="bx" style="background:var(--accent-soft)"><b>サイト</b><br>#5 が「購買履歴から」「閲覧履歴から」の2つに分かれて表示</div><div class="arrow">/</div><div class="bx" style="background:var(--amber-soft)"><b>メール/LINE</b><br>#5 の1つだけ</div>
+</div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 「『配信用レコメンド』で協調フィルタリングが利用できるアルゴリズムは、『関連したユーザーの購買/閲覧履歴からおすすめのアイテムを表示』のみです」[3]。</p>
+<p><span class="b chk">要確認</span> メール本文への差し込み手順は公式FAQに見つかりませんでした(M4)。</p>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>ロジック(最小単位)を集めたのがロジックセット、それらの組み合わせと割合で決まるのがアルゴリズム。</li>
+    <li>全12種。サイト用は11種、配信用は7種。両方で使えるのは#1〜6。</li>
+    <li>配信用で協調フィルタリングが使えるのは#5だけ。#8〜12はサイトだけ、#7ランダムは配信だけ。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>アルゴリズムを構成する最小単位は?</summary><p>ロジック[3]。</p></details>
+      <details><summary><span class="lv">仕組み</span>サイトだけのアルゴリズムのうち、配信用で使えない理由が公式に書かれているのはどれ? 理由は?</summary><p>#8(サイト側でのみデータを保持)と#12(リアルタイムでのサイト表示のため)。#9〜11の理由は書かれていません[3]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「メールでも、似たお客様が買っている商品を出したい」と言われたら?</summary><p>例:「メールで協調フィルタリングが使えるのは『関連したユーザーの購買/閲覧履歴からおすすめのアイテムを表示』の1つだけです」[3]。本文への差し込み手順は要確認なので、案内は社内で確かめてから。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m2">
+      <li><input type="checkbox" id="c-m2-1"><label for="c-m2-1">ロジック・ロジックセット・アルゴリズムの関係を図で描いて説明できる</label></li>
+      <li><input type="checkbox" id="c-m2-2"><label for="c-m2-2">配信用で協調フィルタリングが使えるのは#5だけ、と言える</label></li>
+      <li><input type="checkbox" id="c-m2-3"><label for="c-m2-3"><b>説明</b>: 12種の3つの分け方を、白紙に図を描きながら聞き手役に説明できた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M3 -->
+<section id="m3">
+<div class="chap"><span class="n">M3</span><h2>データセット<span class="sub">AIに渡すデータと、選ぶカラム</span></h2></div>
+  <div class="modmeta"><span>目安 90分</span><span>前提: M1、M2(アルゴリズムの種類)</span><span>区分: 設定支援</span></div>
+  <div class="goal"><b>ゴール</b> マスタ・履歴・スコアの役割と、アイテムマスタの必須カラム3つを即答できる。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「始めるのに、どんなデータを準備すればいいですか?」</h3></div>
+<p class="ans">商品データ(アイテムマスタ)は必ず要ります。ほかに要るデータは、使う出し方(アルゴリズム)を選ぶと画面に色で出ます。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0"><svg class="fig" viewBox="0 0 740 230" role="img" aria-label="アイテムマスタ、画像マスタ、行動・購入履歴をまとめてデータセットにし、AIが分析してレコメンドを出す流れ">
+      <g font-size="13">
+        <use href="#i-db" x="20" y="14" width="190" height="60" class="f-accs"/>
+        <text x="36" y="42" class="ta">アイテムマスタ</text><text x="36" y="61" class="tm" font-size="11">必須側の例(商品データ)</text>
+        <use href="#i-db" x="20" y="82" width="190" height="60" class="f-ambs"/>
+        <text x="36" y="110" class="tam">画像マスタ</text><text x="36" y="129" class="tm" font-size="11">任意側の例(商品画像)</text>
+        <use href="#i-db" x="20" y="150" width="190" height="60" class="f-teals"/>
+        <text x="36" y="178" class="tt">行動・購入履歴</text><text x="36" y="197" class="tm" font-size="11">AIがパターンを見つける材料</text>
+      </g>
+      <path d="M214 46 C250 46 250 110 278 112 M214 114 H278 M214 182 C250 182 250 116 278 116" class="s-mut nofill" stroke-width="2"/>
+      <path d="M270 114 H282" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <!-- データセット(フォルダ) -->
+      <use href="#i-db" x="288" y="74" width="154" height="92" class="f-line"/>
+      <text x="365" y="124" text-anchor="middle" class="t" font-size="15" font-weight="700">データセット</text>
+      <text x="365" y="144" text-anchor="middle" class="t" font-size="11">必須項目+任意項目</text>
+      <path d="M446 118 H486" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <rect x="494" y="78" width="96" height="80" rx="4" class="f-acc"/>
+      <text x="542" y="114" text-anchor="middle" class="tw" font-size="13">おすすめを</text><text x="542" y="132" text-anchor="middle" class="tw" font-size="13">計算する</text>
+      <path d="M594 118 H630" class="s-mut" stroke-width="2" marker-end="url(#ah)"/>
+      <use href="#i-item" x="636" y="92" width="50" height="50" class="f-teal" color="var(--teal)"/>
+      <text x="661" y="164" text-anchor="middle" class="tt" font-size="12">レコメンド</text>
+      <!-- 吹き出し -->
+      <rect x="292" y="182" width="300" height="34" rx="8" class="f-ambs"/>
+      <text x="442" y="204" text-anchor="middle" class="tam" font-size="12">アルゴリズムを選ぶと、必要なデータが色付きで示される</text>
+    </svg><p class="figcap">出典: 公式[1][4][B][D]</p></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> データセットは「商品の情報や顧客の行動履歴などのデータをまとめたもの」[B]。データパレットに取り込んだデータファイルを、データセットの枠に割り当てて作る[4][D]。画面のデータ区分は「マスタ」(5種)「閲覧履歴」「購買履歴」「スコア」(3種)の4つ。アイテムマスタは必ず設定する。アルゴリズムを選ぶと、必須のデータは赤、任意のデータは青で示される[D]。</p>
+<details><summary>アルゴリズムを選んだときの例</summary>
+<div class="tbl"><table>
+<tr><th>選んだアルゴリズム</th><th>必須</th><th>任意</th></tr>
+<tr><td>ユーザーの履歴からおすすめのアイテムを自動で表示(サイト用)</td><td>アイテムマスタ</td><td>画像マスタ、閲覧履歴、購買履歴</td></tr>
+<tr><td>関連したユーザーの購買/閲覧履歴からおすすめのアイテムを表示(配信用)</td><td>アイテムマスタ</td><td>画像マスタ、ユーザーマスタ、閲覧履歴、購買履歴</td></tr>
+</table></div><p class="src">出典: [D]の画面画像</p></details>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「商品データは、どの項目があればいいですか?」</h3></div>
+<p class="ans">商品ID・商品名・商品ページのURLの3つが必須です。説明文・価格・画像URLはあると使えます。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0">
+<div class="cols">
+<div class="mrow"><span class="mname">アイテムマスタ</span><span class="chips"><span class="cc req">アイテムID</span><span class="cc req">タイトル</span><span class="cc req">ページアドレス</span><span class="cc opt">説明文</span><span class="cc opt">表示用価格</span><span class="cc opt">画像アドレス</span></span></div>
+<div class="mrow"><span class="mname">画像マスタ</span><span class="chips"><span class="cc req">アイテムID</span><span class="cc req">解析用画像アドレス</span></span></div>
+<div class="mrow"><span class="mname">履歴</span><span class="chips"><span class="cc opt" style="border-style:dashed">列は要確認</span></span></div>
+</div><div class="keyline"><span><span class="cc req">塗り</span> 必須</span><span><span class="cc opt">枠</span> 任意</span><span>出典: [D]の画面画像</span></div>
+</div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 配信用データセットの作成画面より。例では商品ID・商品名・商品ページURL・商品説明・価格の列が選ばれている。選んだ列は「アイテムフィルタ」の条件にも使える[D]。</p>
+<p><span class="b chk">要確認</span> サイト用でも同じ項目か、履歴データで選ぶ列(顧客ID・日時など)と型の条件は見つかりませんでした。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「サイト用とメール用で、データは別々に用意するんですか?」</h3></div>
+<p class="ans">メール用(配信用)は専用のタブで作ります。web接客用は、サイト用と同じデータを使えます。</p>
+<div class="lbl">図</div>
+<div class="share">
+<div class="bx" style="background:var(--accent-soft)"><b>サイト用</b><br>データセット</div><div class="arrow">=</div><div class="bx" style="background:var(--accent-soft)"><b>web接客用</b><br>同じものを使える</div>
+</div>
+<div class="share" style="margin-top:10px;grid-template-columns:1fr"><div class="bx" style="background:var(--amber-soft)"><b>配信用(メール/LINE)</b><br>「配信用」タブで別に作る。一から作るなら弊社側の対応が必要</div></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 配信用は「共通設定」→「データセット設定」→「配信用」タブで作る。一から作る場合は「弊社側での対応が必要」[D]。web接客用は「サイトレコメンド」と同じ処理なので、共通のデータセット設定を使える[J]。</p>
+<details><summary>設定の手順</summary><ol>
+<li>「共通設定」→「データセット設定」→「編集」(配信用は「配信用」タブ)[4][D]</li>
+<li>アルゴリズムを選ぶ</li>
+<li>必須項目の「未設定」→ データファイル → 列を選んで「適用」</li>
+<li>任意項目も同じように選ぶ</li>
+<li>必要なら列で絞り込む(例: 性別を「メンズ」)、更新タイミングを決める(例: 毎週月曜05:00)</li>
+<li>データセット名を付けて保存</li></ol></details>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>データセットは、データパレットのデータをマスタ・履歴・スコアの枠に割り当てて作る。</li>
+    <li>アイテムマスタはどのアルゴリズムでも必須。必須カラムはアイテムID・タイトル・ページアドレス。</li>
+    <li>他に何が要るかはアルゴリズムを選ぶと赤(必須)・青(任意)で分かる。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>画面のデータ区分4つは?</summary><p>マスタ(5種)・閲覧履歴・購買履歴・スコア(3種)[D]。</p></details>
+      <details><summary><span class="lv">仕組み</span>画像マスタの必須カラムは?</summary><p>アイテムIDと解析用画像アドレス[D]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「最低限、どんなデータがあれば始められる?」と聞かれたら?</summary><p>例:「商品データは必ず要ります。商品ID・商品名・商品ページのURLの3つが必須です。ほかに要るデータは、使うアルゴリズムを選ぶと画面に色で出ます」[D]。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m3">
+      <li><input type="checkbox" id="c-m3-1"><label for="c-m3-1">アイテムマスタの必須カラム3つを即答できる</label></li>
+      <li><input type="checkbox" id="c-m3-2"><label for="c-m3-2">マスタ・閲覧履歴・購買履歴・スコアの4区分と、赤(必須)/青(任意)の見方を説明できる</label></li>
+      <li><input type="checkbox" id="c-m3-3"><label for="c-m3-3"><b>説明</b>: 「どんなデータが要る?」に資料を見ずに答え、聞き手役が「次に何を準備すればよいか分かった」と言えた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M4 -->
+<section id="m4">
+<div class="chap"><span class="n">M4</span><h2>アプリと設定<span class="sub">3つのアプリと、サイト用・配信用・web接客用の違い</span></h2></div>
+  <div class="modmeta"><span>目安 90分</span><span>前提: M2、M3</span><span>区分: 設定支援</span></div>
+  <div class="goal"><b>ゴール</b> どのアプリで何をするかを順に言え、顧客の目的を聞いてサイト用・配信用・web接客用のどれを作るか選べる。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「設定は、どの画面で、どういう順番でやるんですか?」</h3></div>
+<p class="ans">3つの画面(アプリ)を順に使います。データパレットでデータを取り込み、共通設定でデータセットとタグを用意し、AIレコメンドでおすすめの出し方を決めて「運用中」にします。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0;overflow-x:auto"><svg class="fig" style="min-width:680px" viewBox="0 0 1000 720" role="img" aria-label="データパレット、共通設定、AIレコメンドの3つのアプリと、サイト訪問者・Web担当・マーケ担当の3人のつながりを示す構成図">
+<defs><marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-acc"/></marker>
+<marker id="ac" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="f-mut"/></marker></defs>
+<rect x="10" y="20" width="245" height="640" rx="14" class="nofill s-mut" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="24" y="44" class="t" font-size="13" font-weight="700">顧客のサイト・配信</text>
+<rect x="270" y="20" width="530" height="640" rx="14" class="f-accs"/>
+<text x="786" y="44" text-anchor="end" class="ta" font-size="14">b→dash</text>
+<rect x="815" y="20" width="175" height="640" rx="14" class="nofill s-mut" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="829" y="44" class="t" font-size="13" font-weight="700">設定する人(顧客側)</text>
+<!-- left -->
+<use href="#i-person" x="100" y="58" width="50" height="50" class="f-teal"/>
+<text x="125" y="124" text-anchor="middle" class="t" font-size="12" font-weight="700">サイト訪問者・会員</text>
+<path d="M125 130 V156" class="s-acc" stroke-width="2.2" marker-start="url(#ad)" marker-end="url(#ad)"/>
+<rect x="30" y="160" width="205" height="66" rx="4" class="f-paper s-acc" stroke-width="2"/>
+<text x="132" y="188" text-anchor="middle" class="t" font-size="13" font-weight="700">サイトにおすすめを出す</text>
+<text x="132" y="208" text-anchor="middle" class="tm" font-size="10">AIレコメンドタグ(ワンタグ)</text>
+<text x="36" y="248" class="ta" font-size="10">⇄ 顧客ID・閲覧中の商品 / おすすめ</text>
+<use href="#i-person" x="34" y="268" width="36" height="36" class="f-mut"/>
+<text x="76" y="284" class="t" font-size="12" font-weight="700">Web担当</text>
+<text x="76" y="300" class="tm" font-size="10">タグ設置・表示コード</text>
+<path d="M52 266 V231" class="s-mut" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ac)"/>
+<rect x="30" y="340" width="205" height="62" rx="4" class="f-paper s-acc" stroke-width="2"/>
+<text x="132" y="366" text-anchor="middle" class="t" font-size="13" font-weight="700">web接客に出す</text>
+<text x="132" y="386" text-anchor="middle" class="tm" font-size="10">web接客用(差し込みは要確認)</text>
+<rect x="30" y="450" width="205" height="62" rx="4" class="f-paper s-acc" stroke-width="2"/>
+<text x="132" y="476" text-anchor="middle" class="t" font-size="13" font-weight="700">メール/LINEに出す</text>
+<text x="132" y="496" text-anchor="middle" class="tm" font-size="10">配信用(差し込みは要確認)</text>
+<path d="M30 481 H18 V83 H94" class="s-acc nofill" stroke-width="2" marker-end="url(#ad)"/>
+<text x="13" y="440" class="ta" font-size="10" transform="rotate(-90 13 440)">受信者に届く</text>
+<!-- band1 -->
+<rect x="285" y="60" width="500" height="150" rx="10" class="f-paper s-acc" stroke-width="1.5"/>
+<text x="300" y="82" class="ta" font-size="13">① データパレット</text><text x="430" y="82" class="tm" font-size="11">データを取り込む</text>
+<use href="#i-db" x="300" y="100" width="145" height="72" class="f-ambs"/>
+<text x="372" y="134" text-anchor="middle" class="tam" font-size="13">商品データ</text>
+<text x="372" y="152" text-anchor="middle" class="t" font-size="10">アイテムマスタ・画像</text>
+<use href="#i-db" x="460" y="100" width="145" height="72" class="f-teals"/>
+<text x="532" y="134" text-anchor="middle" class="tt" font-size="13">閲覧・購買履歴</text>
+<text x="532" y="152" text-anchor="middle" class="t" font-size="10">取り込み済みのデータ</text>
+<use href="#i-db" x="620" y="100" width="150" height="72" class="f-teals"/>
+<text x="695" y="134" text-anchor="middle" class="tt" font-size="13">AIレコメンド行動ログ</text>
+<text x="695" y="152" text-anchor="middle" class="t" font-size="10">表示・クリック・購入</text>
+<!-- band2 -->
+<rect x="285" y="235" width="500" height="160" rx="10" class="f-paper s-acc" stroke-width="1.5"/>
+<text x="300" y="257" class="ta" font-size="13">② 共通設定</text><text x="400" y="257" class="tm" font-size="11">データセットとタグを用意する</text>
+<rect x="300" y="280" width="150" height="60" rx="4" class="f-paper s-acc" stroke-width="2"/>
+<text x="375" y="306" text-anchor="middle" class="t" font-size="12" font-weight="700">データセットを作る</text>
+<text x="375" y="325" text-anchor="middle" class="tm" font-size="10">データセット設定</text>
+<use href="#i-db" x="466" y="274" width="132" height="72" class="f-line"/>
+<text x="532" y="316" text-anchor="middle" class="t" font-size="12" font-weight="700">データセット</text>
+<rect x="615" y="280" width="155" height="60" rx="4" class="f-paper s-acc" stroke-width="2"/>
+<text x="692" y="306" text-anchor="middle" class="t" font-size="12" font-weight="700">タグを管理する</text>
+<text x="692" y="325" text-anchor="middle" class="tm" font-size="10">リレーション・ドメイン・ON</text>
+<path d="M372 174 V276" class="s-acc" stroke-width="2.2" marker-end="url(#ad)"/>
+<path d="M520 174 L424 276" class="s-acc" stroke-width="2.2" marker-end="url(#ad)"/>
+<path d="M452 310 H462" class="s-acc" stroke-width="2.2" marker-end="url(#ad)"/>
+<!-- band3 -->
+<rect x="285" y="420" width="500" height="215" rx="10" class="f-paper s-acc" stroke-width="1.5"/>
+<text x="300" y="442" class="ta" font-size="13">③ AIレコメンド</text><text x="420" y="442" class="tm" font-size="11">おすすめを計算して運用する</text>
+<rect x="300" y="468" width="150" height="58" rx="4" class="f-acc"/>
+<text x="375" y="493" text-anchor="middle" class="tw" font-size="12">サイト用を計算</text>
+<text x="375" y="512" text-anchor="middle" class="tw" font-size="10">11種から1つ</text>
+<rect x="465" y="468" width="150" height="58" rx="4" class="f-acc"/>
+<text x="540" y="493" text-anchor="middle" class="tw" font-size="12">web接客用を計算</text>
+<text x="540" y="512" text-anchor="middle" class="tw" font-size="10">集計期間・補完30件</text>
+<rect x="630" y="468" width="145" height="58" rx="4" class="f-acc"/>
+<text x="702" y="493" text-anchor="middle" class="tw" font-size="12">配信用を計算</text>
+<text x="702" y="512" text-anchor="middle" class="tw" font-size="10">7種から1つ・集計期間</text>
+<rect x="465" y="556" width="150" height="56" rx="4" class="f-paper s-acc" stroke-width="2"/>
+<text x="540" y="580" text-anchor="middle" class="t" font-size="12" font-weight="700">実績を集計する</text>
+<text x="540" y="598" text-anchor="middle" class="tm" font-size="10">配信実績</text>
+<path d="M520 348 L384 464 M532 348 V464 M546 348 L692 464" class="s-acc nofill" stroke-width="2.2" marker-end="url(#ad)"/>
+<!-- 出口への線 -->
+<path d="M237 193 H258 V497 H296" class="s-acc nofill" stroke-width="2.2" marker-start="url(#ad)" marker-end="url(#ad)"/>
+<path d="M540 466 V456 H264 V371 H239" class="s-acc nofill" stroke-width="2.2" marker-end="url(#ad)"/>
+<path d="M702 528 V648 H272 V481 H239" class="s-acc nofill" stroke-width="2.2" marker-end="url(#ad)"/>
+<!-- ログ -->
+<path d="M235 170 H262 V50 H695 V96" class="s-acc nofill" stroke-width="2.2" marker-end="url(#ad)"/>
+<rect x="440" y="42" width="128" height="16" rx="4" class="f-accs"/><text x="446" y="54" class="ta" font-size="10">表示・クリック・購入のログ</text>
+<path d="M772 136 H793 V584 H619" class="s-acc nofill" stroke-width="2.2" marker-end="url(#ad)"/>
+<!-- マーケ担当 -->
+<use href="#i-person" x="872" y="300" width="56" height="56" class="f-acc"/>
+<text x="900" y="374" text-anchor="middle" class="t" font-size="13" font-weight="700">マーケ担当</text>
+<text x="900" y="392" text-anchor="middle" class="tm" font-size="10">b→dashの画面で操作</text>
+<path d="M880 304 C860 220 830 140 789 135" class="s-mut nofill" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ac)"/>
+<text x="826" y="196" class="tm" font-size="11">① 取り込む</text>
+<path d="M870 324 C840 318 820 315 789 315" class="s-mut nofill" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ac)"/>
+<text x="826" y="300" class="tm" font-size="11">② 作る・ON</text>
+<path d="M880 360 C860 440 830 497 789 497" class="s-mut nofill" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ac)"/>
+<text x="826" y="472" class="tm" font-size="11">③ 設定・運用中に</text>
+<path d="M900 400 C900 560 860 600 799 600" class="s-mut nofill" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ac)"/>
+<text x="840" y="584" class="tm" font-size="11">実績を見る</text>
+<!-- 凡例 -->
+<g font-size="11">
+<path d="M24 692 H64" class="s-acc" stroke-width="2.2" marker-end="url(#ad)"/><text x="72" y="696" class="t">データの流れ</text>
+<path d="M170 692 H210" class="s-mut" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#ac)"/><text x="218" y="696" class="t">人の操作</text>
+<use href="#i-db" x="300" y="679" width="40" height="26" class="f-line"/><text x="348" y="696" class="t">データ</text>
+<rect x="400" y="681" width="40" height="22" rx="3" class="f-paper s-acc" stroke-width="1.5"/><text x="448" y="696" class="t">処理(役割を書く)</text>
+<rect x="560" y="681" width="40" height="22" rx="10" class="f-paper s-acc" stroke-width="1.5"/><text x="608" y="696" class="t">アプリ</text>
+<use href="#i-person" x="660" y="680" width="22" height="22" class="f-mut"/><text x="688" y="696" class="t">人</text>
+</g></svg><p class="figcap">出典: 公式[3][4][5][A][C][D][E][F][G][J][K]。書き方はQiita[12](箱には役割を書く・データは円柱/処理は四角・データの流れは実線/人の操作は点線)</p></div>
+<div class="lbl">根拠</div>
+<ul>
+<li><span class="b off">公式</span> データパレット: 「データを連携する」から、連携システム(SFTP・Amazon S3・Sales Cloudなど)経由か、ローカルからのアップロードで取り込む[K]</li>
+<li><span class="b off">公式</span> 共通設定: データセット設定[4][D]と、タグ管理(タグのON/OFF・対象ドメイン・リレーション設定)[A][T]</li>
+<li><span class="b off">公式</span> AIレコメンド: 新規作成でサイト用・配信用・web接客用を選び、設定して「運用中」にする[5][E][J]。配信実績もここで見る[F]</li>
+</ul>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「社内で、誰が何をやればいいですか?」</h3></div>
+<p class="ans">画面での設定はマーケ担当、サイトへのタグ設置と表示用のコードはWeb担当(エンジニア)の作業です。</p>
+<div class="lbl">図</div>
+<div class="wins">
+    <div class="win">
+      <div class="tb"><i></i><i></i><i></i><span class="ap">① データパレット</span></div>
+      <div class="bd">
+        <div class="mn"><span class="on">データを連携する</span><span>データファイル</span></div>
+        <div class="ct">
+          <span class="lbl">取り込み方</span>
+          <span class="row">連携システム(SFTP・Amazon S3・Sales Cloudなど)</span>
+          <span class="row">ローカルからアップロード</span>
+          <span class="lbl">ファイルの例</span>
+          <span class="row">商品データ</span><span class="row">商品画像マスタ</span><span class="row">webコンバージョンデータ</span>
+        </div>
+      </div>
+      <div class="ft">データを取り込む場所[K]。AIレコメンドの行動ログデータ・性能計測結果データも「データパレット」の仕様として載っています[G][L]。</div>
+    </div>
+    <div class="win">
+      <div class="tb"><i></i><i></i><i></i><span class="ap">② 共通設定</span></div>
+      <div class="bd">
+        <div class="mn"><span class="on">データセット設定</span><span>タグ管理</span><span class="sub">リレーション設定</span><span class="sub on">AIレコメンドタグ</span></div>
+        <div class="ct">
+          <span class="lbl">データセット設定</span>
+          <span class="row">アルゴリズム → 必須/任意データ</span>
+          <span class="lbl">タグ管理</span>
+          <span class="row">アクセスログタグ<i class="tg on"></i></span>
+          <span class="row">AIレコメンドタグ<i class="tg on"></i></span>
+          <span class="row">対象ドメイン ＋</span>
+        </div>
+      </div>
+      <div class="ft">データセットを作る[4][D]。タグのON/OFF・ドメイン・リレーション設定を管理する[A][T]。</div>
+    </div>
+    <div class="win">
+      <div class="tb"><i></i><i></i><i></i><span class="ap">③ AIレコメンド</span></div>
+      <div class="bd">
+        <div class="mn"><span class="on">新規作成</span><span>レコメンド一覧</span><span>配信実績</span></div>
+        <div class="ct">
+          <span class="lbl">種類を選ぶ</span>
+          <span class="row">サイト用レコメンド</span><span class="row">配信用レコメンド</span><span class="row">web接客用レコメンド</span>
+          <span class="lbl">一覧</span>
+          <span class="row">トップ_ランキング <b style="color:var(--teal)">運用中</b></span>
+        </div>
+      </div>
+      <div class="ft">おすすめの計算方法を決めて「運用中」にする[5][E][J]。配信実績を見る[F]。</div>
+    </div>
+  </div>
+<p class="src">画面は説明用のイメージで、実際の配置や見た目とは違います。メニュー名・項目名は公式FAQの記載に合わせています。</p>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 表示用のコーディングは「貴社でコーディングを行ってください」とある[A]。画面での設定を誰が担当するかの定めは公式にはなく、上の分担は<b>作成者の整理</b>です。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「サイトに出すのとメールに出すのとで、設定は何が違いますか?」</h3></div>
+<p class="ans">サイト用だけ、出すページの指定とタグの設定が要ります。メール用(配信用)とweb接客用は、集計期間と、足りない時に補う商品(最大30件)を決めます。</p>
+<div class="lbl">図</div>
+<div class="tbl"><table>
+    <tr><th>設定項目</th><th>サイト用</th><th>配信用(メール/LINE)</th><th>web接客用</th></tr>
+    <tr><td>アルゴリズム</td><td>11種から1つ</td><td>7種から1つ</td><td>1つ選ぶ(種類の一覧は要確認)</td></tr>
+    <tr><td>データセット</td><td>選ぶ</td><td>選ぶ(配信用タブで作成)</td><td>サイト用と共通で使える</td></tr>
+    <tr><td>集計期間</td><td>記載なし</td><td>選ぶ(例: 直近7日間)</td><td>選ぶ</td></tr>
+    <tr><td>アイテム不足時の補完</td><td>記載なし</td><td>アイテムIDを最大30件</td><td>アイテムIDを最大30件</td></tr>
+    <tr><td>表示件数・フィルタ</td><td>表示件数とフィルタ</td><td>フィルタ</td><td>フィルタ</td></tr>
+    <tr><td>表示するページ</td><td>ページ・ページ種別9種・重複排除・優先度</td><td>—</td><td>—</td></tr>
+    <tr><td>最後に</td><td>「運用中」+ AIレコメンドタグ</td><td>「運用中」</td><td>「運用中」</td></tr>
+  </table></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> サイト用[5]、配信用[E]、web接客用[J]の設定手順より。補完: フィルタ後のアイテムが30件未満のとき、指定したアイテムIDが算出結果の後ろに差し込まれる[E]。</p>
+<details><summary>サイト用の細かい設定(ページ種別・重複排除・上限)</summary>
+<ul>
+<li><b>ページ種別9種</b>: トップ/アイテム一覧(カテゴリ)/アイテム詳細/コーディネート詳細/カート/購入完了/ユーザープロファイル/検索結果/その他[5]</li>
+<li><b>重複排除</b>: 同じページに同じ商品が複数出るとき、優先度の高いレコメンド設定を優先して表示する[5]</li>
+<li><b>上限(参考)</b>: 従来の「レコメンド」アプリでは、1つのレコメンドでサイトに出せるのは100件、「運用中」にできるサイトレコメンドは300件まで[N]。AIレコメンドの上限は要確認</li>
+</ul></details>
+<details><summary>おすすめ枠を置く場所の例(作成者の例)</summary>
+<div class="figbox"><svg class="fig" viewBox="0 0 740 300" role="img" aria-label="ECサイトの各ページとメール・LINEに、使えるアルゴリズムの例を置いたマップ">
+      <!-- ブラウザ枠 -->
+      <rect x="14" y="14" width="520" height="272" rx="12" class="f-paper s-line" stroke-width="2"/>
+      <rect x="14" y="14" width="520" height="30" rx="12" class="f-line"/>
+      <circle cx="34" cy="29" r="5" class="f-paper"/><circle cx="50" cy="29" r="5" class="f-paper"/><circle cx="66" cy="29" r="5" class="f-paper"/>
+      <!-- ページ4つ -->
+      <g font-size="12">
+        <rect x="32" y="60" width="236" height="100" rx="10" class="f-accs"/>
+        <text x="46" y="82" class="ta" font-size="14">アイテム詳細ページ</text>
+        <text x="46" y="104" class="t">似た商品を表示(公式例)</text>
+        <text x="46" y="122" class="t">対応するアルゴリズムは要確認</text>
+        <text x="46" y="146" class="tm" font-size="11">→ 回遊を増やす</text>
+        <rect x="282" y="60" width="236" height="100" rx="10" class="f-ambs"/>
+        <text x="296" y="82" class="tam" font-size="14">検索結果ページ</text>
+        <text x="296" y="104" class="t">#10 キーワード履歴から</text>
+        <text x="296" y="122" class="t">検索ワードに基づく(公式例)</text>
+        <text x="296" y="146" class="tm" font-size="11">→ 探している物に近づける</text>
+        <rect x="32" y="172" width="236" height="100" rx="10" class="f-teals"/>
+        <text x="46" y="194" class="tt" font-size="14">トップページ</text>
+        <text x="46" y="216" class="t">#1〜3 ランキング</text>
+        <text x="46" y="234" class="t">#8 履歴から自動で表示</text>
+        <text x="46" y="258" class="tm" font-size="11">→ 季節の入れ替えも自動</text>
+        <rect x="282" y="172" width="236" height="100" rx="10" class="f-accs"/>
+        <text x="296" y="194" class="ta" font-size="14">アイテム詳細(アパレル)</text>
+        <text x="296" y="216" class="t">#9 コーディネートを表示</text>
+        <text x="296" y="234" class="t">#11 閲覧履歴を表示</text>
+        <text x="296" y="258" class="tm" font-size="11">→ ついで買い・再訪</text>
+      </g>
+      <!-- メール/LINE -->
+      <rect x="566" y="40" width="156" height="236" rx="22" class="f-paper s-line" stroke-width="2"/>
+      <rect x="616" y="50" width="56" height="6" rx="3" class="f-line"/>
+      <use href="#i-mail" x="584" y="74" width="40" height="40" class="f-amb"/>
+      <text x="632" y="92" class="tam" font-size="13">メール</text>
+      <text x="632" y="108" class="tam" font-size="13">LINE</text>
+      <rect x="582" y="126" width="124" height="34" rx="6" class="f-ambs"/><text x="644" y="148" text-anchor="middle" class="t" font-size="12">#1〜3 ランキング</text>
+      <rect x="582" y="168" width="124" height="34" rx="6" class="f-ambs"/><text x="644" y="190" text-anchor="middle" class="t" font-size="12">#5 似た人の購買</text>
+      <rect x="582" y="210" width="124" height="34" rx="6" class="f-ambs"/><text x="644" y="232" text-anchor="middle" class="t" font-size="12">#7 ランダム</text>
+    </svg><p class="figcap">公式にあるのは「似た商品」「検索ワード」の2つの例[1]と、12種の名前[3]だけです。ページとアルゴリズムの組み合わせは<b>作成者の例</b>で、公式の推奨ではありません。</p></div></details>
+<p><span class="b chk">要確認</span> 配信用をメール/LINE本文に、web接客用をweb接客のコンテンツに差し込む手順は公式FAQに見つかりませんでした。従来のレコメンドアプリでは、メールの「ブロック追加」→「テキスト」→「レコメンド挿入」で差し込みます[P]が、AIレコメンドにも使えるとは書かれていません。</p>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>アプリはデータパレット(取り込む)→ 共通設定(データセット・タグ)→ AIレコメンド(計算・運用)の順に触る。</li>
+    <li>レコメンドはサイト用・配信用・web接客用の3種類。サイト用だけ表示ページの設定とタグが要る。</li>
+    <li>配信用とweb接客用は、集計期間と補完アイテム(最大30件)を設定する。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>AIレコメンドの新規作成で選べる3種類は?</summary><p>サイト用レコメンド・配信用レコメンド・web接客用レコメンド[J]。</p></details>
+      <details><summary><span class="lv">仕組み</span>web接客用のデータセットは、新しく作る必要がある?</summary><p>ない。サイトレコメンドと同じ処理なので、データセットを共通で使える[J]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「メルマガの開封後の購入を増やしたい」顧客には、どれを作る?</summary><p>候補は配信用レコメンド[E]。ただし配信用データセットを一から作る場合は弊社側の対応が必要で[D]、メール本文への差し込み手順は公式FAQで確認できていません。顧客には「メール向けの仕組みはあります。準備の進め方は確認してご案内します」と伝え、社内で確かめてから手順を案内します。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m4">
+      <li><input type="checkbox" id="c-m4-1"><label for="c-m4-1">3つのアプリで何をするかを順に言える</label></li>
+      <li><input type="checkbox" id="c-m4-2"><label for="c-m4-2">顧客の目的を聞いて、サイト用・配信用・web接客用のどれを作るか選び、理由を言える</label></li>
+      <li><input type="checkbox" id="c-m4-3"><label for="c-m4-3"><b>説明</b>: 顧客の目的を1つ聞き、どの種類を作るかと理由を聞き手役に説明できた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M5 -->
+<section id="m5">
+<div class="chap"><span class="n">M5</span><h2>タグと表示<span class="sub">ワンタグ・リレーション設定・コーディング</span></h2></div>
+  <div class="modmeta"><span>目安 60分</span><span>前提: M4</span><span>区分: 設定支援</span></div>
+  <div class="goal"><b>ゴール</b> AIレコメンドタグの5手順と、「運用中」だけでは表示されない理由を言える。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「もう入っているタグじゃダメなんですか?」</h3></div>
+<p class="ans">ダメです。サイトに入れるタグ(ワンタグ)は1つですが、その中のAIレコメンドタグという機能を、新しく設定してONにする必要があります。</p>
+<div class="lbl">図</div>
+<div class="onetag">
+    <div class="ttl">ワンタグ(サイトに入れるタグは1つ)</div>
+    <div class="tags">
+      <span>アクセスログタグ</span><span>LINE ID連携タグ</span><span>閲覧アイテムタグ</span>
+      <span>web接客タグ</span><span>レコメンドタグ<br><small>従来版</small></span><span class="ai">AIレコメンドタグ</span>
+    </div>
+  </div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> ワンタグは「アクセスログ取得」や「web接客表示」などの機能を1つのタグにまとめたもの[M]。AIレコメンドタグはその1機能で、通常のレコメンドタグとは別。レコメンドタグを設定済みでも、AIレコメンドタグは新規に設定する[A][C]。</p>
+<p class="src">タグ管理画面の一覧(画像)は6つ[A]。ワンタグの説明ページ[M]の一覧には5つしか載っておらず、AIレコメンドタグがありません。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「タグって、ページから何を読み取っているんですか?」</h3></div>
+<p class="ans">見ている人(ユーザーID)、見ている商品(アイテムID)、カテゴリ、検索キーワードの4つです。このうち商品のIDは必須です。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0;overflow-x:auto"><svg class="fig" style="min-width:600px" viewBox="0 0 760 300" role="img" aria-label="商品ページのログイン情報、検索キーワード、パンくずのカテゴリ、商品IDから、リレーション設定の4項目に値を取る図">
+<rect x="10" y="10" width="430" height="280" rx="10" class="f-paper s-line" stroke-width="2"/>
+<rect x="10" y="10" width="430" height="26" rx="10" class="f-line"/>
+<circle cx="28" cy="23" r="4" class="f-paper"/><circle cx="42" cy="23" r="4" class="f-paper"/><circle cx="56" cy="23" r="4" class="f-paper"/>
+<text x="80" y="27" class="tm" font-size="10">shop.example/item/A-1029(アイテム詳細ページ)</text>
+<rect x="232" y="46" width="196" height="22" rx="4" class="f-teals"/><text x="240" y="61" class="tt" font-size="11">ログイン中 会員ID: 12345</text>
+<rect x="22" y="76" width="200" height="22" rx="4" class="f-paper s-line" stroke-width="1.5"/><text x="30" y="91" class="t" font-size="11">検索: 白 スニーカー</text>
+<rect x="22" y="104" width="210" height="20" rx="4" class="f-ambs"/><text x="28" y="118" class="tam" font-size="11">TOP &gt; シューズ &gt; スニーカー</text>
+<rect x="22" y="132" width="110" height="88" rx="6" class="f-line"/>
+<use href="#i-item" x="57" y="156" width="40" height="40" class="f-mut"/>
+<text x="146" y="150" class="t" font-size="13" font-weight="700">ホワイトスニーカー</text>
+<rect x="142" y="158" width="118" height="18" rx="4" class="f-accs"/><text x="148" y="171" class="ta" font-size="11">商品ID: A-1029</text>
+<text x="146" y="196" class="t" font-size="12">¥8,800</text>
+<rect x="22" y="230" width="406" height="50" rx="6" class="nofill s-acc" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="30" y="246" class="ta" font-size="10">おすすめ枠(例: div id="rec_area")</text>
+<rect x="200" y="238" width="44" height="34" rx="4" class="f-accs"/><rect x="252" y="238" width="44" height="34" rx="4" class="f-accs"/><rect x="304" y="238" width="44" height="34" rx="4" class="f-accs"/><rect x="356" y="238" width="44" height="34" rx="4" class="f-accs"/>
+<rect x="500" y="30" width="240" height="40" rx="4" class="f-paper s-acc" stroke-width="2"/><text x="516" y="55" class="t" font-size="13" font-weight="700">ユーザーID</text>
+<rect x="500" y="90" width="240" height="40" rx="4" class="f-paper s-acc" stroke-width="2"/><text x="516" y="115" class="t" font-size="13" font-weight="700">アイテムID</text><rect x="640" y="101" width="40" height="18" rx="4" class="f-ambs"/><text x="660" y="114" text-anchor="middle" class="tam" font-size="10">必須</text>
+<rect x="500" y="150" width="240" height="40" rx="4" class="f-paper s-acc" stroke-width="2"/><text x="516" y="175" class="t" font-size="13" font-weight="700">カテゴリID</text>
+<rect x="500" y="210" width="240" height="40" rx="4" class="f-paper s-acc" stroke-width="2"/><text x="516" y="235" class="t" font-size="13" font-weight="700">キーワード</text>
+<text x="620" y="20" text-anchor="middle" class="tm" font-size="11">リレーション設定で取る項目</text>
+<g class="s-acc nofill" stroke-width="2"><path d="M430 57 C460 57 470 50 496 50" marker-end="url(#ah)"/><path d="M262 167 C380 167 420 110 496 110" marker-end="url(#ah)"/><path d="M234 114 C380 114 420 170 496 170" marker-end="url(#ah)"/><path d="M224 87 C400 87 420 230 496 230" marker-end="url(#ah)"/></g>
+<text x="20" y="298" class="tm" font-size="10">Step1 ページの指定 → Step2 場所の指定(HTML・JavaScript・その他)→ Step3 タイミングの指定</text>
+</svg><p class="figcap">ページ上の場所は説明用のイメージです。項目名と3ステップは公式[A]の画面画像より</p></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> リレーション設定は、タグが「顧客ID」「商品ID」などのキー項目をページから取り、アクセスログと他のデータを結びつけるための設定[Q]。AIレコメンド用は「その他(AIレコメンド)」で作り、ページの指定 → 場所の指定(HTML・JavaScript・その他)→ タイミングの指定の3ステップで決める。取る項目はユーザーID・アイテムID(必須)・カテゴリID・キーワード[A]。AIレコメンドタグは顧客IDや閲覧中の商品情報を取得し、それに合わせたおすすめを表示する[C]。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「エンジニアにお願いする作業は、どこからどこまでですか?」</h3></div>
+<p class="ans">サイトにおすすめを表示するためのコードを書く作業です。リレーション設定・ドメイン登録・割り当て・タグのONは、b→dashの画面で行います。</p>
+<div class="lbl">図</div>
+<div class="steps">
+    <div class="st"><div class="k">1</div><h4>リレーション設定</h4><p>共通設定 → タグ管理 → リレーション設定 → 新規作成 →「その他(AIレコメンド)」</p></div>
+    <div class="st"><div class="k">2</div><h4>ドメイン登録</h4><p>AIレコメンドタグ →「＋」。複数ドメインはすべて登録</p></div>
+    <div class="st"><div class="k">3</div><h4>割り当て</h4><p>レコメンド設定にリレーション設定を割り当てる</p></div>
+    <div class="st"><div class="k">4</div><h4>コーディング</h4><p>サンプルコードを見て、表示用コードを書く。<b>顧客側の作業</b></p></div>
+    <div class="st" style="background:var(--teal-soft)"><div class="k" style="color:var(--teal)">5</div><h4>タグをON</h4><p>タグ管理 → AIレコメンドタグのトグルをON</p></div>
+  </div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> AIレコメンドタグの設定は5手順。コーディングはサンプルコードを参考に「貴社でコーディングを行ってください」[A]。複数ドメインはすべて登録。配信除外URLで特定ページのログを取らないようにできる。ドメインを削除したら、アクセスログを一度OFFにしてから再度ONにする[A]。</p>
+<details><summary>エンジニアに渡す情報: タグに渡されるデータの項目名</summary><div class="tbl"><table>
+    <tr><th>どこに出てくるか</th><th>項目名</th></tr>
+    <tr><td>サンプルコード</td><td>detail.img(画像)/ detail.page(リンク先)/ detail.title(タイトル)/ detail.sprice(価格)/ detail.desc(説明)/ detail.item</td></tr>
+    <tr><td>サンプルデータ(画像より)</td><td>item_id, title, desc, sprice, img_addr, page_addr, rec_flag, price, parent, cat_id など</td></tr>
+  </table></div><p class="src">「detail_image」「detail_page」のような名前は公式に見当たりません。表示用のdivのid(例: rec_area)に、上の項目でHTMLを組み立て、クリック時にsendRecClickを呼ぶ形のサンプルです[A]</p></details>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>AIレコメンドタグはワンタグの1機能で、従来のレコメンドタグとは別。新しく設定が要る。</li>
+    <li>手順はリレーション設定 → ドメイン登録 → 割り当て → コーディング(顧客側)→ ON。</li>
+    <li>リレーション設定ではアイテムIDが必須。ページ・場所・タイミングの3つを決める。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>リレーション設定で必須の項目は?</summary><p>アイテムID[A]。</p></details>
+      <details><summary><span class="lv">仕組み</span>ドメインを削除したあとにすることは?</summary><p>アクセスログを一度OFFにしてから再度ONにする[A]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「タグはもう入っているので、すぐ使えますよね?」と聞かれたら?</summary><p>例:「今入っているのが従来のレコメンドタグなら、AIレコメンドタグは別に設定が必要です。共通設定のタグ管理で、リレーション設定・ドメイン登録・割り当てをしてからAIレコメンドタグをONにします。サイトに表示するためのコードは御社で書いていただきます」[A][C]。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m5">
+      <li><input type="checkbox" id="c-m5-1"><label for="c-m5-1">5手順を順番どおりに言える</label></li>
+      <li><input type="checkbox" id="c-m5-2"><label for="c-m5-2">「運用中にしたのに出ない」理由を、タグの設定が別に要ることで説明できる(切り分けの順番はM7)</label></li>
+      <li><input type="checkbox" id="c-m5-3"><label for="c-m5-3"><b>説明</b>: 5手順を、誰がどの画面でやるかと合わせて聞き手役に説明できた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M6 -->
+<section id="m6">
+<div class="chap"><span class="n">M6</span><h2>実績と運用<span class="sub">配信実績・行動ログ・上限</span></h2></div>
+  <div class="modmeta"><span>目安 45分</span><span>前提: M4</span><span>区分: 設定支援(前半)</span></div>
+  <div class="goal"><b>ゴール</b> サイト用の配信実績で何が見られるかを言え、各数字の計算式が要確認であることを伝えたうえで、選択率とCV金額の動きを顧客と一緒に読める。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「効果が出ているかは、どこで見られますか?」</h3></div>
+<p class="ans">AIレコメンドの「配信実績」で、自動で見られます。レコメンドの設定ごとと、商品ごとの2つの見方があります。</p>
+<div class="lbl">図</div>
+<div class="win" style="max-width:560px">
+  <div class="tb"><i></i><i></i><i></i><span class="ap">AIレコメンド › 配信実績</span></div>
+  <div class="bd" style="grid-template-columns:34% 1fr">
+    <div class="mn"><span class="on">配信設定ごと</span><span>アイテムごと</span></div>
+    <div class="ct">
+      <span class="row">表示回数</span><span class="row">選択回数・選択率</span><span class="row">CV数・CV率・CV金額</span><span class="row">CV金額の寄与率</span><span class="row">閲覧回数・購入回数・セッション数</span>
+    </div>
+  </div>
+  <div class="ft">画面は説明用のイメージ。項目名は公式[F]</div>
+</div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 「AIレコメンド」→「配信実績」で「配信設定ごと」「アイテムごと」に見られる。配信後に自動で見られるので、「レコメンド実績レポート」を作る必要はない[F]。</p>
+<p class="src">配信実績のFAQはサイト用についてのもので、配信用・web接客用の実績画面は見つかりませんでした</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「クリックはされているのに売れていない時、何を見ればいい?」</h3></div>
+<p class="ans">「アイテムごと」の実績で、クリックが多いのに購入が少ない商品を探します。数字は、表示 → クリック → 購入の順に記録されています。</p>
+<div class="lbl">図</div>
+<div class="flowmini" style="flex-direction:row;flex-wrap:wrap">
+<div><b>1</b>表示(view)</div><div><b>2</b>クリック(select)</div><div><b>3</b>購入(purchase)</div>
+</div>
+<div class="tbl"><table>
+    <tr><th>見られる主な数字</th><th>意味(一般的な読み方)</th></tr>
+    <tr><td>表示回数</td><td>おすすめ枠が表示された回数</td></tr>
+    <tr><td>選択回数・選択率</td><td>おすすめがクリックされた回数と、表示に対する割合</td></tr>
+    <tr><td>CV数・CV率・CV金額</td><td>おすすめ経由の購入などの数・割合・金額</td></tr>
+    <tr><td>CV金額の寄与率</td><td>CV金額のうち、おすすめが関わった割合</td></tr>
+    <tr><td>閲覧回数・購入回数・セッション数</td><td>サイト全体の動き</td></tr>
+  </table></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 「AIレコメンド行動ログデータ」の履歴種別は view(レコメンド表示)・select(クリック)・purchase(購入)。リクエストID・表示エリアID・アイテムID・コンバート金額などを持つ[G]。「AIレコメンドアイテム別性能計測結果データ」は「集計期間FROM」「集計期間TO」の列を持つ[L]。</p>
+<p class="src">表の「意味」は一般的な読み方で、b→dashでの計算式は要確認。アイテムごとの画面には、アイテムマスタに設定したカラムの値が並びます[F]</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「設定してから、どれくらいで出始めますか?」</h3></div>
+<p class="ans">反映までの時間は公式に書かれていないので、確認してから答えます。運用で決めておくのは、データの更新タイミング・集計期間・優先度の3つです。</p>
+<div class="lbl">図</div>
+<div class="share" style="grid-template-columns:1fr 1fr 1fr">
+<div class="bx" style="background:var(--soft)"><b>データの更新タイミング</b><br>例: 毎週月曜05:00[D]</div>
+<div class="bx" style="background:var(--soft)"><b>集計期間</b><br>例: 直近7日間(配信用・web接客用)[E][J]</div>
+<div class="bx" style="background:var(--soft)"><b>優先度・重複排除</b><br>サイト用[5]</div>
+</div>
+<div class="lbl">根拠</div>
+<p><span class="b chk">要確認</span> 設定してから表示・実績に反映されるまでの時間、AIの再学習の頻度は公式に見つかりませんでした。AIレコメンドの上限値も要確認(従来アプリの参考値はM4)。</p>
+<p class="src">参考: 従来のレコメンドアプリでは「集計中」から2時間以上たっても完了しなければ問い合わせ、とあります[S]</p>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>配信実績は「配信設定ごと」「アイテムごと」に自動で見られる。レポートを作る必要はない。</li>
+    <li>行動ログは表示(view)・クリック(select)・購入(purchase)の3種類。</li>
+    <li>更新タイミング・集計期間・優先度を運用で決める。反映時間は要確認。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>行動ログの履歴種別3つは?</summary><p>view(表示)・select(クリック)・purchase(購入)[G]。</p></details>
+      <details><summary><span class="lv">仕組み</span>配信実績を見るために、レポートを作る必要はある?</summary><p>ない。配信後に自動で見られる[F]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「選択率は高いのにCV金額が伸びない」とき、顧客にどう話す?</summary><p>例:「おすすめはよく見られていてクリックもされていますが、購入まではつながっていない状態です。アイテムごとの実績で、クリックが多いのに売れていない商品を一緒に見てみましょう」(読み方は一般論)。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m6">
+      <li><input type="checkbox" id="c-m6-1"><label for="c-m6-1">配信実績で見られる数字を5つ以上言える</label></li>
+      <li><input type="checkbox" id="c-m6-2"><label for="c-m6-2">運用で決めること(更新タイミング・集計期間・優先度)を言える</label></li>
+      <li><input type="checkbox" id="c-m6-3"><label for="c-m6-3"><b>説明</b>: 配信実績の画面(またはこの資料の表)を見せながら、選択率とCV金額の読み方を聞き手役に説明できた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+<!-- M7 -->
+<section id="m7">
+<div class="chap"><span class="n">M7</span><h2>トラブルとデータの扱い<span class="sub">切り分けの順番とデータポリシー</span></h2></div>
+  <div class="modmeta"><span>目安 60分</span><span>前提: M3、M5、M6</span></div>
+  <div class="goal"><b>ゴール</b>「おすすめが出ない」を順番に切り分けられ、データの扱いを顧客が安心できる言い方で説明できる。</div>
+<div class="qa"><div class="qh"><span class="qn">Q1</span><h3>「設定したのに、サイトに出てこないんですけど?」</h3></div>
+<p class="ans">まず設定が「運用中」か、次にAIレコメンドタグがONかを確認します。そのあと、ドメインの登録、リレーション設定の割り当て、表示用のコード、データの順に見ます。</p>
+<div class="lbl">図</div>
+<div class="trouble">
+    <div class="tr"><div class="ln"><span class="no">1</span><i></i></div><div class="bx"><b>レコメンド設定は「運用中」?</b><p>「停止中」のままなら出ない[5]。</p></div></div>
+    <div class="tr"><div class="ln"><span class="no">2</span><i></i></div><div class="bx"><b>AIレコメンドタグはON?</b><p>運用中でもタグがOFFなら出ない。従来のレコメンドタグとは別物[5][A]。</p></div></div>
+    <div class="tr"><div class="ln"><span class="no">3</span><i></i></div><div class="bx"><b>ドメインは全部登録してある?</b><p>複数ドメインはすべて登録。削除したらアクセスログをOFF→ON[A]。</p></div></div>
+    <div class="tr"><div class="ln"><span class="no">4</span><i></i></div><div class="bx"><b>リレーション設定は割り当ててある?</b><p>アイテムIDが取れているか[A]。</p></div></div>
+    <div class="tr"><div class="ln"><span class="no">5</span><i></i></div><div class="bx"><b>表示用のコードは入っている?</b><p>サンプルデータの形で値を受け取れているか。コードは顧客側の作業[A]。</p></div></div>
+    <div class="tr"><div class="ln"><span class="no">6</span><i></i></div><div class="bx"><b>データに問題はない?</b><p>アイテムマスタの必須カラムが入っているか[D]。下の参考も確認。</p></div></div>
+  </div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 「運用開始」にしただけではサイトに表示されず、AIレコメンドタグの設定が必要[5]。ドメイン・割り当て・コーディングは[A]、アイテムマスタの必須列は[D]。</p>
+<p><span class="b chk">作成者の整理</span> 確認の順番は公式の手順ではありません。画面ですぐ確かめられるもの(運用中・ON)から、顧客側の作業が要るもの(コード・データ)の順に並べています。</p>
+<details><summary>参考: 従来のレコメンドアプリで案内されているデータの注意点 <span class="b chk">要確認</span></summary>
+    <p>以下は従来の「レコメンド」アプリのFAQの記載です。AIレコメンドにも当てはまるとは書かれていませんが、切り分けのヒントになります。</p>
+    <ul>
+      <li>使うカラムの値に空文字/NULLがあると集計エラーになり、表示されない[R]</li>
+      <li>顧客ID・商品IDが255文字より長いと結果が出ない原因になる[S]</li>
+      <li>閲覧履歴の商品IDと商品データの商品ID、閲覧履歴の顧客IDと配信先の顧客IDが一致している必要がある[R]</li>
+      <li>「集計中」から2時間以上たっても完了しなければカスタマーサクセスに問い合わせる[S]</li>
+      <li>メールでは、おすすめの件数が本文に差し込む件数より少ないと配信されない[R]</li>
+    </ul>
+  </details>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q2</span><h3>「うちのデータが、他社のAIの学習に使われたりしませんか?」</h3></div>
+<p class="ans">同意や指示がない限り、学習・改善には使いません。特に定めがある場合を除き、お客様ごとに独立したAIを用意して、データが混ざらないようにしています。</p>
+<div class="lbl">図</div>
+<div class="figbox" style="margin:0;overflow-x:auto"><svg class="fig" style="min-width:600px" viewBox="0 0 760 300" role="img" aria-label="お客様ごとに独立したAIを使い、データが混ざらない。同意なく学習に使わない。解約後は1週間以内に削除または匿名化する">
+<g>
+<rect x="20" y="20" width="250" height="150" rx="12" class="f-accs"/>
+<text x="36" y="44" class="ta" font-size="14">お客様A</text>
+<use href="#i-db" x="36" y="62" width="90" height="60" class="f-paper"/><text x="81" y="98" text-anchor="middle" class="t" font-size="12">データ</text>
+<path d="M130 92 H156" class="s-acc" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="162" y="64" width="92" height="56" rx="4" class="f-acc"/><text x="208" y="90" text-anchor="middle" class="tw" font-size="12">A専用の</text><text x="208" y="108" text-anchor="middle" class="tw" font-size="12">AI</text>
+<text x="36" y="152" class="t" font-size="11">データの権利はお客様A</text>
+</g>
+<g>
+<rect x="490" y="20" width="250" height="150" rx="12" class="f-teals"/>
+<text x="506" y="44" class="tt" font-size="14">お客様B</text>
+<use href="#i-db" x="506" y="62" width="90" height="60" class="f-paper"/><text x="551" y="98" text-anchor="middle" class="t" font-size="12">データ</text>
+<path d="M600 92 H626" class="s-teal" stroke-width="2" marker-end="url(#ah)"/>
+<rect x="632" y="64" width="92" height="56" rx="4" class="f-teal"/><text x="678" y="90" text-anchor="middle" class="tw" font-size="12">B専用の</text><text x="678" y="108" text-anchor="middle" class="tw" font-size="12">AI</text>
+<text x="506" y="152" class="t" font-size="11">データの権利はお客様B</text>
+</g>
+<rect x="352" y="20" width="56" height="150" rx="6" class="f-line"/>
+<path d="M352 50 H408 M352 80 H408 M352 110 H408 M352 140 H408 M380 20 V50 M366 50 V80 M394 50 V80 M380 80 V110 M366 110 V140 M394 110 V140 M380 140 V170" class="s-mut" stroke-width="1.5"/>
+<text x="380" y="190" text-anchor="middle" class="t" font-size="12" font-weight="700">混ざらない</text>
+<rect x="20" y="214" width="230" height="64" rx="10" class="f-ambs"/>
+<text x="135" y="240" text-anchor="middle" class="tam" font-size="12">同意・指示がない限り</text><text x="135" y="260" text-anchor="middle" class="tam" font-size="12">学習・改善に使わない</text>
+<rect x="265" y="214" width="230" height="64" rx="10" class="f-soft f-line"/>
+<text x="380" y="240" text-anchor="middle" class="t" font-size="12">統計データ(利用回数など)</text><text x="380" y="260" text-anchor="middle" class="t" font-size="12">だけ社内で使うことがある</text>
+<rect x="510" y="214" width="230" height="64" rx="10" class="f-accs"/>
+<circle cx="540" cy="246" r="15" class="nofill s-acc" stroke-width="2.5"/><path d="M540 236 V246 L548 251" class="s-acc nofill" stroke-width="2.5"/>
+<text x="640" y="240" text-anchor="middle" class="ta" font-size="12">解約後 原則1週間以内に</text><text x="640" y="260" text-anchor="middle" class="ta" font-size="12">削除または匿名化</text>
+</svg><p class="figcap">出典: 公式[6]。このポリシーはAI機能全般が対象で、AIレコメンドだけを名指ししたものではありません</p></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> 「特筆事項のない限り、お客様ごとに独立したAIエージェントを用意し、複数のお客様のデータが混在することがないよう取り計らいます」「明示的な同意を行う場合、または弊社に対して明確な指示を行う場合を除き、…学習・改善目的に利用いたしません」[6]。統計処理した数値(機能の利用回数・データ容量など)は、サービス改善のため社内でだけ使うことがある[6]。</p>
+<p class="src">答えるときは「AI機能全般のポリシー」「特に定めがない限り」を落とさない。AIレコメンド個別の学習の仕組みは確認してから答える。</p>
+</div>
+
+<div class="qa"><div class="qh"><span class="qn">Q3</span><h3>「解約したらデータはどうなりますか? 売上が上がる保証はありますか?」</h3></div>
+<p class="ans">解約後、AI機能が作ったデータは、法令上の保存義務がない限り原則1週間以内に削除または匿名化します。出力の正確さや目的の達成は保証されていないので、「必ず売上が上がる」とは言えません。</p>
+<div class="lbl">図</div>
+<div class="tbl"><table>
+    <tr><th>項目</th><th>公式の内容[6]</th></tr>
+    <tr><td>データの持ち主</td><td>AI機能で作ったデータの権利はお客様にある</td></tr>
+    <tr><td>混ざらない</td><td>特筆事項のない限り、お客様ごとに独立したAIエージェントを用意し、複数のお客様のデータが混ざらないようにする</td></tr>
+    <tr><td>学習に使わない</td><td>明示的な同意か明確な指示がない限り、AIの学習・改善に使わない</td></tr>
+    <tr><td>統計データ</td><td>誰のものか分からない形にした数値(機能の利用回数・データ容量など)は、サービス改善のため社内でだけ使うことがある</td></tr>
+    <tr><td>解約後</td><td>AI機能が生成したデータを、法令上の保存義務がある場合を除き、原則1週間以内に完全に削除または匿名化</td></tr>
+    <tr><td>安全管理</td><td>暗号化・アクセス権限管理・監査ログの保管など。外部のAIモデルやAPIを使う場合は、契約と監督のもとで委託</td></tr>
+    <tr><td>保証しないこと</td><td>出力の正確さ、他者の権利を侵害しないこと、利用目的を達成できること</td></tr>
+  </table></div>
+<div class="lbl">根拠</div>
+<p><span class="b off">公式</span> データ保持ポリシーと免責事項より[6]。</p>
+</div>
+<div class="point"><b>このモジュールのポイント</b><ol>
+    <li>「出ない」は運用中 → タグON → ドメイン → 割り当て → コード → データの順に見る。</li>
+    <li>AI機能全般のポリシーとして、特に定めがない限りお客様ごとに独立し、同意なく学習に使わない。解約後、AIが生成したデータは原則1週間以内に削除または匿名化。</li>
+    <li>出力の正確さは保証されない。顧客に「必ず売上が上がる」とは言わない。</li>
+  </ol></div>
+  <div class="endbox">
+    <div class="qq"><h4>確認問題</h4>
+      <details><summary><span class="lv">用語</span>統計処理したデータの例として公式が挙げているものは?</summary><p>機能の利用回数、データ容量[6]。</p></details>
+      <details><summary><span class="lv">仕組み</span>運用中なのにサイトに出ない。最初に確かめるのは?</summary><p>AIレコメンドタグがONになっているか[5][A]。</p></details>
+      <details><summary><span class="lv">言い換え</span>「うちのデータで他社のAIが賢くなるのは困る」と言われたら?</summary><p>例:「b→dashのAI機能全般のデータポリシーで、特に定めがない限り、お客様ごとに独立したAIを用意して、他のお客様のデータと混ざらないようにするとしています。お客様の同意や指示がない限り、学習・改善にも使いません。AIレコメンド個別の学習の仕組みは、確認してご回答します」[6]。</p></details>
+    </div>
+    <div><h4>到達チェック</h4><ul class="checks" data-mod="m7">
+      <li><input type="checkbox" id="c-m7-1"><label for="c-m7-1">「出ない」の切り分けを6段階の順番で言える</label></li>
+      <li><input type="checkbox" id="c-m7-2"><label for="c-m7-2">データポリシーを「独立・学習に使わない・解約後1週間」で説明できる</label></li>
+      <li><input type="checkbox" id="c-m7-3"><label for="c-m7-3"><b>説明</b>: 「データは他社に使われない?」に、但し書き(AI機能全般・特に定めがない限り)を落とさず答えられた</label></li>
+    </ul></div>
+  </div>
+
+</section>
+
+
+<!-- ================= 総合ロープレ ================= -->
+<section id="rp" class="roleplay">
+  <div class="chap"><span class="n" style="font-size:.85rem">RP</span><h2>総合ロープレ<span class="sub">約30分。声に出して答えてから、答えの例を開く</span></h2></div>
+  <p>顧客役の質問7本です。最後の2本は、資料に答えがない質問への答え方の練習です。詰まったら、書いてあるモジュールに戻ってください。</p>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">AIレコメンドって、普通のレコメンドと何が違うんですか?<span class="src" style="display:block;font-weight:400">→ M1</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>商品説明の文章まで読んで似た商品を探せる点と、購入・閲覧の履歴からAIがパターンを見つけて、購入につながりやすい商品を出す点が違います。季節で商品が入れ替わっても、自動でおすすめに反映できます[1]。</p></details>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">始めるのに、どんなデータを用意すればいいですか?<span class="src" style="display:block;font-weight:400">→ M3</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>商品データ(アイテムマスタ)は必ず必要です。メール向けの設定画面では、アイテムID・タイトル・ページアドレスの3項目が必須でした(御社の列なら商品ID・商品名・商品ページURLに当たります)。サイト向けも同じかは確認します。画像や閲覧・購買の履歴が要るかは使うアルゴリズムで変わり、設定画面で赤(必須)と青(任意)で分かります[D]。</p></details>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">メールにも使えますか? サイトと同じことができますか?<span class="src" style="display:block;font-weight:400">→ M2・M4</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>メール/LINE向けの「配信用レコメンド」があります。ただしサイトは11種類、メール/LINEは7種類で、使える計算方法が違います。閲覧履歴の表示などはサイトだけです[3]。メール本文への入れ方と準備の範囲は、確認してからご案内します。</p></details>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">設定は終わったのに、サイトに出てきません。<span class="src" style="display:block;font-weight:400">→ M5・M7</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>まず設定が「運用中」か、次にAIレコメンドタグがONかを確認させてください。そのあと、ドメインの登録、リレーション設定の割り当て、表示用のコードの順に見ていきます[5][A]。</p></details>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">うちのデータが、他社のAIの学習に使われることはありませんか?<span class="src" style="display:block;font-weight:400">→ M7</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>AI機能全般のデータポリシーで、同意や指示がない限り学習・改善には使わないと定めています。特に定めがある場合を除き、お客様ごとに独立したAIを用意して、データが混ざらないようにしています。ご契約が終わった場合、AI機能が作ったデータは、法令上の保存義務がない限り、原則1週間以内に削除または匿名化します[6]。</p></details>
+  <p class="phase">答えが資料にない質問(確認して答える練習)</p>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">使い続けると、AIの精度はどんどん上がるんですよね?<span class="src" style="display:block;font-weight:400">→ M1・M2</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>公式には「AIが自ら発見した特徴や行動パターンを活かす」とありますが[1]、精度が上がり続けるとは書かれていません。学習の頻度は確認してご回答します。</p></details>
+  <div class="chat">
+    <div class="bub q"><svg><use href="#i-person" class="f-mut"/></svg><div class="tx">設定してから、何時間でおすすめが出始めますか?<span class="src" style="display:block;font-weight:400">→ M6</span></div></div>
+  </div>
+  <details><summary>答えの例</summary><p>反映までの時間は公式に書かれていないため、確認してご回答します。</p></details>
+</section>
+
+<!-- ================= 要確認リスト ================= -->
+<section id="unknown">
+  <div class="chap"><span class="n" style="font-size:.85rem">?</span><h2>要確認リスト<span class="sub">公式FAQで見つからなかったこと。社内でまとめて確かめる</span></h2></div>
+  <div class="tbl unknown"><table>
+    <tr><th>#</th><th>確かめること</th><th>関係するモジュール</th><th>探した場所</th></tr>
+    <tr><td>1</td><td>ロジックの組み合わせ・割合を、誰が・いつ・どう調整するか。AIの学習の頻度</td><td>M2</td><td>FAQ 279・276・277・2705 ほか</td></tr>
+    <tr><td>2</td><td>12種すべてのアルゴリズムと、必要なデータ(必須/任意)の対応表</td><td>M3</td><td>FAQ 266・276</td></tr>
+    <tr><td>3</td><td>閲覧・購買履歴で選ぶカラム(顧客ID・日時など)とデータの型の条件</td><td>M3</td><td>FAQ 266・276</td></tr>
+    <tr><td>4</td><td>配信用をメール/LINE本文に差し込む手順</td><td>M4</td><td>FAQ 277・1910・1516・185・219・217</td></tr>
+    <tr><td>5</td><td>web接客用をweb接客のコンテンツに差し込む手順と、使えるアルゴリズム</td><td>M4</td><td>FAQ 2705・216・1533・179</td></tr>
+    <tr><td>6</td><td>設定してから表示・実績に反映されるまでの時間</td><td>M6</td><td>FAQ 276・277・2705・275・295</td></tr>
+    <tr><td>7</td><td>配信実績の各数字の計算式。配信用・web接客用の実績画面。AIレコメンドの上限値</td><td>M6</td><td>FAQ 275・2227</td></tr>
+    <tr><td>8</td><td>従来アプリのデータの注意点(NULL・255文字・ID一致)がAIレコメンドにも当てはまるか</td><td>M7</td><td>FAQ 466・1367</td></tr>
+    <tr><td>9</td><td>新商品・新規会員(コールドスタート)のときの挙動</td><td>M0</td><td>未調査(FAQ 1454「結果が想定通りではない」から確認)</td></tr>
+    <tr><td>10</td><td>アイテムマスタの必須カラムが、サイト用も配信用と同じか</td><td>M3</td><td>FAQ 266・276</td></tr>
+  </table></div>
+</section>
+
+<!-- ================= 用語集 ================= -->
+<section id="gl">
+  <div class="chap"><span class="n" style="font-size:.85rem">GL</span><h2>用語集と参照元</h2></div>
+  <dl class="gl">
+    <dt>AIレコメンド <span class="b off">公式</span></dt><dd>AIを活用して顧客1人1人に最適なレコメンドを表示する機能。別途オプション契約が必要[1]。</dd>
+    <dt>アルゴリズム <span class="b off">公式</span></dt><dd>ロジックセットとロジックを組み合わせた計算手法の種類。全12種。ユーザーが1つ選ぶ[3][5]。</dd>
+    <dt>ロジックセット <span class="b off">公式</span></dt><dd>複数のロジックを組み合わせたまとまり[3]。</dd>
+    <dt>ロジック <span class="b off">公式</span></dt><dd>アルゴリズムを構成する最小単位。例: ランキング、協調フィルタリング、類似ユーザー相関[3]。</dd>
+    <dt>データパレット <span class="b off">公式</span></dt><dd>データを取り込むアプリ。連携システム経由かローカルからのアップロードで取り込む[K]。</dd>
+    <dt>共通設定 <span class="b off">公式</span></dt><dd>b→dashを使うための設定をまとめたアプリ。データセット設定・タグ管理がある[4][T]。</dd>
+    <dt>データセット <span class="b off">公式</span></dt><dd>AIレコメンドで使う商品情報や顧客の行動履歴などをまとめたもの[B]。</dd>
+    <dt>アイテムマスタ <span class="b off">公式</span></dt><dd>商品のデータ。どのアルゴリズムでも必須。必須カラムはアイテムID・タイトル・ページアドレス[D]。</dd>
+    <dt>集計期間 <span class="b off">公式</span></dt><dd>おすすめの計算に使う期間(例: 直近7日間)。配信用・web接客用で選ぶ[E][J]。</dd>
+    <dt>サイト用/配信用/web接客用 <span class="b off">公式</span></dt><dd>AIレコメンドの3種類。サイト用はWebサイト、配信用はメール/LINE、web接客用はweb接客向け[3][J]。</dd>
+    <dt>ワンタグ <span class="b off">公式</span></dt><dd>アクセスログ取得やweb接客表示などの機能を1つにまとめたタグ[M]。</dd>
+    <dt>AIレコメンドタグ <span class="b off">公式</span></dt><dd>ワンタグの1機能。顧客IDや閲覧中の商品を取得し、サイトにおすすめを表示する。従来のレコメンドタグとは別[C]。</dd>
+    <dt>リレーション設定 <span class="b off">公式</span></dt><dd>タグがページから顧客ID・商品IDなどのキー項目を取る設定。AIレコメンド用は「その他(AIレコメンド)」[A][Q]。</dd>
+    <dt>重複排除 <span class="b off">公式</span></dt><dd>同じページに同じ商品が複数出るとき、優先度の高い設定を優先して表示する機能[5]。</dd>
+    <dt>配信実績 <span class="b off">公式</span></dt><dd>表示回数・選択率・CV金額などを、配信設定ごと・アイテムごとに見られる画面[F]。</dd>
+    <dt>メイン/サブロジック <span class="b off">公式</span></dt><dd>従来の「レコメンド」アプリの仕組み。メインで抽出し、足りない分をサブで補う[H]。</dd>
+    <dt>内容ベース <span class="b gen">一般論</span></dt><dd>商品の特徴が似ているものをおすすめする方法[7][10]。</dd>
+    <dt>協調フィルタリング <span class="b gen">一般論</span></dt><dd>好みや行動が似ている人が選んだものをおすすめする方法[7][8][9]。</dd>
+    <dt>コールドスタート <span class="b gen">一般論</span></dt><dd>履歴が少ない新商品・新規会員に、うまくおすすめを出せない問題[9][10]。</dd>
+    <dt>類似度 <span class="b gen">一般論</span></dt><dd>商品どうし・人どうしがどれくらい似ているかを表す数値[7][9]。</dd>
+    <dt>人気順(ランキング) <span class="b gen">一般論</span></dt><dd>個人の好みに関係なく、全員に同じ人気商品を出す方法[10]。</dd>
+  </dl>
+
+  <h3 id="refs">参照元URL</h3>
+  <p class="src">b→dash公式サポートサイト(https://support.user-portal.jp/faq/show/番号?site_domain=bdash)</p>
+  <ol class="refs">
+    <li>[1] AIレコメンド(用語集) <a href="https://support.user-portal.jp/faq/show/749?site_domain=bdash">https://support.user-portal.jp/faq/show/749?site_domain=bdash</a></li>
+    <li>[2] 【概要】AIレコメンドを配信したい <a href="https://support.user-portal.jp/faq/show/267?site_domain=bdash">https://support.user-portal.jp/faq/show/267?site_domain=bdash</a></li>
+    <li>[3] AIレコメンドで利用できるアルゴリズムを知りたい <a href="https://support.user-portal.jp/faq/show/279?site_domain=bdash">https://support.user-portal.jp/faq/show/279?site_domain=bdash</a></li>
+    <li>[4] AIレコメンド用のデータセットを設定したい <a href="https://support.user-portal.jp/faq/show/266?site_domain=bdash">https://support.user-portal.jp/faq/show/266?site_domain=bdash</a></li>
+    <li>[5] AIレコメンド(サイトレコメンド)の設定をしたい <a href="https://support.user-portal.jp/faq/show/262?site_domain=bdash">https://support.user-portal.jp/faq/show/262?site_domain=bdash</a></li>
+    <li>[6] AIに関するデータポリシー <a href="https://support.user-portal.jp/faq/show/1694?site_domain=bdash">https://support.user-portal.jp/faq/show/1694?site_domain=bdash</a></li>
+    <li>[A] AIレコメンドタグを設定したい <a href="https://support.user-portal.jp/faq/show/264?site_domain=bdash">https://support.user-portal.jp/faq/show/264?site_domain=bdash</a></li>
+    <li>[B] データセット(用語集) <a href="https://support.user-portal.jp/faq/show/647?site_domain=bdash">https://support.user-portal.jp/faq/show/647?site_domain=bdash</a></li>
+    <li>[C] AIレコメンドタグ(用語集) <a href="https://support.user-portal.jp/faq/show/750?site_domain=bdash">https://support.user-portal.jp/faq/show/750?site_domain=bdash</a></li>
+    <li>[D] AIレコメンド(配信用レコメンド)のデータセットを作成したい <a href="https://support.user-portal.jp/faq/show/276?site_domain=bdash">https://support.user-portal.jp/faq/show/276?site_domain=bdash</a></li>
+    <li>[E] AIレコメンド(配信用レコメンド)の設定をしたい <a href="https://support.user-portal.jp/faq/show/277?site_domain=bdash">https://support.user-portal.jp/faq/show/277?site_domain=bdash</a></li>
+    <li>[F] AIレコメンド(サイトレコメンド)の配信実績を確認したい <a href="https://support.user-portal.jp/faq/show/275?site_domain=bdash">https://support.user-portal.jp/faq/show/275?site_domain=bdash</a></li>
+    <li>[G] AIレコメンド行動ログデータについて知りたい <a href="https://support.user-portal.jp/faq/show/2226?site_domain=bdash">https://support.user-portal.jp/faq/show/2226?site_domain=bdash</a></li>
+    <li>[H] レコメンドアルゴリズムを知りたい(従来のレコメンドアプリ) <a href="https://support.user-portal.jp/faq/show/229?site_domain=bdash">https://support.user-portal.jp/faq/show/229?site_domain=bdash</a></li>
+    <li>[J] AIレコメンド(web接客用レコメンド)を利用したい <a href="https://support.user-portal.jp/faq/show/2705?site_domain=bdash">https://support.user-portal.jp/faq/show/2705?site_domain=bdash</a></li>
+    <li>[K] データを取り込みたい <a href="https://support.user-portal.jp/faq/show/671?site_domain=bdash">https://support.user-portal.jp/faq/show/671?site_domain=bdash</a></li>
+    <li>[L] AIレコメンドアイテム別性能計測結果データについて知りたい <a href="https://support.user-portal.jp/faq/show/2227?site_domain=bdash">https://support.user-portal.jp/faq/show/2227?site_domain=bdash</a></li>
+    <li>[M] ワンタグ <a href="https://support.user-portal.jp/faq/show/745?site_domain=bdash">https://support.user-portal.jp/faq/show/745?site_domain=bdash</a></li>
+    <li>[N] 各設定項目の上限値を確認したい(レコメンド) <a href="https://support.user-portal.jp/faq/show/295?site_domain=bdash">https://support.user-portal.jp/faq/show/295?site_domain=bdash</a></li>
+    <li>[P] レコメンドメールを配信したい(従来のレコメンドアプリ) <a href="https://support.user-portal.jp/faq/show/217?site_domain=bdash">https://support.user-portal.jp/faq/show/217?site_domain=bdash</a></li>
+    <li>[Q] 【概要】webデータの全体像 <a href="https://support.user-portal.jp/faq/show/13?site_domain=bdash">https://support.user-portal.jp/faq/show/13?site_domain=bdash</a></li>
+    <li>[R] レコメンドに関するよくあるお問い合わせ(従来のレコメンドアプリ) <a href="https://support.user-portal.jp/faq/show/466?site_domain=bdash">https://support.user-portal.jp/faq/show/466?site_domain=bdash</a></li>
+    <li>[S] 「レコメンドにおいてプレビューを実施しても結果が表示されない」原因を特定したい(従来のレコメンドアプリ) <a href="https://support.user-portal.jp/faq/show/1367?site_domain=bdash">https://support.user-portal.jp/faq/show/1367?site_domain=bdash</a></li>
+    <li>[T] 共通設定 <a href="https://support.user-portal.jp/faq/show/2757?site_domain=bdash">https://support.user-portal.jp/faq/show/2757?site_domain=bdash</a></li>
+  </ol>
+  <p class="src">一般的なレコメンドの仕組み(Qiita)</p>
+  <ol class="refs">
+    <li>[7] 内容ベースと協調フィルタリングの長所と短所 <a href="https://qiita.com/haminiku/items/f5008a57a870e0188f63">https://qiita.com/haminiku/items/f5008a57a870e0188f63</a></li>
+    <li>[8] 協調フィルタリング入門(カレー推薦) <a href="https://qiita.com/Tadataka_Takahashi/items/458b5ba96bc833b156c2">https://qiita.com/Tadataka_Takahashi/items/458b5ba96bc833b156c2</a></li>
+    <li>[9] レコメンドアルゴリズムまとめ① <a href="https://qiita.com/monkichizae/items/df847420018bd6e0c15f">https://qiita.com/monkichizae/items/df847420018bd6e0c15f</a></li>
+    <li>[10] 推薦システム実践入門まとめ <a href="https://qiita.com/Yoshida44/items/55bace5e6a19878a4bc5">https://qiita.com/Yoshida44/items/55bace5e6a19878a4bc5</a></li>
+  </ol>
+  <p class="src">資料の書き方の参考(内容の出典ではありません)</p>
+  <ol class="refs">
+    <li>[11] 理論上最も分かりやすいQiita記事を書く方法 <a href="https://qiita.com/CinnamonSea2073/items/7b93530a403a72165798">https://qiita.com/CinnamonSea2073/items/7b93530a403a72165798</a></li>
+    <li>[12] わかりやすいシステム構成図の書き方 <a href="https://qiita.com/fetaro/items/c8420f5de48f48317391">https://qiita.com/fetaro/items/c8420f5de48f48317391</a></li>
+  </ol>
+</section>
+</div>
+
+<script>
+(function(){
+  var KEY='bdash-ai-reco-checks';
+  var saved={};
+  try{ saved=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; }catch(e){ saved={}; }
+  var boxes=[].slice.call(document.querySelectorAll('.checks input[type=checkbox]'));
+  function update(){
+    var mods={}, done=0;
+    boxes.forEach(function(b){
+      var m=b.closest('.checks').getAttribute('data-mod');
+      mods[m]=mods[m]||{n:0,d:0}; mods[m].n++;
+      if(b.checked){mods[m].d++; done++;}
+    });
+    Object.keys(mods).forEach(function(m){
+      var bar=document.querySelector('[data-bar="'+m+'"]');
+      if(bar) bar.style.width=(mods[m].d/mods[m].n*100)+'%';
+    });
+    var t=document.getElementById('totalbar'); if(t) t.style.width=(done/boxes.length*100)+'%';
+    var tx=document.getElementById('totaltxt'); if(tx) tx.textContent=done+' / '+boxes.length;
+  }
+  boxes.forEach(function(b){
+    if(saved[b.id]) b.checked=true;
+    b.addEventListener('change',function(){
+      saved[b.id]=b.checked;
+      try{ localStorage.setItem(KEY,JSON.stringify(saved)); }catch(e){}
+      update();
+    });
+  });
+  update();
+})();
+</script>
+
+</body></html>
