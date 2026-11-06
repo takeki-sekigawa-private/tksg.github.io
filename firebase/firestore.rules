@@ -1,0 +1,49 @@
+rules_version = '2';
+// 北関東旅行 写真共有 Firestore セキュリティルール
+// Firebaseコンソール > Firestore Database > ルール に貼り付けて「公開」してください。
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 合言葉（共有アカウントのパスワード）でログインした人だけ
+    function isMember() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && request.auth.token.email == 'kitakanto202611@tripphotosavesystem.firebaseapp.com';
+    }
+
+    function validText(v, max) { return v is string && v.size() <= max; }
+
+    function validPhoto(d, id) {
+      return d.keys().hasOnly(['name', 'caption', 'day', 'storagePath', 'url', 'createdAt', 'lat', 'lng', 'hasLoc'])
+        && validText(d.name, 40)
+        && validText(d.caption, 300)
+        && (d.day == null || d.day in ['d1', 'd2', 'd3'])
+        && d.storagePath == 'trips/kitakanto202611/memories/' + id + '.jpg'
+        && d.url is string
+        && d.url.matches('^https://firebasestorage[.]googleapis[.]com/v0/b/tripphotosavesystem[.]firebasestorage[.]app/o/.*')
+        && d.url.size() < 1000
+        && d.hasLoc is bool
+        && (d.hasLoc == false
+            || (d.lat is number && d.lng is number
+                && d.lat >= -90 && d.lat <= 90 && d.lng >= -180 && d.lng <= 180));
+    }
+
+    match /trips/kitakanto202611/memories/{id} {
+      allow read: if isMember();
+      allow create: if isMember()
+        && validPhoto(request.resource.data, id)
+        && request.resource.data.createdAt == request.time;
+      // 編集は「お名前」「ひとこと」だけ
+      allow update: if isMember()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'caption'])
+        && validText(request.resource.data.name, 40)
+        && validText(request.resource.data.caption, 300);
+      allow delete: if isMember();
+    }
+
+    // それ以外は全部拒否
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,28 @@
+rules_version = '2';
+// 北関東旅行 写真共有 Storage セキュリティルール
+// Firebaseコンソール > Storage > ルール に貼り付けて「公開」してください。
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isMember() {
+      return request.auth != null
+        && request.auth.token.firebase.sign_in_provider == 'password'
+        && request.auth.token.email == 'kitakanto202611@tripphotosavesystem.firebaseapp.com';
+    }
+
+    match /trips/kitakanto202611/memories/{file} {
+      allow read: if isMember();
+      // 新規アップロードのみ（上書き不可）・JPEG・5MBまで・ファイル名はID.jpg
+      allow create: if isMember()
+        && file.matches('^[A-Za-z0-9]{20}[.]jpg$')
+        && request.resource.contentType == 'image/jpeg'
+        && request.resource.size < 5 * 1024 * 1024;
+      allow delete: if isMember();
+    }
+
+    // それ以外は全部拒否
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
