@@ -214,6 +214,9 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .wx .wt .hi{color:#C05621}
 .wx .wt .lo{color:var(--route)}
 .wx .wd{font-size:11.5px;color:var(--sub);line-height:1.5}
+.wx-link{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:74px;padding:7px 10px;border:1px solid var(--route);border-radius:8px;background:#EBF8FF;color:var(--route);text-decoration:none;font-size:12px;font-weight:600;line-height:1.3;-webkit-tap-highlight-color:transparent}
+.wx-link small{font-size:9.5px;font-weight:500;color:var(--sub)}
+.wx-link:active{transform:scale(.96)}
 .wx-tip{font-size:12px;color:var(--sub);background:#FFFAF0;border:1px solid #FBD38D;border-radius:6px;padding:6px 9px;margin-top:9px;line-height:1.55}
 .tl li.is-done{opacity:.45}
 .tl li.is-next .bd h4::before{content:"NEXT";display:inline-block;font:700 10px/1 var(--f-num);letter-spacing:.1em;color:#fff;background:#C05621;padding:3px 6px;border-radius:3px;margin-right:6px;vertical-align:2px}
@@ -357,7 +360,10 @@ html.map-locked .nextbar{display:none}
 <h4>草津温泉 到着・ホテルヴィレッジ チェックイン</h4>
 <p class="addr">吾妻郡草津町草津618 / TEL: 0570-01-3232</p>
 <p class="desc">到着後は先にホテルでチェックイン（入室できない場合は荷物を預けて散策へ）</p>
+<div class="lodge-btns" style="margin-top:8px">
 <a href="https://www.google.com/maps/search/?api=1&query=草津温泉+ホテルヴィレッジ" target="_blank" rel="noopener noreferrer" class="gmap-btn">📍 Googleマップで開く</a>
+<a href="https://www.hotelvillage.co.jp/" target="_blank" rel="noopener noreferrer" class="gmap-btn">🏨 ホテルの公式サイト</a>
+</div>
 </div>
 </li>
 <li class="stop">
@@ -1059,9 +1065,9 @@ function jst(dateStr,hm){return new Date(dateStr+'T'+(hm||'00:00')+':00+09:00');
 function ymd(d){var j=new Date(d.getTime()+9*3600e3);return j.toISOString().slice(0,10);}
 
 var DAYS=[
- {id:'day1',date:'2026-11-21',label:'1日目',place:'鬼怒川',lat:36.818,lon:139.712,norm:{hi:11,lo:1}},
- {id:'day2',date:'2026-11-22',label:'2日目',place:'草津',lat:36.623,lon:138.597,norm:{hi:7,lo:-2}},
- {id:'day3',date:'2026-11-23',label:'3日目',place:'伊香保',lat:36.497,lon:138.921,norm:{hi:10,lo:2}}
+ {id:'day1',date:'2026-11-21',label:'1日目',place:'鬼怒川',lat:36.818,lon:139.712,norm:{hi:11,lo:1},wn:'https://weathernews.jp/onebox/tenki/tochigi/09206/',wnArea:'日光市'},
+ {id:'day2',date:'2026-11-22',label:'2日目',place:'草津',lat:36.623,lon:138.597,norm:{hi:7,lo:-2},wn:'https://weathernews.jp/onebox/tenki/gunma/10426/',wnArea:'草津町'},
+ {id:'day3',date:'2026-11-23',label:'3日目',place:'伊香保',lat:36.497,lon:138.921,norm:{hi:10,lo:2},wn:'https://weathernews.jp/onebox/tenki/gunma/10208/',wnArea:'渋川市'}
 ];
 
 /* ---------- タブ切り替え（全タブ共通） ---------- */
@@ -1091,7 +1097,9 @@ function renderWx(day,el,data,isForecast){
  var hi=Math.round(data.hi),lo=Math.round(data.lo),w=isForecast?WMO(data.code):['🍂','11月下旬の目安'];
  var sub=isForecast?(day.place+'の予報 ・ '+w[1]+(data.pop!=null?' ・ 降水'+data.pop+'%':'')+(data.at?'<br>更新 '+data.at:''))
    :(day.place+' ・ 例年の気温の目安です<br>天気予報は11/6ごろから自動で表示されます');
- el.innerHTML='<span class="wi">'+w[0]+'</span><div class="wb"><div class="wt"><span class="hi">'+hi+'℃</span> / <span class="lo">'+lo+'℃</span></div><div class="wd">'+sub+'</div></div>';
+ el.innerHTML='<span class="wi">'+w[0]+'</span><div class="wb"><div class="wt"><span class="hi">'+hi+'℃</span> / <span class="lo">'+lo+'℃</span></div><div class="wd">'+sub+'</div></div>'
+  +(day.wn?'<a class="wx-link" href="'+esc(day.wn)+'" target="_blank" rel="noopener noreferrer" aria-label="'+esc(day.wnArea)+'の詳しい天気をウェザーニュースで開く">詳しい天気 ›<small>ウェザーニュース</small></a>':'');
+ var wl=el.querySelector('.wx-link');if(wl)wl.addEventListener('click',function(){track('weathernews_open',{day:day.id});});
  var tip=tipFor(hi,lo,isForecast?data.pop:null,isForecast?data.code:-1,day.place);
  var tipEl=el.parentNode.querySelector('.wx-tip');
  if(tip){if(!tipEl){tipEl=document.createElement('div');tipEl.className='wx-tip';el.parentNode.appendChild(tipEl);}tipEl.innerHTML=tip;}
