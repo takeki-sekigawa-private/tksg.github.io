@@ -214,6 +214,28 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .wx .wt .hi{color:#C05621}
 .wx .wt .lo{color:var(--route)}
 .wx .wd{font-size:11.5px;color:var(--sub);line-height:1.5}
+.dv-intro{font-size:12.5px;color:var(--sub);line-height:1.7;margin:0 0 12px}
+.dv-day{margin-bottom:22px}
+.dv-dh{display:flex;align-items:baseline;gap:8px;margin:0 0 8px}
+.dv-dh b{font:700 15px var(--f-num);color:var(--text)}
+.dv-dh span{font-size:12px;color:var(--sub)}
+.dv-jam{border-radius:8px;padding:9px 11px;margin:0 0 10px;font-size:12.5px;line-height:1.65;color:var(--text);border:1px solid}
+.dv-jam .lv{display:inline-block;font:700 11px/1 var(--f-num);padding:3px 7px;border-radius:3px;color:#fff;margin-right:6px;vertical-align:1px}
+.dv-jam.mid{background:#FFFAF0;border-color:#FBD38D}.dv-jam.mid .lv{background:#C05621}
+.dv-jam.low{background:#F0FFF4;border-color:#C6F6D5}.dv-jam.low .lv{background:#38A169}
+.dv-jam.high{background:#FFF5F5;border-color:#FEB2B2}.dv-jam.high .lv{background:#C53030}
+.cp{list-style:none;margin:0;padding:0;background:var(--bg-card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.cp li{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:9px 12px;border-bottom:1px solid var(--line);font-size:13px;line-height:1.55}
+.cp li:last-child{border-bottom:0}
+.cp .t{font:600 13.5px var(--f-num);color:var(--gold)}
+.cp .p b{display:block;font-size:13.5px;color:var(--text);font-weight:600}
+.cp .p span{font-size:12px;color:var(--sub)}
+.cp li.dl{background:#FFF5F5}
+.cp li.dl .t{color:#C53030}
+.cp .must{display:inline-block;font:700 10px/1 var(--f-num);letter-spacing:.06em;color:#fff;background:#C53030;padding:3px 5px;border-radius:3px;margin-right:5px;vertical-align:1px}
+.cp .rest{display:inline-block;font-size:10px;line-height:1;color:var(--route);border:1px solid var(--route);padding:2px 5px;border-radius:3px;margin-right:5px;vertical-align:1px}
+.dv-note{font-size:12px;color:var(--sub);line-height:1.65;margin:8px 2px 0}
+.dv-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
 .wx-link{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:74px;padding:7px 10px;border:1px solid var(--route);border-radius:8px;background:#EBF8FF;color:var(--route);text-decoration:none;font-size:12px;font-weight:600;line-height:1.3;-webkit-tap-highlight-color:transparent}
 .wx-link small{font-size:9.5px;font-weight:500;color:var(--sub)}
 .wx-link:active{transform:scale(.96)}
@@ -265,6 +287,7 @@ html.map-locked .nextbar{display:none}
 <button class="tab-btn active" onclick="switchTab(this, 'day1')">1日目</button>
 <button class="tab-btn" onclick="switchTab(this, 'day2')">2日目</button>
 <button class="tab-btn" onclick="switchTab(this, 'day3')">3日目</button>
+<button class="tab-btn" onclick="switchTab(this, 'drive')">🚗 移動</button>
 <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
 <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
 </nav>
@@ -422,6 +445,65 @@ html.map-locked .nextbar{display:none}
 </div>
 
 <!-- 草津ガイド -->
+<!-- 移動・渋滞 -->
+<div id="drive" class="tab-content">
+<div class="sec-h"><h3>🚗 移動の目安と渋滞予想</h3></div>
+<p class="dv-intro">各地点を「この時刻までに通過」の目安でまとめました。<b style="color:#C53030">締切</b>の行に遅れると、その先の予定に間に合わなくなります。11/21〜23は3連休なので、例年の3連休の傾向から混雑を見込んでいます。</p>
+
+<section class="dv-day">
+<div class="dv-dh"><b>1日目 11/21(土)</b><span>品川 → 佐野SA → 鬼怒川</span></div>
+<div class="dv-jam mid"><span class="lv">混雑 中</span>3連休初日の朝は東北道下りが浦和〜久喜あたりで混みやすく、ピークは9時前後です。10時出発だと渋滞の終わりかけに当たる見込みで、首都高〜東北道で30分ほど余分にみています。</div>
+<ol class="cp">
+<li><span class="t">10:00</span><span class="p"><b>品川駅 出発</b><span>首都高から川口JCTで東北道へ</span></span></li>
+<li><span class="t">10:45</span><span class="p"><b>川口JCT（東北道に入る）</b><span>ここで11時を過ぎていたら、佐野SAでの昼食を短めに</span></span></li>
+<li><span class="t">12:00</span><span class="p"><b><span class="rest">休憩</span>佐野SA（下り）着</b><span>昼食・トイレ。各自で済ませる</span></span></li>
+<li class="dl"><span class="t">13:00</span><span class="p"><b><span class="must">締切</span>佐野SA 出発</b><span>ここから乗船場まで約65分。12:45出発なら安心</span></span></li>
+<li><span class="t">13:35</span><span class="p"><b>宇都宮IC → 日光宇都宮道路</b><span>今市ICで降りて国道121号で鬼怒川へ</span></span></li>
+<li class="dl"><span class="t">14:30</span><span class="p"><b><span class="must">締切</span>鬼怒川ライン下り 乗船場</b><span>15:10便の受付。土曜の鬼怒川温泉街は夕方にかけて混みやすいです</span></span></li>
+<li><span class="t">16:30</span><span class="p"><b>宿（Airbnb）チェックイン</b><span>車は徒歩1分の鬼怒川レジャー公園駐車場へ</span></span></li>
+</ol>
+</section>
+
+<section class="dv-day">
+<div class="dv-dh"><b>2日目 11/22(日)</b><span>鬼怒川 → 北関東道 → 草津</span></div>
+<div class="dv-jam low"><span class="lv">混雑 小</span>3連休の中日で、走る方向（栃木→群馬）は大きな渋滞が少ない区間です。北関東道は連休でも10km以上の渋滞はほぼ出ません。注意点は渋滞よりも草津周辺の路面で、11月下旬は朝晩に凍結や雪のおそれがあるため、冬用タイヤかチェーンを用意してください。</div>
+<ol class="cp">
+<li><span class="t">09:00</span><span class="p"><b>鬼怒川 出発</b><span>今市IC → 日光宇都宮道路 → 東北道（上り）</span></span></li>
+<li><span class="t">10:10</span><span class="p"><b>岩舟JCT → 北関東道</b><span>群馬方面へ西に進む</span></span></li>
+<li><span class="t">10:40</span><span class="p"><b><span class="rest">休憩</span>太田強戸PA</b><span>トイレ休憩（15分）</span></span></li>
+<li class="dl"><span class="t">11:40</span><span class="p"><b><span class="must">締切</span>関越道 渋川伊香保IC 出口</b><span>ここから草津まで一般道で約80分</span></span></li>
+<li><span class="t">12:20</span><span class="p"><b><span class="rest">休憩</span>道の駅 八ッ場ふるさと館（任意）</b><span>草津前の最後の休憩ポイント</span></span></li>
+<li><span class="t">13:00</span><span class="p"><b>草津温泉 ホテルヴィレッジ着</b><span>15:30の湯もみショーまで時間に余裕あり</span></span></li>
+</ol>
+</section>
+
+<section class="dv-day">
+<div class="dv-dh"><b>3日目 11/23(月・祝)</b><span>草津 → 吾妻峡 → 伊香保 → 品川</span></div>
+<div class="dv-jam high"><span class="lv">混雑 大</span>3連休最終日の関越道上りは、例年、午後から花園IC〜鶴ヶ島IC（坂戸西SIC付近）で渋滞し、ピークは16〜17時、長さは20〜30kmになることが多いです。14:30に伊香保を出ると渋滞の真ん中に入る見込みで、品川着は通常より1時間ほど遅れる想定です。</div>
+<ol class="cp">
+<li><span class="t">09:45</span><span class="p"><b>草津温泉 出発</b><span>朝は路面の凍結に注意</span></span></li>
+<li class="dl"><span class="t">10:30</span><span class="p"><b><span class="must">締切</span>アガッタン 受付</b><span>10:45〜11:50 往復体験。10:15着の予定</span></span></li>
+<li><span class="t">11:55</span><span class="p"><b>アガッタン 出発</b><span>伊香保・水沢方面へ約50分</span></span></li>
+<li><span class="t">12:45</span><span class="p"><b>万葉亭で昼食 → 石段街</b><span>祝日の昼は混みやすいので、待ちが長ければ石段街を先に</span></span></li>
+<li class="dl"><span class="t">14:30</span><span class="p"><b><span class="must">締切</span>伊香保 出発</b><span>遅れるほど渋滞が長くなります</span></span></li>
+<li><span class="t">14:50</span><span class="p"><b>関越道 渋川伊香保IC（上り）</b><span>東京方面へ</span></span></li>
+<li><span class="t">15:25</span><span class="p"><b><span class="rest">休憩</span>上里SA</b><span>トイレはここで。この先は渋滞の中に入るので、飲み物も用意</span></span></li>
+<li><span class="t">16:00〜</span><span class="p"><b>花園IC〜鶴ヶ島IC 付近</b><span>渋滞区間。抜けるのに40〜80分ほどかかる見込み</span></span></li>
+<li><span class="t">17:30</span><span class="p"><b>練馬IC → 首都高</b><span>首都高は祝日なので比較的すいている見込み</span></span></li>
+<li><span class="t">18:00〜18:30</span><span class="p"><b>品川 帰着（目安）</b><span>渋滞がなければ16:45ごろ</span></span></li>
+</ol>
+<p class="dv-note">渋滞を避けたい場合は、①石段街を短めにして13:30ごろ伊香保を出る（渋滞が伸びきる前に抜けやすい）、②逆に伊香保や高崎で夕食をとって19時以降に出る、のどちらかが有効です。</p>
+</section>
+
+<div class="card">
+<p class="dv-note" style="margin:0">時刻は地図のルート（車での所要時間）に休憩と混雑を足した目安です。渋滞予想は例年の3連休の傾向にもとづくもので、NEXCOの公式予測ではありません。前日に公式の渋滞予報を、当日はリアルタイムの交通情報を確認してください。</p>
+<div class="dv-links">
+<a class="gmap-btn" href="https://www.driveplaza.com/traffic/roadinfo/jutaiyoho/" target="_blank" rel="noopener noreferrer">📅 渋滞予報（ドラぷら）</a>
+<a class="gmap-btn" href="https://www.drivetraffic.jp/" target="_blank" rel="noopener noreferrer">🚦 いまの交通情報（ドラとら）</a>
+</div>
+</div>
+</div>
+
 <div id="kusatsu" class="tab-content">
 <!-- 公式観光マップPDFバナー -->
 <a href="https://agakanren.com/websys/wp-content/uploads/kusatsuonsenTM2024_9.pdf" target="_blank" rel="noopener noreferrer" class="pdf-btn">
@@ -522,7 +604,7 @@ btn.classList.add('active');
 
 function switchTabByCode(tabId) {
 const btns = document.querySelectorAll('.tab-btn');
-const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4};
+const targetMap = {'day1':0, 'day2':1, 'day3':2, 'drive':3, 'kusatsu':4, 'info':5};
 if(targetMap[tabId] !== undefined) {
 switchTab(btns[targetMap[tabId]], tabId);
 }
