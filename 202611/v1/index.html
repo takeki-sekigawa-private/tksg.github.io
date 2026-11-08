@@ -61,7 +61,6 @@ h1,h2,h3,h4{font-family:var(--f-hand);margin:0;font-weight:400;color:var(--text)
 .kicker{font-family:var(--f-num);font-size:12px;letter-spacing:0.2em;color:var(--gold);text-transform:uppercase;margin:0 0 6px;font-weight:600}
 .cover h1{font-size:32px;line-height:1.2;letter-spacing:0.1em;margin-bottom:8px}
 .cover .date{font-family:var(--f-num);font-size:14px;color:var(--sub);font-weight:600}
-.mem-quicklink{display:inline-flex;align-items:center;gap:4px;margin-top:12px;font-size:12.5px;color:var(--gold);border:1px solid var(--gold);padding:6px 14px;border-radius:20px;text-decoration:none;font-weight:600;background:var(--bg-card)}
 
 /* タブUI */
 .tab-nav{display:flex;background:var(--bg-accent);border-y:1px solid var(--line);padding:4px;gap:2px;position:sticky;top:0;z-index:30;overflow-x:auto}
@@ -233,31 +232,6 @@ html.map-locked,html.map-locked body{overflow:hidden}
 body.has-nextbar{padding-bottom:calc(100px + env(safe-area-inset-bottom))}
 html.map-locked .nextbar{display:none}
 
-/* ---- 旅のビンゴ ---- */
-.bg-intro{font-size:13px;color:var(--sub);margin:0 0 12px;text-align:center}
-.bingo{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:0 0 12px}
-.bg-cell{aspect-ratio:1/1;position:relative;border:1px solid var(--line);background:var(--bg-card);border-radius:10px;padding:6px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font:inherit;font-size:11.5px;line-height:1.35;letter-spacing:.02em;color:var(--text);cursor:pointer;text-align:center;transition:transform .15s,background .2s;-webkit-tap-highlight-color:transparent;overflow:hidden}
-.bg-cell .e{font-size:26px;line-height:1}
-.bg-cell.free{border:1.5px dashed var(--gold)}
-.bg-cell:active{transform:scale(.95)}
-.bg-cell.on{background:#FFF7EA;border-color:var(--gold)}
-.bg-cell.on .e,.bg-cell.on .tx{opacity:.7}
-.bg-cell.on::after{content:"達成";position:absolute;top:5px;right:5px;width:38px;height:38px;transform:rotate(-14deg);border:2.5px solid rgba(197,48,48,.85);border-radius:50%;background:rgba(255,255,255,.85);color:rgba(197,48,48,.95);font:700 12px/1 var(--f-hand);display:flex;align-items:center;justify-content:center;letter-spacing:.1em;animation:stamp .35s ease-out}
-.bg-cell.line{background:#FCE3C4;border:2px solid #C05621;box-shadow:0 0 0 3px rgba(192,86,33,.15)}
-@keyframes stamp{0%{transform:rotate(-14deg) scale(2);opacity:0}100%{transform:rotate(-14deg) scale(1);opacity:1}}
-.bg-stat{display:flex;justify-content:center;gap:18px;font-size:13px;color:var(--sub);margin:0 0 12px}
-.bg-stat b{font:700 20px var(--f-num);color:var(--gold);margin:0 2px}
-.bg-reset{display:block;margin:4px auto 0;background:none;border:0;color:var(--dim);font:inherit;font-size:12px;text-decoration:underline;cursor:pointer}
-.bg-celebrate{position:fixed;inset:0;z-index:99998;display:flex;align-items:center;justify-content:center;background:rgba(31,42,56,.5);overflow:hidden}
-.bg-celebrate .bx{position:relative;z-index:2;background:#fff;border-radius:16px;padding:22px 22px 18px;width:min(86vw,340px);text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.3);animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
-.bg-celebrate .big{font:700 34px/1.1 var(--f-num);letter-spacing:.08em;color:#C05621;margin:0 0 6px}
-.bg-celebrate p{font-size:13.5px;color:var(--sub);margin:0 0 14px}
-.bg-celebrate .acts{display:flex;gap:8px}
-.bg-celebrate .acts button{flex:1;min-height:44px;border-radius:10px;border:1px solid var(--line);background:#fff;font:inherit;font-weight:600;color:var(--text);cursor:pointer}
-.bg-celebrate .acts .pri{background:var(--gold);border-color:var(--gold);color:#fff}
-.cf{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;animation:fall linear forwards;z-index:1}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-@keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 
 /* ---- ホーム画面追加・オフライン ---- */
 .install{display:none;align-items:center;gap:10px;margin:14px auto 0;max-width:380px;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:9px 10px 9px 12px;font-size:12px;line-height:1.55;color:var(--sub)}
@@ -270,7 +244,6 @@ html.map-locked .nextbar{display:none}
 .install .ix{background:none;color:var(--dim);font-size:16px;padding:2px 4px}
 .offline-pill{position:fixed;top:calc(8px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:950;background:#1F2A38;color:#fff;font-size:12px;padding:5px 12px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .offline-pill[hidden]{display:none}
-.quicklinks{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -281,9 +254,6 @@ html.map-locked .nextbar{display:none}
 <p class="kicker">Trip Schedule ｜ 鬼怒川・草津・伊香保</p>
 <h1>北関東旅行</h1>
 <p class="date">2026.11.21(土) - 11.23(月・祝)</p>
-<div class="quicklinks">
-<a href="javascript:void(0)" onclick="switchTabByCode('bingo')" class="mem-quicklink">🎯 旅のビンゴ</a>
-</div>
 <div class="install" id="installHint"><span class="ii">📲</span><span class="it"></span><button type="button" class="ib" hidden>追加</button><button type="button" class="ix" aria-label="閉じる">×</button></div>
 </header>
 
@@ -294,7 +264,6 @@ html.map-locked .nextbar{display:none}
 <button class="tab-btn" onclick="switchTab(this, 'day3')">3日目</button>
 <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
 <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
-<button class="tab-btn" onclick="switchTab(this, 'bingo')">🎯 ビンゴ</button>
 </nav>
 
 <!-- DAY 1 -->
@@ -509,16 +478,6 @@ html.map-locked .nextbar{display:none}
 </div>
 </div>
 
-<!-- 旅のビンゴ -->
-<div id="bingo" class="tab-content">
-<div class="sec-h"><h3>🎯 旅のビンゴ</h3></div>
-<p class="bg-intro">ミッションを達成したらマスをタップ。<br>縦・横・ななめに3つそろえばビンゴ！</p>
-<div class="bg-stat"><span>達成<b id="bingoDone">0</b>/ 9</span><span>ビンゴ<b id="bingoLines">0</b>列</span></div>
-<div class="bingo" id="bingoGrid" role="group" aria-label="旅のビンゴ"></div>
-<p class="map-note" style="text-align:center">達成の記録はこの端末に保存されます。</p>
-<button type="button" class="bg-reset" id="bingoReset">リセット</button>
-</div>
-
 <!-- 精密広域マップ -->
 <section class="sec-h" id="map">
 <h3>ドライブ詳細ルートマップ</h3>
@@ -557,7 +516,7 @@ btn.classList.add('active');
 
 function switchTabByCode(tabId) {
 const btns = document.querySelectorAll('.tab-btn');
-const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4, 'bingo':5};
+const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4};
 if(targetMap[tabId] !== undefined) {
 switchTab(btns[targetMap[tabId]], tabId);
 }
@@ -1081,7 +1040,7 @@ startMap();
 </script>
 
 <script>
-/* ===== v1.25: 今日の見どころ天気 / 次の予定バー / 旅のビンゴ / ホーム画面追加・オフライン ===== */
+/* ===== v1.25: 今日の見どころ天気 / 次の予定バー / ホーム画面追加・オフライン ===== */
 (function(){
 'use strict';
 var TRIP_ID='kitakanto202611';
@@ -1208,9 +1167,11 @@ function renderBar(){
  }else{
   var home=n<jst('2026-11-24');
   k=home?'帰り道も安全運転で 🚗':'おかえりなさい！';
-  t=home?'旅のビンゴ、いくつ揃った？':'また一緒に旅しよう 👋';
-  s=home?'🎯 ビンゴの結果をみんなで見せ合おう':'3日間おつかれさまでした';
-  goLabel='ビンゴ';goAct=function(){switchTabByCode('bingo');scrollTo(0,0);};target=null;
+  t=home?'お土産の買い忘れはない？':'また一緒に旅しよう 👋';
+  s=home?'忘れ物がないか最後にチェック':'3日間おつかれさまでした';
+  if(home){goLabel='持ち物・土産';goAct=function(){switchTabByCode('info');scrollTo(0,0);};}
+  else{goLabel='旅程を見る';goAct=function(){switchTabByCode('day1');scrollTo(0,0);};}
+  target=null;
  }
  bar.querySelector('.nb-k').textContent=k;
  bar.querySelector('.nb-t').textContent=t;
@@ -1233,64 +1194,6 @@ function initBar(){
  /* 旅行当日は、その日のタブを自動で開く */
  var today=ymd(now());
  DAYS.forEach(function(d){if(d.date===today&&!location.hash)switchTabByCode(d.id);});
-}
-
-/* ---------- 旅のビンゴ ---------- */
-var MISSIONS=[
- {e:'🚂',t:'SL大樹を<br>写真に撮る'},
- {e:'🚣',t:'ライン下りで<br>渓谷を満喫'},
- {e:'🍜',t:'佐野ラーメン<br>を食べる'},
- {e:'🍖',t:'テラスBBQで<br>かんぱい'},
- {e:'♨️',t:'湯畑の前で<br>全員集合写真',free:true},
- {e:'🪵',t:'湯もみショー<br>を見る'},
- {e:'🍡',t:'温泉まんじゅう<br>食べ比べ'},
- {e:'🚲',t:'アガッタンで<br>鉄橋を渡る'},
- {e:'⛩️',t:'伊香保の石段<br>を上りきる'}
-];
-var LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-var BKEY='bingo_'+TRIP_ID;
-function bState(){var s=null;try{s=JSON.parse(lsGet(BKEY)||'null');}catch(e){}return Array.isArray(s)&&s.length===9?s:[0,0,0,0,0,0,0,0,0];}
-function bLines(s){return LINES.filter(function(l){return l.every(function(i){return s[i];});});}
-function renderBingo(){
- var box=$('bingoGrid');if(!box)return;
- var s=bState(),lines=bLines(s),inLine={};
- lines.forEach(function(l){l.forEach(function(i){inLine[i]=1;});});
- box.innerHTML=MISSIONS.map(function(m,i){
-  return '<button type="button" class="bg-cell'+(m.free?' free':'')+(s[i]?' on':'')+(inLine[i]?' line':'')+'" data-i="'+i+'" aria-pressed="'+(s[i]?'true':'false')+'"><span class="e">'+m.e+'</span><span class="tx">'+m.t+'</span></button>';
- }).join('');
- $('bingoDone').textContent=s.filter(Boolean).length;
- $('bingoLines').textContent=lines.length;
-}
-function celebrate(title,msg){
- var el=document.createElement('div');el.className='bg-celebrate';
- var colors=['#C05621','#B78A52','#2B6CB0','#38A169','#D53F8C','#ECC94B'],cf='';
- for(var i=0;i<60;i++){cf+='<i class="cf" style="left:'+(Math.random()*100)+'%;background:'+colors[i%colors.length]+';animation-duration:'+(1.8+Math.random()*1.8)+'s;animation-delay:'+(Math.random()*.6)+'s"></i>';}
- el.innerHTML=cf+'<div class="bx"><div class="big">'+title+'</div><p>'+msg+'</p><div class="acts"><button type="button" class="pri cl">とじる</button></div></div>';
- document.body.appendChild(el);
- function close(){if(el.parentNode)el.parentNode.removeChild(el);}
- el.addEventListener('click',function(e){if(e.target===el)close();});
- el.querySelector('.cl').addEventListener('click',close);
- if(navigator.vibrate)try{navigator.vibrate([60,40,120]);}catch(e){}
-}
-function initBingo(){
- var box=$('bingoGrid');if(!box)return;
- renderBingo();
- box.addEventListener('click',function(e){
-  var b=e.target.closest('.bg-cell');if(!b)return;
-  var i=+b.getAttribute('data-i'),s=bState(),before=bLines(s).length;
-  s[i]=s[i]?0:1;lsSet(BKEY,JSON.stringify(s));renderBingo();
-  var after=bLines(s).length;
-  if(s[i])track('bingo_check',{mission:i});
-  if(s.every(Boolean))celebrate('PERFECT!!','9マス全部達成！最高の旅になりましたね 🎉');
-  else if(after>before)celebrate('BINGO!',after===1?'1列そろいました！この調子で次のラインも狙おう':after+'列目がそろいました！');
- });
- $('bingoReset').addEventListener('click',function(){
-  var el=document.createElement('div');el.className='bg-celebrate';
-  el.innerHTML='<div class="bx"><p style="color:var(--text);margin-bottom:16px">ビンゴをすべてリセットしますか？</p><div class="acts"><button type="button" class="cl">キャンセル</button><button type="button" class="pri ok">リセット</button></div></div>';
-  document.body.appendChild(el);
-  el.querySelector('.cl').onclick=function(){el.remove();};
-  el.querySelector('.ok').onclick=function(){lsSet(BKEY,'[0,0,0,0,0,0,0,0,0]');renderBingo();el.remove();};
- });
 }
 
 /* ---------- 持ち物チェックを端末に保存 ---------- */
@@ -1326,7 +1229,7 @@ function initPwa(){
  window.addEventListener('online',function(){net();loadWeather();});window.addEventListener('offline',net);net();
 }
 
-function init(){initBar();loadWeather();initBingo();initChecklist();initPwa();}
+function init(){initBar();loadWeather();initChecklist();initPwa();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
