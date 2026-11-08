@@ -77,7 +77,7 @@ h1,h2,h3,h4{font-family:var(--f-hand);margin:0;font-weight:400;color:var(--text)
 .tl .rl{position:relative}
 .tl .rl::after{content:"";position:absolute;left:5px;top:10px;bottom:-18px;width:1px;background:var(--line)}
 .tl li:last-child .rl::after{display:none}
-.tl .stop .rl::before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.tl .stop .rl::before{content:"";position:absolute;left:2px;top:7px;width:7px;height:7px;border-radius:50%;background:var(--gold);z-index:1;box-shadow:0 0 0 4px var(--bg)}
 .tl .bd h4{font-size:16px;margin:0 0 2px;font-weight:600}
 .tl .addr{font-size:12px;color:var(--dim);margin-bottom:4px}
 .tl .desc{font-size:13px;color:var(--sub);margin:0 0 8px}
@@ -220,7 +220,7 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .wx-tip{font-size:12px;color:var(--sub);background:#FFFAF0;border:1px solid #FBD38D;border-radius:6px;padding:6px 9px;margin-top:9px;line-height:1.55}
 .tl li.is-done{opacity:.45}
 .tl li.is-next .bd h4::before{content:"NEXT";display:inline-block;font:700 10px/1 var(--f-num);letter-spacing:.1em;color:#fff;background:#C05621;padding:3px 6px;border-radius:3px;margin-right:6px;vertical-align:2px}
-.tl li.is-next .rl::before{background:#C05621!important;box-shadow:0 0 0 4px rgba(192,86,33,.2)}
+.tl li.is-next .rl::before{background:#C05621!important;box-shadow:0 0 0 4px #EFD8C8,0 0 0 7px var(--bg)}
 
 /* ---- 次の予定バー ---- */
 .nextbar{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
