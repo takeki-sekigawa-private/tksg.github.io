@@ -1,10 +1,10 @@
 /* 北関東旅行 Service Worker: ホーム画面追加・オフライン表示用 */
-var VER = 'kk-v1.26';
+var VER = 'kk-v1.27';
 var SHELL = VER + '-shell', RT = VER + '-rt', TILES = 'kk-tiles';
 var SHELL_FILES = ['./', './index.html', './kusatsu-town-map.jpg', './manifest.webmanifest', './icon-192.png', './icon-180.png',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
-/* 写真共有・解析・天気APIはキャッシュしない（常に最新を取得） */
-var BYPASS = /firestore\.googleapis|identitytoolkit|securetoken|googletagmanager|google-analytics|open-meteo|firebaseinstallations/;
+/* 解析・天気APIはキャッシュしない（常に最新を取得） */
+var BYPASS = /googletagmanager|google-analytics|open-meteo/;
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(SHELL).then(function (c) {

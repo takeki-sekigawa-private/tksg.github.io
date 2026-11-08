@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.gstatic.com https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.googleapis.com https://tripphotosavesystem.firebaseapp.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://api.open-meteo.com https://unpkg.com https://cdn.jsdelivr.net https://cyberjapandata.gsi.go.jp https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://fonts.googleapis.com https://fonts.gstatic.com; frame-src https://tripphotosavesystem.firebaseapp.com; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://*.googleapis.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://api.open-meteo.com https://unpkg.com https://cyberjapandata.gsi.go.jp https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://fonts.googleapis.com https://fonts.gstatic.com; frame-src 'none'; worker-src 'self'; manifest-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <script>/* 他サイトへの埋め込み（クリックジャッキング）防止 */if(window.top!==window.self){try{window.top.location=window.self.location;}catch(e){document.documentElement.style.display="none";}}</script>
    <!-- Google tag (gtag.js) -->
@@ -200,32 +200,6 @@ html.map-locked,html.map-locked body{overflow:hidden}
 .hero .hc span{font-size:12px;opacity:.92}
 .hero-cr{font-size:10px;color:#718096;margin:0 0 12px}
 
-/* ---- 写真共有 ---- */
-.mem-field{width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;box-sizing:border-box;background:#fff;color:var(--text)}
-.mem-label{display:block;font-size:12px;color:var(--sub);margin:0 0 4px}
-.mem-msg{font-size:12px;margin:8px 0 0;min-height:1.2em}
-.mem-msg.err{color:#C53030}
-.mem-btn{background:var(--gold);color:#fff;border:0;padding:11px 16px;border-radius:6px;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
-.mem-btn:disabled{opacity:.6}
-.mem-pickbtn{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--route);background:#EBF8FF;border:1px solid #BEE3F8;padding:6px 10px;border-radius:4px;font-weight:600;cursor:pointer}
-.mem-pickbtn.on{background:var(--route);color:#fff}
-#memMap{height:clamp(260px,50vh,420px);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;background:#E8E4DC}
-.mem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
-.mem-thumb{position:relative;padding:0;border:0;background:var(--bg-accent);border-radius:6px;overflow:hidden;cursor:pointer;aspect-ratio:1/1}
-.mem-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.mem-nopin{position:absolute;right:3px;bottom:3px;font-size:9px;background:rgba(20,28,40,.65);color:#fff;padding:1px 5px;border-radius:3px}
-.mem-thumb .rm{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(20,28,40,.65);color:#fff;font-size:13px;line-height:20px;text-align:center;border:0;padding:0;cursor:pointer;z-index:2}
-.mem-thumb .locbadge{position:absolute;left:3px;bottom:3px;font-size:9px;background:rgba(20,28,40,.65);color:#fff;padding:1px 5px;border-radius:3px}
-.mem-sheet{position:fixed;inset:0;z-index:99999;display:flex;align-items:flex-end;justify-content:center;background:rgba(31,42,56,.45)}
-.mem-sheet .mbox{width:100%;max-width:480px;max-height:88vh;max-height:88dvh;overflow:auto;background:var(--bg-card);border-radius:16px 16px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -8px 30px rgba(0,0,0,.2);font-size:13.5px;line-height:1.75;color:var(--text);letter-spacing:.02em}
-.mem-sheet h4{margin:0 0 10px;font-size:16px}
-.mem-sheet .acts{display:flex;gap:8px;margin-top:14px}
-.mem-sheet .acts button{flex:1;min-height:46px;padding:10px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--text);font:inherit;font-weight:600;cursor:pointer}
-.mem-sheet .acts .pri{background:var(--route);border-color:var(--route);color:#fff}
-.mem-sheet .acts .danger{background:#C53030;border-color:#C53030;color:#fff}
-.mem-pin{width:36px;height:36px;border-radius:50% 50% 50% 0;background:#fff;border:3px solid var(--gold);transform:rotate(-45deg);overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.4)}
-.mem-pin img{width:100%;height:100%;object-fit:cover;transform:rotate(45deg) scale(1.4)}
-.mem-empty{font-size:13px;color:var(--dim);text-align:center;padding:20px 0}
 
 
 /* ---- 今日の見どころ・天気 (v1.25) ---- */
@@ -285,7 +259,7 @@ html.map-locked .nextbar{display:none}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
 @keyframes pop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
 
-/* ---- ホーム画面追加・オフライン・割り勘 ---- */
+/* ---- ホーム画面追加・オフライン ---- */
 .install{display:none;align-items:center;gap:10px;margin:14px auto 0;max-width:380px;text-align:left;background:var(--bg-card);border:1px solid var(--line);border-radius:10px;padding:9px 10px 9px 12px;font-size:12px;line-height:1.55;color:var(--sub)}
 .install.show{display:flex}
 .install .ii{font-size:20px;flex:none}
@@ -297,10 +271,6 @@ html.map-locked .nextbar{display:none}
 .offline-pill{position:fixed;top:calc(8px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:950;background:#1F2A38;color:#fff;font-size:12px;padding:5px 12px;border-radius:20px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .offline-pill[hidden]{display:none}
 .quicklinks{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.warica-card{display:flex;align-items:center;gap:12px;text-decoration:none}
-.warica-card .wi{font-size:26px}
-.warica-card .wt b{display:block;color:var(--text);font-size:14.5px}
-.warica-card .wt span{font-size:12px;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -312,9 +282,7 @@ html.map-locked .nextbar{display:none}
 <h1>北関東旅行</h1>
 <p class="date">2026.11.21(土) - 11.23(月・祝)</p>
 <div class="quicklinks">
-<a href="javascript:void(0)" onclick="switchTabByCode('memories')" class="mem-quicklink">📷 写真を共有する</a>
 <a href="javascript:void(0)" onclick="switchTabByCode('bingo')" class="mem-quicklink">🎯 旅のビンゴ</a>
-<a href="#" data-walica target="_blank" rel="noopener noreferrer" class="mem-quicklink" hidden style="display:none">💴 割り勘</a>
 </div>
 <div class="install" id="installHint"><span class="ii">📲</span><span class="it"></span><button type="button" class="ib" hidden>追加</button><button type="button" class="ix" aria-label="閉じる">×</button></div>
 </header>
@@ -327,7 +295,6 @@ html.map-locked .nextbar{display:none}
 <button class="tab-btn" onclick="switchTab(this, 'kusatsu')">草津ガイド</button>
 <button class="tab-btn" onclick="switchTab(this, 'info')">持ち物・土産</button>
 <button class="tab-btn" onclick="switchTab(this, 'bingo')">🎯 ビンゴ</button>
-<button class="tab-btn" onclick="switchTab(this, 'memories')">📷 写真共有</button>
 </nav>
 
 <!-- DAY 1 -->
@@ -511,7 +478,6 @@ html.map-locked .nextbar{display:none}
 
 <!-- 持ち物＆お土産 -->
 <div id="info" class="tab-content">
-<a class="card warica-card" data-walica href="#" target="_blank" rel="noopener noreferrer" hidden style="display:none"><span class="wi">💴</span><span class="wt"><b>旅費の割り勘（Walica）</b><span>立て替えた高速代・ガソリン・BBQ食材などを記録して、最後にまとめて精算</span></span></a>
 <div class="sec-h">
 <h3>持ち物チェックリスト</h3>
 </div>
@@ -549,67 +515,8 @@ html.map-locked .nextbar{display:none}
 <p class="bg-intro">ミッションを達成したらマスをタップ。<br>縦・横・ななめに3つそろえばビンゴ！</p>
 <div class="bg-stat"><span>達成<b id="bingoDone">0</b>/ 9</span><span>ビンゴ<b id="bingoLines">0</b>列</span></div>
 <div class="bingo" id="bingoGrid" role="group" aria-label="旅のビンゴ"></div>
-<p class="map-note" style="text-align:center">達成の記録はこの端末に保存されます。証拠写真は「📷 写真共有」へどうぞ。</p>
+<p class="map-note" style="text-align:center">達成の記録はこの端末に保存されます。</p>
 <button type="button" class="bg-reset" id="bingoReset">リセット</button>
-</div>
-
-<!-- 写真共有 -->
-<div id="memories" class="tab-content">
-<div class="sec-h"><h3>写真共有</h3></div>
-
-<div class="card" id="memGate">
-<p style="margin:0 0 10px">道中で撮った写真をアップロードすると、撮影場所が地図に並びます。合言葉を入力してください。</p>
-<div style="display:flex;gap:8px">
-<input type="password" id="memPass" class="mem-field" placeholder="合言葉" autocomplete="current-password" maxlength="128">
-<button type="button" id="memUnlock" class="mem-btn" style="flex:none">開く</button>
-</div>
-<p id="memGateMsg" class="mem-msg err"></p>
-</div>
-
-<div id="memApp" style="display:none">
-
-<div class="card">
-<h4 style="margin-bottom:10px">写真を投稿する</h4>
-
-<button type="button" id="memLibraryBtn" class="mem-btn" style="width:100%;margin-bottom:10px">📷 写真を選ぶ</button>
-<input type="file" id="memFileLibrary" accept="image/*" multiple style="display:none">
-
-<div class="mem-grid" id="memPreview" style="display:none;margin-bottom:8px"></div>
-<p id="memSelCount" class="mem-msg" style="color:var(--sub)"></p>
-
-<div id="memSaveWrap" style="display:none;margin-bottom:8px">
-<button type="button" id="memSaveBtn" class="mem-pickbtn">📥 iPhoneに保存</button>
-</div>
-
-<div style="display:flex;gap:8px;flex-wrap:wrap">
-<button type="button" id="memUseHereBtn" class="mem-pickbtn">📍 現在地を使う</button>
-<button type="button" id="memPickBtn" class="mem-pickbtn">🗺️ 地図で場所を指定</button>
-</div>
-<p id="memPickStatus" class="mem-msg" style="color:var(--sub)"></p>
-
-<label class="mem-label" style="margin-top:6px">ひとこと（任意・まとめて投稿する写真に共通で入ります）</label>
-<textarea id="memCaption" class="mem-field" rows="2" maxlength="300" style="margin-bottom:10px;resize:vertical"></textarea>
-
-<select id="memDay" class="mem-field" style="margin-bottom:12px">
-<option value="">日程（任意）</option>
-<option value="d1">1日目</option>
-<option value="d2">2日目</option>
-<option value="d3">3日目</option>
-</select>
-
-<button type="button" id="memUploadBtn" class="mem-btn" style="width:100%">アップロード</button>
-<p id="memUploadMsg" class="mem-msg" style="color:var(--sub)"></p>
-<button type="button" id="memLogoutBtn" class="mem-pickbtn" style="margin-top:8px">🔒 この端末からログアウト</button>
-</div>
-
-<div class="sec-h"><h3>地図で見る</h3></div>
-<div id="memMap" role="region" aria-label="写真共有の地図"></div>
-
-<div class="sec-h"><h3>みんなの写真</h3></div>
-<div class="mem-grid" id="memGrid"></div>
-<p class="mem-empty" id="memEmpty" style="display:none">まだ写真がありません。最初の1枚を投稿してみましょう。</p>
-
-</div>
 </div>
 
 <!-- 精密広域マップ -->
@@ -646,12 +553,11 @@ document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'
 
 document.getElementById(tabId).classList.add('active');
 btn.classList.add('active');
-if(tabId==='memories' && window.memMapInvalidate) window.memMapInvalidate();
 }
 
 function switchTabByCode(tabId) {
 const btns = document.querySelectorAll('.tab-btn');
-const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4, 'memories':5};
+const targetMap = {'day1':0, 'day2':1, 'day3':2, 'kusatsu':3, 'info':4, 'bingo':5};
 if(targetMap[tabId] !== undefined) {
 switchTab(btns[targetMap[tabId]], tabId);
 }
@@ -661,7 +567,7 @@ switchTab(btns[targetMap[tabId]], tabId);
 (function(){
 var TAB_ORDER=Array.prototype.map.call(document.querySelectorAll('.tab-content'),function(el){return el.id;});
 /* 地図（Leafletのドラッグ操作）・モーダル・入力欄の上でのスワイプはタブ切り替えの対象外にする */
-var EXCLUDE_SEL='.leaflet-container, .tab-nav, .lsheet, .mem-sheet, input, textarea, select';
+var EXCLUDE_SEL='.leaflet-container, .tab-nav, .lsheet, input, textarea, select';
 var startX=0, startY=0, startT=0, tracking=false;
 document.addEventListener('touchstart', function(e){
 if(e.touches.length!==1){ tracking=false; return; }
@@ -1174,562 +1080,10 @@ startMap();
 })();
 </script>
 
-<!-- ==== 写真共有（Firebase連携） ==== -->
-<script>
-(function(){
-'use strict';
-
-/* ===== 設定値（設定済み） =====
-   - firebaseConfig: Firebaseプロジェクト「TripPhotoSaveSystem」のWebアプリ設定値です。
-   - 合言葉はソースには一切書きません。Firebase Authentication に登録した
-     共有アカウント（MEMBER_EMAIL）のパスワードとしてサーバー側で照合します。
-   - apiKey 等がソースに出ること自体は正常です（Firebaseの仕組み上、
-     Webアプリの設定値は公開情報です）。実際のアクセス制御は
-     Firestore / Storage のセキュリティルール側（共有アカウントでのログイン必須）で行います。
-===================================== */
-var TRIP_ID = 'kitakanto202611';
-var MEMBER_EMAIL = 'kitakanto202611@tripphotosavesystem.firebaseapp.com'; /* 共有ログイン用アカウント（パスワード＝合言葉） */
-var firebaseConfig = {
-  apiKey: "AIzaSyA9IRYrJSnvYveqKcZn3yUWzICEDV4zg04",
-  authDomain: "tripphotosavesystem.firebaseapp.com",
-  projectId: "tripphotosavesystem",
-  storageBucket: "tripphotosavesystem.firebasestorage.app",
-  messagingSenderId: "129847832008",
-  appId: "1:129847832008:web:1c154e2f5418c626cb24fd"
-};
-/* ===================================== */
-
-function $(id){return document.getElementById(id);}
-function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
-/* 写真URLは自分のFirebase Storageのものだけを許可（不正なデータによるXSS対策） */
-var PHOTO_URL_PREFIX='https://firebasestorage.googleapis.com/v0/b/tripphotosavesystem.firebasestorage.app/o/';
-function safePhotoUrl(u){return (typeof u==='string' && u.indexOf(PHOTO_URL_PREFIX)===0)?u:'';}
-function safeId(id){return /^[A-Za-z0-9]{1,40}$/.test(String(id))?String(id):'';}
-function safeNum(n,lim){n=Number(n);return (isFinite(n)&&Math.abs(n)<=lim)?n:null;}
-var SRI={'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css':'sha384-sHL9NAb7lN7rfvG5lfHpm643Xkcjzp4jFvuavGOndn6pjVqS6ny56CAt3nsEVT4H','https://unpkg.com/leaflet@1.9.4/dist/leaflet.js':'sha384-cxOPjt7s7Iz04uaHJceBmS+qpjv2JkIHNVcuOrM+YHwZOmJGBXI00mdUXEq65HTH','https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js':'sha384-KRanV2NRwHPanp7iM6nlLQC5jPCTscSYMko30dLJHzNXJaUNtcucWv+SOi3jV3PE'};
-function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');if(SRI[src]){s.integrity=SRI[src];s.crossOrigin='anonymous';}s.src=src;s.async=true;s.onload=res;s.onerror=function(){rej(new Error('load failed: '+src));};document.head.appendChild(s);});}
-function loadCss(href){return new Promise(function(res){var l=document.createElement('link');l.rel='stylesheet';if(SRI[href]){l.integrity=SRI[href];l.crossOrigin='anonymous';}l.href=href;l.onload=res;l.onerror=res;document.head.appendChild(l);});}
-
-/* ---- 独自の確認/入力/通知シート（ブラウザ標準のprompt/confirm/alertは
-   サイトのアドレスが表示されてしまうため使わない） ---- */
-function memSheet(innerHtml){
-  var el=document.createElement('div');
-  el.className='mem-sheet';
-  el.innerHTML='<div class="mbox">'+innerHtml+'</div>';
-  document.body.appendChild(el);
-  function close(){ if(el.parentNode) el.parentNode.removeChild(el); }
-  el.addEventListener('click',function(e){ if(e.target===el) close(); });
-  return {el:el, close:close};
-}
-function memAlert(msg){
-  var s=memSheet('<p>'+esc(msg)+'</p><div class="acts"><button type="button" class="pri" id="memAlertOk">OK</button></div>');
-  s.el.querySelector('#memAlertOk').addEventListener('click', s.close);
-}
-function memConfirm(msg, okLabel){
-  return new Promise(function(resolve){
-    var s=memSheet('<p>'+esc(msg)+'</p><div class="acts"><button type="button" id="memConfCancel">キャンセル</button><button type="button" class="danger" id="memConfOk">'+esc(okLabel||'OK')+'</button></div>');
-    s.el.querySelector('#memConfCancel').addEventListener('click', function(){ s.close(); resolve(false); });
-    s.el.querySelector('#memConfOk').addEventListener('click', function(){ s.close(); resolve(true); });
-  });
-}
-function memEditSheet(name, caption){
-  return new Promise(function(resolve){
-    var s=memSheet(
-      '<h4>編集</h4>'+
-      '<label class="mem-label">お名前（任意）</label>'+
-      '<input type="text" id="memEditName" class="mem-field" style="margin-bottom:10px">'+
-      '<label class="mem-label">ひとこと（任意）</label>'+
-      '<textarea id="memEditCaption" class="mem-field" rows="2" maxlength="300" style="resize:vertical"></textarea>'+
-      '<div class="acts"><button type="button" id="memEditCancel">キャンセル</button><button type="button" class="pri" id="memEditSave">保存</button></div>'
-    );
-    s.el.querySelector('#memEditName').value=name||'';
-    s.el.querySelector('#memEditCaption').value=caption||'';
-    s.el.querySelector('#memEditCancel').addEventListener('click', function(){ s.close(); resolve(null); });
-    s.el.querySelector('#memEditSave').addEventListener('click', function(){
-      var n=s.el.querySelector('#memEditName').value.trim().slice(0,40);
-      var c=s.el.querySelector('#memEditCaption').value.trim().slice(0,300);
-      s.close();
-      resolve({name:n, caption:c});
-    });
-  });
-}
-
-var elGate=$('memGate'), elGateInput=$('memPass'), elGateBtn=$('memUnlock'), elGateMsg=$('memGateMsg');
-var elApp=$('memApp');
-var elLibraryBtn=$('memLibraryBtn'), elFileLibrary=$('memFileLibrary');
-var elPreview=$('memPreview'), elSelCount=$('memSelCount');
-var elCaption=$('memCaption'), elDay=$('memDay'), elUploadBtn=$('memUploadBtn'), elUploadMsg=$('memUploadMsg');
-var elMapDiv=$('memMap'), elGrid=$('memGrid'), elEmpty=$('memEmpty'), elPickBtn=$('memPickBtn'), elPickStatus=$('memPickStatus'), elUseHereBtn=$('memUseHereBtn');
-var elSaveWrap=$('memSaveWrap'), elSaveBtn=$('memSaveBtn');
-
-if(!elGate){return;} /* このタブが無いページでは何もしない */
-
-var STORE_KEY_UNLOCK='mem_unlock_'+TRIP_ID;
-
-/* ---- Firebase読み込み＆匿名サインイン ---- */
-var fbReady=null;
-function ensureFirebase(){
-  if(fbReady) return fbReady;
-  var v='10.14.1';
-  fbReady=loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-app-compat.js')
-    .then(function(){
-      return Promise.all([
-        loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-auth-compat.js'),
-        loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-firestore-compat.js'),
-        loadScript('https://www.gstatic.com/firebasejs/'+v+'/firebase-storage-compat.js')
-      ]);
-    })
-    .then(function(){
-      if(!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-      return firebase.auth();
-    });
-  return fbReady;
-}
-
-/* ---- 合言葉ゲート ---- */
-function unlockUI(){
-  elGate.style.display='none';
-  elApp.style.display='block';
-  initAppOnce();
-}
-function lockUI(){
-  elApp.style.display='none';
-  elGate.style.display='block';
-}
-/* 合言葉はサーバー（Firebase Authentication）で照合する。
-   ブラウザ側の判定ではないので、ソースを読んだり保存値を書き換えても突破できない。
-   連続で間違えるとFirebase側で一時的にブロックされる（総当たり対策）。 */
-function tryUnlock(pass){
-  elGateBtn.disabled=true; elGateMsg.textContent='確認中…';
-  ensureFirebase().then(function(auth){
-    return auth.signInWithEmailAndPassword(MEMBER_EMAIL, pass);
-  }).then(function(){
-    elGateBtn.disabled=false; elGateInput.value=''; elGateMsg.textContent='';
-    try{localStorage.setItem(HINT_KEY,'1');}catch(e){}
-    watchAuth();
-  }).catch(function(err){
-    elGateBtn.disabled=false;
-    var c=err&&err.code||'';
-    if(c==='auth/too-many-requests') elGateMsg.textContent='試行回数が多すぎます。しばらく待ってからお試しください。';
-    else if(c==='auth/network-request-failed'||/load failed/.test(String(err&&err.message))) elGateMsg.textContent='読み込みに失敗しました。通信環境を確認してください。';
-    else elGateMsg.textContent='合言葉が違います。';
-  });
-}
-elGateBtn.addEventListener('click',function(){var v=elGateInput.value.trim();if(v)tryUnlock(v);});
-elGateInput.addEventListener('keydown',function(e){if(e.key==='Enter'){var v=elGateInput.value.trim();if(v)tryUnlock(v);}});
-/* 旧方式の「解錠済み」フラグは無効なので消す */
-try{localStorage.removeItem(STORE_KEY_UNLOCK);}catch(e){}
-/* ログイン状態の監視（ログイン済みなら合言葉入力なしで開く）。
-   HINTは「この端末で前にログインした」目印で、Firebaseを先読みするかの判断にだけ使う
-   （書き換えても中身は見られない。可否はサーバーが判定する） */
-var HINT_KEY='mem_signedin_'+TRIP_ID, authWatching=false;
-function watchAuth(){
-  if(authWatching) return; authWatching=true;
-  ensureFirebase().then(function(auth){
-  auth.onAuthStateChanged(function(user){
-    if(user && !user.isAnonymous && user.email===MEMBER_EMAIL) unlockUI();
-    else { if(user) auth.signOut(); try{localStorage.removeItem(HINT_KEY);}catch(e){} lockUI(); }
-  });
-  }).catch(function(){ authWatching=false; });
-}
-try{ if(localStorage.getItem(HINT_KEY)==='1') watchAuth(); }catch(e){}
-var elLogout=$('memLogoutBtn');
-if(elLogout) elLogout.addEventListener('click',function(){
-  memConfirm('この端末からログアウトします。次に開くときは合言葉が必要です。','ログアウト').then(function(ok){
-    if(!ok) return;
-    try{localStorage.removeItem(HINT_KEY);}catch(e){}
-    firebase.auth().signOut().then(function(){ location.reload(); });
-  });
-});
-
-/* ---- アップロード＆ギャラリー（初期化は解錠後に一度だけ） ---- */
-var appInited=false;
-function initAppOnce(){
-  if(appInited)return; appInited=true;
-
-  var db=firebase.firestore();
-  var storage=firebase.storage();
-  var col=db.collection('trips').doc(TRIP_ID).collection('memories');
-
-  var selected=[]; /* アップロード待ちの写真: {file,url,loc,locStatus} */
-  var batchManualLoc=null; /* 地図タップで指定した位置（位置情報が無い写真に使う） */
-  var deviceLocPromise=null; /* 撮影/選択ボタンを押した瞬間に取得を始める現在地 */
-  var map=null, markers={}, pickMarker=null, pickMode=false, itemsById={};
-
-  var elViewer=document.createElement('div');
-  elViewer.className='lsheet'; elViewer.hidden=true;
-  document.body.appendChild(elViewer);
-  elViewer.addEventListener('click',function(e){if(e.target===elViewer)elViewer.hidden=true;});
-
-  /* ---- 写真をピンチ／ダブルタップで拡大できるようにする ---- */
-  function makeZoomable(wrap, img){
-    var scale=1, panX=0, panY=0, minScale=1, maxScale=5;
-    function apply(){ img.style.transform='translate('+panX+'px,'+panY+'px) scale('+scale+')'; }
-    function clampPan(){
-      if(scale<=1){ panX=0; panY=0; return; }
-      var maxX=(wrap.clientWidth*(scale-1))/2, maxY=(wrap.clientHeight*(scale-1))/2;
-      panX=Math.max(-maxX,Math.min(maxX,panX));
-      panY=Math.max(-maxY,Math.min(maxY,panY));
-    }
-    function reset(){ scale=1; panX=0; panY=0; apply(); }
-    function dist(a,b){ return Math.hypot(a.clientX-b.clientX, a.clientY-b.clientY); }
-    var startDist=0, startScale=1, dragging=false, dragStart={x:0,y:0}, lastTap=0;
-    wrap.addEventListener('dblclick', function(){ if(scale>1){reset();}else{scale=2.5;clampPan();apply();} });
-    wrap.addEventListener('touchstart', function(e){
-      if(e.touches.length===2){ startDist=dist(e.touches[0],e.touches[1]); startScale=scale; dragging=false; }
-      else if(e.touches.length===1){
-        var now=Date.now();
-        if(now-lastTap<300){ if(scale>1){reset();}else{scale=2.5;clampPan();apply();} }
-        lastTap=now;
-        dragging=scale>1;
-        dragStart={x:e.touches[0].clientX-panX, y:e.touches[0].clientY-panY};
-      }
-    }, {passive:true});
-    wrap.addEventListener('touchmove', function(e){
-      if(e.touches.length===2){
-        var d=dist(e.touches[0],e.touches[1]);
-        if(startDist>0){ scale=Math.min(maxScale, Math.max(minScale, startScale*(d/startDist))); clampPan(); apply(); }
-      }else if(e.touches.length===1 && dragging){
-        panX=e.touches[0].clientX-dragStart.x; panY=e.touches[0].clientY-dragStart.y;
-        clampPan(); apply();
-      }
-    }, {passive:true});
-    wrap.addEventListener('touchend', function(e){ if(e.touches.length===0){ dragging=false; startDist=0; if(scale<1.02) reset(); } });
-    return {reset:reset};
-  }
-
-  function openViewer(it){
-    if(!it || !safeId(it.id)) return;
-    elViewer.innerHTML='<div class="lbox">'
-      +'<div class="vimg-wrap" id="memViewerImgWrap"><img src="'+esc(safePhotoUrl(it.url))+'" id="memViewerImg" alt=""></div>'
-      +'<p class="vimg-hint">ピンチまたはダブルタップで拡大</p>'
-      +'<h4>'+esc(it.name||'')+'</h4>'
-      +(it.caption?'<p>'+esc(it.caption)+'</p>':'')
-      +'<div class="acts">'
-      +'<button type="button" id="memViewerEdit">✏️ 編集</button>'
-      +'<button type="button" id="memViewerDelete">🗑 削除</button>'
-      +'<button type="button" class="pri" id="memViewerClose">閉じる</button>'
-      +'</div></div>';
-    elViewer.hidden=false;
-    var wrap=$('memViewerImgWrap'), img=$('memViewerImg');
-    if(wrap && img) makeZoomable(wrap, img);
-    var b=$('memViewerClose'); if(b)b.addEventListener('click',function(){elViewer.hidden=true;});
-    var bEdit=$('memViewerEdit');
-    if(bEdit) bEdit.addEventListener('click', function(){
-      memEditSheet(it.name, it.caption).then(function(res){
-        if(res===null) return;
-        bEdit.disabled=true;
-        col.doc(it.id).update({name:res.name, caption:res.caption}).then(function(){
-          elViewer.hidden=true;
-        }).catch(function(err){
-          console.error(err);
-          bEdit.disabled=false;
-          memAlert('更新に失敗しました。通信環境を確認してもう一度お試しください。');
-        });
-      });
-    });
-    var bDelete=$('memViewerDelete');
-    if(bDelete) bDelete.addEventListener('click', function(){
-      memConfirm('この写真を削除します。この操作は取り消せません。よろしいですか？','削除する').then(function(ok){
-        if(!ok) return;
-        bDelete.disabled=true;
-        col.doc(it.id).delete().then(function(){
-          if(it.storagePath==='trips/'+TRIP_ID+'/memories/'+it.id+'.jpg'){ return storage.ref(it.storagePath).delete().catch(function(){/* ファイル削除は失敗しても無視 */}); }
-        }).then(function(){
-          elViewer.hidden=true;
-        }).catch(function(err){
-          console.error(err);
-          bDelete.disabled=false;
-          memAlert('削除に失敗しました。通信環境を確認してもう一度お試しください。');
-        });
-      });
-    });
-  }
-
-  function startMemMap(){
-    Promise.all([loadCss('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'), window.L?Promise.resolve():loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js')]).then(function(){
-      map=L.map(elMapDiv,{scrollWheelZoom:false});
-      L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',{maxZoom:18,attribution:'<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener noreferrer">地理院タイル</a>'}).addTo(map);
-      map.setView([36.65,139.2],9);
-      map.on('click',function(){map.scrollWheelZoom.enable();});
-      map.on('mouseout',function(){map.scrollWheelZoom.disable();});
-      map.on('click',function(e){ if(pickMode) setPick(e.latlng.lat,e.latlng.lng); });
-      window.memMapInvalidate=function(){ if(map) map.invalidateSize(); };
-      subscribeMemories();
-    }).catch(function(){elMapDiv.innerHTML='<p style="padding:16px;font-size:13px">地図を読み込めませんでした。下の一覧はご覧いただけます。</p>';});
-  }
-
-  function setPick(lat,lng){
-    batchManualLoc={lat:lat,lng:lng};
-    if(pickMarker)map.removeLayer(pickMarker);
-    pickMarker=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="pin" style="background:#DD6B20">📍</div>',iconSize:[26,26],iconAnchor:[13,26]})}).addTo(map);
-    elPickStatus.textContent='地図上に仮ピンを置きました。位置情報のない写真にはこの場所を使います。';
-    renderPreview();
-  }
-  elPickBtn.addEventListener('click',function(){
-    pickMode=!pickMode;
-    elPickBtn.classList.toggle('on',pickMode);
-    elPickStatus.textContent=pickMode?'地図をタップして撮影場所を指定してください。':'';
-  });
-  if(elUseHereBtn){
-    elUseHereBtn.addEventListener('click', function(){
-      elUseHereBtn.disabled=true;
-      elPickStatus.textContent='現在地を取得しています…';
-      tryDeviceLocation().then(function(loc){
-        elUseHereBtn.disabled=false;
-        if(loc){
-          setPick(loc.lat, loc.lng);
-          if(map) map.flyTo([loc.lat, loc.lng], Math.max(map.getZoom(),14), {duration:0.8});
-        }else{
-          elPickStatus.textContent='現在地を取得できませんでした。位置情報の利用を許可しているか確認してください。';
-        }
-      });
-    });
-  }
-
-  /* ---- 写真を端末（iPhone）にも保存 ---- */
-  if(elSaveBtn){
-    elSaveBtn.addEventListener('click', function(){
-      var files=selected.map(function(s){return s.file;});
-      if(!files.length)return;
-      if(navigator.share && navigator.canShare && navigator.canShare({files:files})){
-        navigator.share({files:files, title:'写真'}).catch(function(){});
-      }else{
-        files.forEach(function(f,i){
-          setTimeout(function(){
-            var url=URL.createObjectURL(f);
-            var a=document.createElement('a');
-            a.href=url; a.download=f.name||('photo'+(i+1)+'.jpg');
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            setTimeout(function(){URL.revokeObjectURL(url);},4000);
-          }, i*300);
-        });
-      }
-    });
-  }
-
-  /* ---- 位置情報の取得: EXIF→ダメなら現在地 ---- */
-  var exifReady=null;
-  function ensureExifr(){
-    if(exifReady)return exifReady;
-    exifReady=loadScript('https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/lite.umd.js');
-    return exifReady;
-  }
-  function tryDeviceLocation(){
-    return new Promise(function(resolve){
-      if(!navigator.geolocation){ resolve(null); return; }
-      navigator.geolocation.getCurrentPosition(function(pos){
-        resolve({lat:pos.coords.latitude,lng:pos.coords.longitude});
-      }, function(){ resolve(null); }, {enableHighAccuracy:true, timeout:8000, maximumAge:120000});
-    });
-  }
-  /* 撮る/選ぶボタンを押した「その瞬間」に現在地の取得を始める。
-     EXIF確認などを待ってから位置情報を求めると、iOSでは許可ダイアログが
-     ボタン操作から離れすぎて出ないことがあるため、必ずタップ直後に呼ぶ。 */
-  function primeDeviceLocation(){
-    deviceLocPromise = tryDeviceLocation();
-    return deviceLocPromise;
-  }
-
-  /* ---- 選択中の写真のプレビュー ---- */
-  function badgeFor(s){
-    if(s.locStatus==='checking') return '確認中…';
-    if(s.locStatus==='exif') return '📍写真';
-    if(s.locStatus==='device') return '📍現在地';
-    if(s.locStatus==='none' && batchManualLoc) return '📍地図指定';
-    return '位置情報なし';
-  }
-  function renderPreview(){
-    if(!elPreview) return;
-    if(!selected.length){
-      elPreview.style.display='none'; elPreview.innerHTML='';
-      if(elSelCount) elSelCount.textContent='';
-      if(elSaveWrap) elSaveWrap.style.display='none';
-      return;
-    }
-    elPreview.style.display='grid';
-    elPreview.innerHTML = selected.map(function(s,i){
-      return '<div class="mem-thumb"><img src="'+esc(s.url)+'" alt=""><span class="locbadge">'+esc(badgeFor(s))+'</span><button type="button" class="rm" data-idx="'+i+'" aria-label="削除">×</button></div>';
-    }).join('');
-    if(elSelCount) elSelCount.textContent=selected.length+'枚選択中';
-    if(elSaveWrap) elSaveWrap.style.display='block';
-  }
-  if(elPreview){
-    elPreview.addEventListener('click', function(e){
-      var b=e.target.closest('button.rm'); if(!b)return;
-      var i=parseInt(b.getAttribute('data-idx'),10);
-      if(!isNaN(i) && selected[i]){ try{URL.revokeObjectURL(selected[i].url);}catch(e2){} selected.splice(i,1); renderPreview(); }
-    });
-  }
-
-  function resolveFileLocation(item){
-    ensureExifr().then(function(){ return exifr.gps(item.file); }).catch(function(){ return null; }).then(function(gps){
-      if(gps && typeof gps.latitude==='number'){
-        item.loc={lat:gps.latitude,lng:gps.longitude};
-        item.locStatus='exif';
-        renderPreview();
-        return;
-      }
-      /* iPhoneのSafariは写真のEXIF位置情報を渡す前に消してしまうことが多いため、
-         その場合は撮影/選択ボタンを押した時点から取得していた現在地を代わりに使う */
-      var lp = deviceLocPromise || tryDeviceLocation();
-      return lp.then(function(loc){
-        if(loc){ item.loc=loc; item.locStatus='device'; }
-        else { item.locStatus='none'; }
-        renderPreview();
-      });
-    });
-  }
-  function handleFilesSelected(fileList){
-    var files=Array.prototype.slice.call(fileList||[]);
-    if(!files.length) return;
-    files=files.filter(function(f){ return f && /^image\//.test(f.type||'image/'); });
-    files.forEach(function(f){
-      var item={file:f, url:URL.createObjectURL(f), loc:null, locStatus:'checking'};
-      selected.push(item);
-      resolveFileLocation(item);
-    });
-    renderPreview();
-  }
-  elLibraryBtn.addEventListener('click', function(){
-    elFileLibrary.click();
-    primeDeviceLocation();
-  });
-  elFileLibrary.addEventListener('change', function(){ handleFilesSelected(elFileLibrary.files); elFileLibrary.value=''; });
-
-  /* ---- 画像の縮小（EXIF回転補正込み。対応ブラウザのみ自動補正） ---- */
-  function resizeImage(file, maxSize, quality){
-    var opt={};
-    try{ opt.imageOrientation='from-image'; }catch(e){}
-    return createImageBitmap(file, opt).then(function(bmp){
-      var scale=Math.min(1, maxSize/Math.max(bmp.width,bmp.height));
-      var dW=Math.max(1,Math.round(bmp.width*scale)), dH=Math.max(1,Math.round(bmp.height*scale));
-      var canvas=document.createElement('canvas');
-      canvas.width=dW; canvas.height=dH;
-      var ctx=canvas.getContext('2d');
-      ctx.drawImage(bmp,0,0,dW,dH);
-      return new Promise(function(resolve){canvas.toBlob(resolve,'image/jpeg',quality||0.82);});
-    });
-  }
-
-  /* ---- アップロード（複数枚まとめて） ---- */
-  elUploadBtn.addEventListener('click', function(){
-    if(!selected.length){ elUploadMsg.className='mem-msg err'; elUploadMsg.textContent='写真を選んでください。'; return; }
-    elUploadBtn.disabled=true;
-    var items=selected.slice();
-    var total=items.length, done=0, failed=0;
-    var caption=elCaption.value.trim().slice(0,300);
-    var day=(['d1','d2','d3'].indexOf(elDay.value)>=0)?elDay.value:null;
-    elUploadMsg.className='mem-msg'; elUploadMsg.textContent='アップロード中…（0/'+total+'）';
-    var tasks=items.map(function(s){
-      return resizeImage(s.file, 1600, 0.82).then(function(blob){
-        var id=col.doc().id;
-        var path='trips/'+TRIP_ID+'/memories/'+id+'.jpg';
-        var ref=storage.ref().child(path);
-        return ref.put(blob, {contentType:'image/jpeg'}).then(function(){ return ref.getDownloadURL(); }).then(function(url){
-          var loc = s.loc || (s.locStatus==='none' ? batchManualLoc : null);
-          var data={
-            name: '',
-            caption: caption,
-            day: day,
-            storagePath: path,
-            url: url,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
-          };
-          if(loc){ data.lat=loc.lat; data.lng=loc.lng; data.hasLoc=true; }
-          else { data.hasLoc=false; }
-          return col.doc(id).set(data);
-        });
-      }).then(function(){
-        done++; elUploadMsg.textContent='アップロード中…（'+done+'/'+total+'）';
-      }).catch(function(err){
-        console.error(err); failed++; done++; elUploadMsg.textContent='アップロード中…（'+done+'/'+total+'）';
-      });
-    });
-    Promise.all(tasks).then(function(){
-      selected.forEach(function(s){ try{URL.revokeObjectURL(s.url);}catch(e){} });
-      selected=[]; batchManualLoc=null;
-      renderPreview();
-      elCaption.value='';
-      if(pickMarker && map){map.removeLayer(pickMarker);pickMarker=null;}
-      elPickStatus.textContent='';
-      elUploadBtn.disabled=false;
-      if(failed){
-        elUploadMsg.className='mem-msg err';
-        elUploadMsg.textContent=(total-failed)+'/'+total+'枚を投稿しました。'+failed+'枚は失敗しました。通信環境を確認してもう一度お試しください。';
-      }else{
-        elUploadMsg.className='mem-msg';
-        elUploadMsg.textContent=(total>1?total+'枚投稿しました！':'投稿しました！');
-      }
-    });
-  });
-
-  /* ---- 一覧・地図へのリアルタイム反映 ---- */
-  function subscribeMemories(){
-    col.orderBy('createdAt','desc').limit(300).onSnapshot(function(snap){
-      var items=[];
-      snap.forEach(function(doc){
-        var d=doc.data(); d.id=doc.id;
-        if(!safeId(d.id) || !safePhotoUrl(d.url)) return; /* 不正なデータは表示しない */
-        if(d.hasLoc){ d.lat=safeNum(d.lat,90); d.lng=safeNum(d.lng,180); if(d.lat===null||d.lng===null) d.hasLoc=false; }
-        items.push(d);
-      });
-      renderGrid(items);
-      renderPins(items);
-    }, function(err){
-      console.error(err);
-      elEmpty.style.display='block'; elEmpty.textContent='読み込みに失敗しました。';
-    });
-  }
-  function renderGrid(items){
-    itemsById={};
-    items.forEach(function(it){ itemsById[it.id]=it; });
-    if(!items.length){ elGrid.innerHTML=''; elEmpty.style.display='block'; elEmpty.textContent='まだ写真がありません。最初の1枚を投稿してみましょう。'; return; }
-    elEmpty.style.display='none';
-    elGrid.innerHTML=items.map(function(it){
-      return '<button type="button" class="mem-thumb" data-id="'+esc(safeId(it.id))+'"><img src="'+esc(safePhotoUrl(it.url))+'" alt="" loading="lazy">'+(it.hasLoc?'':'<span class="mem-nopin">📍なし</span>')+'</button>';
-    }).join('');
-  }
-  elGrid.addEventListener('click', function(e){
-    var b=e.target.closest('button[data-id]'); if(!b)return;
-    var it=itemsById[b.getAttribute('data-id')]; if(it)openViewer(it);
-  });
-  /* 写真ごとにピンの色を変える（最大7色・同じ写真は常に同じ色になるよう写真IDから決める） */
-  var PIN_COLORS=['#B78A52','#2B6CB0','#DD6B20','#97266D','#38A169','#805AD5','#319795'];
-  function colorForId(id){
-    var h=0;
-    for(var i=0;i<id.length;i++){ h=(h*31+id.charCodeAt(i))>>>0; }
-    return PIN_COLORS[h % PIN_COLORS.length];
-  }
-  function renderPins(items){
-    if(!map)return;
-    var stillThere={};
-    var bounds=[];
-    items.forEach(function(it){
-      if(!it.hasLoc)return;
-      stillThere[it.id]=true;
-      bounds.push([it.lat,it.lng]);
-      if(markers[it.id])return;
-      var color=colorForId(it.id);
-      var m=L.marker([it.lat,it.lng],{icon:L.divIcon({className:'',html:'<div class="mem-pin" style="border-color:'+color+'"><img src="'+esc(safePhotoUrl(it.url))+'" loading="lazy" alt=""></div>',iconSize:[36,36],iconAnchor:[18,36]})});
-      m.on('click', function(){ openViewer(itemsById[it.id]||it); });
-      m.addTo(map);
-      markers[it.id]=m;
-    });
-    Object.keys(markers).forEach(function(id){ if(!stillThere[id]){ map.removeLayer(markers[id]); delete markers[id]; } });
-    if(bounds.length) map.fitBounds(bounds,{padding:[30,30],maxZoom:14});
-  }
-
-  startMemMap();
-}
-
-})();
-</script>
 <script>
 /* ===== v1.25: 今日の見どころ天気 / 次の予定バー / 旅のビンゴ / ホーム画面追加・オフライン ===== */
 (function(){
 'use strict';
-var WALICA_URL='https://walica.jp/group/01M54D4HDVP7N0JC7GEGRFHY1R'; /* 割り勘グループ（Walica）のURL。空なら割り勘リンクは非表示 */
 var TRIP_ID='kitakanto202611';
 
 function $(id){return document.getElementById(id);}
@@ -1854,9 +1208,9 @@ function renderBar(){
  }else{
   var home=n<jst('2026-11-24');
   k=home?'帰り道も安全運転で 🚗':'おかえりなさい！';
-  t=home?'旅のビンゴ、いくつ揃った？':'みんなの写真で旅を振り返ろう';
-  s='📷 写真共有に思い出をアップしよう';
-  goLabel=home?'ビンゴ':'写真を見る';goAct=function(){switchTabByCode(home?'bingo':'memories');scrollTo(0,0);};target=null;
+  t=home?'旅のビンゴ、いくつ揃った？':'また一緒に旅しよう 👋';
+  s=home?'🎯 ビンゴの結果をみんなで見せ合おう':'3日間おつかれさまでした';
+  goLabel='ビンゴ';goAct=function(){switchTabByCode('bingo');scrollTo(0,0);};target=null;
  }
  bar.querySelector('.nb-k').textContent=k;
  bar.querySelector('.nb-t').textContent=t;
@@ -1911,12 +1265,11 @@ function celebrate(title,msg){
  var el=document.createElement('div');el.className='bg-celebrate';
  var colors=['#C05621','#B78A52','#2B6CB0','#38A169','#D53F8C','#ECC94B'],cf='';
  for(var i=0;i<60;i++){cf+='<i class="cf" style="left:'+(Math.random()*100)+'%;background:'+colors[i%colors.length]+';animation-duration:'+(1.8+Math.random()*1.8)+'s;animation-delay:'+(Math.random()*.6)+'s"></i>';}
- el.innerHTML=cf+'<div class="bx"><div class="big">'+title+'</div><p>'+msg+'</p><div class="acts"><button type="button" class="cl">とじる</button><button type="button" class="pri ph">📷 写真を投稿</button></div></div>';
+ el.innerHTML=cf+'<div class="bx"><div class="big">'+title+'</div><p>'+msg+'</p><div class="acts"><button type="button" class="pri cl">とじる</button></div></div>';
  document.body.appendChild(el);
  function close(){if(el.parentNode)el.parentNode.removeChild(el);}
  el.addEventListener('click',function(e){if(e.target===el)close();});
  el.querySelector('.cl').addEventListener('click',close);
- el.querySelector('.ph').addEventListener('click',function(){close();switchTabByCode('memories');scrollTo(0,0);});
  if(navigator.vibrate)try{navigator.vibrate([60,40,120]);}catch(e){}
 }
 function initBingo(){
@@ -1950,12 +1303,6 @@ function initChecklist(){
  });
 }
 
-/* ---------- 割り勘（Walica） ---------- */
-function initWalica(){
- if(!WALICA_URL)return;
- Array.prototype.forEach.call(document.querySelectorAll('[data-walica]'),function(el){el.href=WALICA_URL;el.hidden=false;el.style.display='';el.addEventListener('click',function(){track('walica_open');});});
-}
-
 /* ---------- ホーム画面に追加・オフライン ---------- */
 function initPwa(){
  if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')){
@@ -1979,7 +1326,7 @@ function initPwa(){
  window.addEventListener('online',function(){net();loadWeather();});window.addEventListener('offline',net);net();
 }
 
-function init(){initBar();loadWeather();initBingo();initChecklist();initWalica();initPwa();}
+function init(){initBar();loadWeather();initBingo();initChecklist();initPwa();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
