@@ -1,5 +1,5 @@
 /* 北関東旅行 Service Worker: ホーム画面追加・オフライン表示用 */
-var VER = 'kk-v1.32';
+var VER = 'kk-v1.33';
 var SHELL = VER + '-shell', RT = VER + '-rt', TILES = 'kk-tiles';
 var SHELL_FILES = ['./', './index.html', './kusatsu-town-map.jpg', './manifest.webmanifest', './icon-192.png', './icon-180.png',
   'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
